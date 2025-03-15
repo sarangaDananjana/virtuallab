@@ -1,0 +1,170 @@
+
+input[type="password"]::-ms-reveal, 
+input[type="password"]::-webkit-contacts-auto-fill-button, 
+input[type="password"]::-webkit-search-cancel-button, 
+input[type="password"]::-webkit-clear-button, 
+input[type="password"]::-webkit-outer-spin-button, 
+input[type="password"]::-webkit-inner-spin-button {
+    display: none;
+}
+
+body {
+    background-color: #181818;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    background-color: #202020;
+    padding: 10px 40px;
+    border: 1px solid rgb(82, 82, 82);
+    border-radius: 10px;
+    width:380px;
+    height: 100%;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 50px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+form{
+    width: 100%;
+
+}
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    margin-top: 5px;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 40px;
+    cursor: pointer;
+    color: white;
+}
+
+.forgot-password {
+    font-size: 14px;
+    color: #e2c312;
+    text-decoration: none;
+    padding: 1rem;
+}
+
+.input-group {
+    position: relative;
+}
+#reveal-icon1, #reveal-icon2 {
+    position: absolute;
+    right: 10px;
+    top: 66%;
+    color: #e2c312;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: none;  /* Hidden by default */
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.btn-signin {
+    width: 100%;
+    padding: 12px;
+    margin: 2rem 0;
+    background-color: #e2c312;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-signin:hover {
+    
+    background-color: #ffffff;
+    
+    color: rgb(0, 0, 0);
+    transition: .5s ease-in-out;
+    
+}
+.social-login p {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.social-btn {
+    width: 30px;
+    height: 30px;
+    background-color: gray;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.password-requirements{
+    width: 100%;
+    border: 1px solid rgb(100, 100, 100);
+    border-radius: 10px;
+}
+
+.footer a {
+    font-size: 14px;
+    color: #e2c312;
+    text-decoration: none;
+    margin-top: 10px;
+    display: block;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+@media screen and (min-width:700px) {
+
+.login-box {
+  
+    width:500px;
+    border: 1px solid rgb(82, 82, 82);
+   
+}
+}

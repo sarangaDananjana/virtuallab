@@ -1,0 +1,186 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <title>VIRTUAL LAB</title>
+    <link rel="icon" type="image/png" sizes="32x32" href={% static "images/site_images/main_logo.png" %}>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #1e1e2f, #3a3a5c);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .checkmark {
+            width: 120px;
+            height: 120px;
+            background: #00c853;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            animation: pop 0.5s ease-out;
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            width: 30px;
+            height: 60px;
+            border: solid white;
+            border-width: 0 8px 8px 0;
+            transform: rotate(45deg) translateX(-50%);
+            animation: draw 0.5s 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes draw {
+            0% {
+                opacity: 0;
+                height: 0;
+            }
+
+            100% {
+                opacity: 1;
+                height: 60px;
+            }
+        }
+
+        .text {
+            margin-top: 30px;
+            font-size: 2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .tagline {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #ccc;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 15px 30px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            text-transform: uppercase;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            animation: fadeIn 2s ease-out;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+            background: #1de986;
+        }
+
+        /* Background Animation */
+        .floating-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="floating-stars">
+        <!-- JavaScript will dynamically generate stars here -->
+    </div>
+    <div class="container">
+        <div class="checkmark"></div>
+        <div class="text">Order Successful!</div>
+        <div class="tagline">Thank you for shopping with Virtual Lab! 🎮</div>
+        <button class="button" onclick="location.href='{% url 'select_storage_device' %}'">Continue Shopping</button>
+    </div>
+
+    <script>
+        // Generate floating stars
+        const starContainer = document.querySelector('.floating-stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            star.style.animationDuration = `${3 + Math.random() * 3}s`;
+            starContainer.appendChild(star);
+        }
+    </script>
+</body>
+
+</html>
+
+{% endblock %}
