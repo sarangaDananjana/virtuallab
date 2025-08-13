@@ -1,0 +1,59 @@
+# Ignore compiled output files
+*.class
+*.jar
+*.war
+*.ear
+*.o
+*.obj
+*.dll
+*.exe
+*.pyc
+*.swp
+
+# Ignore build directories
+bin/
+build/
+target/
+out/
+dist/
+
+# Ignore IDE and editor specific files
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Ignore operating system generated files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+logs/
+
+# Ignore temporary files
+*~
+#*#
+.#*
+.fuse_hidden*
+.nfs*
+
+# Ignore sensitive information (e.g., configuration files with credentials)
+config.local.php
+.env
+*.key
+*.pem
+
+# Ignore dependency management files
+node_modules/
+vendor/
+composer.lock
+
+# Ignore user-specific files that are not part of the project
+my_scratchpad.txt

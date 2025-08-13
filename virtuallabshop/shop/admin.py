@@ -1,0 +1,343 @@
+from .models import Ticket, TicketPhoto  # add these to your existing imports
+from django.forms.models import BaseInlineFormSet
+from django.core.exceptions import ValidationError
+from .models import (
+    Genre,
+    Company,
+    Product,
+    ProductImage,
+    SystemRequirements,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
+    ReservedSlot,
+    GameRequest
+)
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth import get_user_model
+from django.contrib.admin.sites import AlreadyRegistered
+from decimal import Decimal
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from .models import User
+
+
+@admin.register(User)
+class UserAdmin(DjangoUserAdmin):
+    fieldsets = DjangoUserAdmin.fieldsets + (
+        ("Extra", {"fields": ("phone_number",)}),
+    )
+    add_fieldsets = DjangoUserAdmin.add_fieldsets + (
+        (None, {"fields": ("phone_number",)}),
+    )
+    list_display = ("id", "username", "email", "phone_number", "is_staff")
+    search_fields = ("username", "email", "phone_number")
+
+
+# -- Optional: register the custom User in admin (if not already registered)
+User = get_user_model()
+try:
+    admin.site.register(User, BaseUserAdmin)
+except AlreadyRegistered:
+    pass
+
+
+# =========================
+# Inline configurations
+# =========================
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    readonly_fields = ("preview",)
+
+    def preview(self, obj):
+        if getattr(obj, "image", None):
+            return f"<img src='{obj.image.url}' style='height:60px' />"
+        return ""
+
+    preview.allow_tags = True
+    preview.short_description = "Preview"
+
+
+class SystemRequirementsInline(admin.StackedInline):
+    model = SystemRequirements
+    extra = 0
+    can_delete = False
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    autocomplete_fields = ["product"]
+    readonly_fields = ("subtotal",)
+
+    def subtotal(self, obj):
+        if not obj.pk:
+            return "—"
+        total = (obj.unit_price or Decimal("0")) * (obj.quantity or 0)
+        return f"{total}"
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    autocomplete_fields = ["product"]
+    readonly_fields = ("subtotal",)
+
+    def subtotal(self, obj):
+        if not obj.pk:
+            return "—"
+        total = (obj.unit_price or Decimal("0")) * (obj.quantity or 0)
+        return f"{total}"
+
+
+# =========================
+# Model admins
+# =========================
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug")
+    search_fields = ("name",)
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("name",)
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ("name", "company_type", "website")
+    list_filter = ("company_type",)
+    search_fields = ("name",)
+    ordering = ("name",)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [ProductImageInline, SystemRequirementsInline]
+
+    list_display = (
+        "title",
+        "sku",
+        "price",
+        "currency",
+        "is_active",
+        "developer",
+        "publisher",
+        "game_size_gb",
+        "image_count",
+        "dlc_count",
+        "created_at",
+    )
+    list_filter = ("is_active", "developer", "publisher", "genres")
+    search_fields = ("title", "sku", "description")
+    list_select_related = ("developer", "publisher")
+    prepopulated_fields = {"slug": ("title",)}
+    autocomplete_fields = ["developer", "publisher", "genres", "dlcs"]
+    readonly_fields = ("created_at", "updated_at")
+    date_hierarchy = "created_at"
+
+    @admin.display(description="Images", ordering=None)
+    def image_count(self, obj):
+        return obj.images.count()
+
+    @admin.display(description="DLCs", ordering=None)
+    def dlc_count(self, obj):
+        return obj.dlcs.count()
+
+    actions = [
+        "activate_products",
+        "deactivate_products",
+    ]
+
+    @admin.action(description="Mark selected products as active")
+    def activate_products(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Activated {updated} product(s).")
+
+    @admin.action(description="Mark selected products as inactive")
+    def deactivate_products(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"Deactivated {updated} product(s).")
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [CartItemInline]
+    list_display = ("id", "users_display", "session_key",
+                    "total_display", "created_at", "updated_at")
+    search_fields = ("session_key", "users__username", "users__email")
+    autocomplete_fields = ["users"]
+    readonly_fields = ("created_at", "updated_at")
+    date_hierarchy = "created_at"
+
+    def users_display(self, obj):
+        users = obj.users.all()[:3]
+        label = ", ".join(u.username for u in users)
+        extra = obj.users.count() - len(users)
+        return f"{label}{' +' + str(extra) if extra > 0 else ''}" or "—"
+
+    users_display.short_description = "Users"
+
+    def total_display(self, obj):
+        return obj.total
+
+    total_display.short_description = "Total"
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderItemInline]
+    list_display = (
+        "id",
+        "status",
+        "payment_method",
+        "currency",
+        "order_value",
+        "ordered_at",
+        "users_display",
+    )
+    list_filter = ("status", "payment_method")
+    search_fields = (
+        "id",
+        "users__username",
+        "users__email",
+        "orderitem__product__title",
+        "orderitem__product__sku",
+        "payment_reference",
+    )
+    autocomplete_fields = ["users"]
+    readonly_fields = ("ordered_at",)
+    date_hierarchy = "ordered_at"
+    actions = ["recalculate_order_values"]
+
+    def users_display(self, obj):
+        users = obj.users.all()[:3]
+        label = ", ".join(u.username for u in users)
+        extra = obj.users.count() - len(users)
+        return f"{label}{' +' + str(extra) if extra > 0 else ''}" or "—"
+
+    users_display.short_description = "Users"
+
+    @admin.action(description="Recalculate totals for selected orders")
+    def recalculate_order_values(self, request, queryset):
+        for order in queryset:
+            total = sum(
+                (item.unit_price or Decimal("0")) * (item.quantity or 0)
+                for item in order.orderitem_set.all()
+            )
+            order.order_value = total
+            order.save(update_fields=["order_value"])
+        self.message_user(
+            request, f"Recalculated {queryset.count()} order(s).")
+
+    def save_related(self, request, form, formsets, change):
+        """Ensure order_value reflects inline items after save."""
+        super().save_related(request, form, formsets, change)
+        order = form.instance
+        total = sum(
+            (item.unit_price or Decimal("0")) * (item.quantity or 0)
+            for item in order.orderitem_set.all()
+        )
+        if order.order_value != total:
+            order.order_value = total
+            order.save(update_fields=["order_value"])
+
+
+class TicketPhotoInlineFormSet(BaseInlineFormSet):
+    """Limit a ticket to max 5 photos."""
+
+    def clean(self):
+        super().clean()
+        count = 0
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+            if form.cleaned_data.get("DELETE", False):
+                continue
+            # Count existing or newly uploaded photos
+            if form.instance.pk or form.cleaned_data.get("image"):
+                count += 1
+        if count > 5:
+            raise ValidationError("You can upload up to 5 photos per ticket.")
+
+
+class TicketPhotoInline(admin.TabularInline):
+    model = TicketPhoto
+    formset = TicketPhotoInlineFormSet
+    extra = 0
+    max_num = 5
+    fields = ("image", "alt_text")
+    show_change_link = False
+
+
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    inlines = [TicketPhotoInline]
+
+    list_display = (
+        "reference",
+        "subject",
+        "source",
+        "status",
+        "priority",
+        "order",
+        "photos_total",
+        "video_attached",
+        "created_at",
+        "updated_at",
+        "users_display",
+    )
+    list_filter = ("source", "status", "priority", "created_at")
+    search_fields = ("reference", "subject", "description",
+                     "order__id", "users__username", "users__email")
+    autocomplete_fields = ("users", "order")
+    readonly_fields = ("reference", "created_at", "updated_at")
+
+    fieldsets = (
+        (None, {"fields": ("reference", "subject", "description", "source", "order")}),
+        ("Attachments", {"fields": ("video",)}),
+        ("Workflow", {"fields": ("status", "priority", "users")}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
+
+    @admin.display(boolean=True, description="Video")
+    def video_attached(self, obj):
+        return bool(obj.video)
+
+    @admin.display(description="Photos")
+    def photos_total(self, obj):
+        return obj.photos.count()
+
+    def users_display(self, obj):
+        users = obj.users.all()[:3]
+        label = ", ".join(u.username for u in users)
+        extra = obj.users.count() - len(users)
+        return f"{label}{' +' + str(extra) if extra > 0 else ''}" or "—"
+
+
+@admin.register(ReservedSlot)
+class ReservedSlotAdmin(admin.ModelAdmin):
+    list_display = ("date", "slot", "user", "ticket", "created_at")
+    list_filter = ("slot", "date", "created_at")
+    search_fields = (
+        "ticket__reference", "ticket__subject",
+        "user__username", "user__email",
+    )
+    list_select_related = ("user", "ticket")
+    autocomplete_fields = ("user", "ticket")
+    readonly_fields = ("created_at", "updated_at")
+    fieldsets = (
+        (None, {"fields": ("ticket", "user")}),
+        ("Reservation", {"fields": ("date", "slot", "notes")}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
+
+
+@admin.register(GameRequest)
+class GameRequestAdmin(admin.ModelAdmin):
+    list_display = ("id", "game_name", "edition_name", "user", "request_date")
+    list_filter = ("request_date",)
+    search_fields = ("game_name", "edition_name",
+                     "user__username", "user__email")
+    autocomplete_fields = ("user",)
+    ordering = ("-request_date",)

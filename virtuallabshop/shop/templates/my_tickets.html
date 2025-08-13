@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Support Tickets — Virtual Lab Games</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background:
+                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2)
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .375rem;
+            padding: .25rem .5rem;
+            border-radius: .75rem;
+            font-weight: 600;
+            font-size: .75rem;
+            border: 1px solid rgba(255, 255, 255, .12)
+        }
+
+        .badge-open {
+            background: rgba(16, 185, 129, .15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, .25)
+        }
+
+        .badge-progress {
+            background: rgba(59, 130, 246, .15);
+            color: #93c5fd;
+            border-color: rgba(59, 130, 246, .25)
+        }
+
+        .badge-resolved {
+            background: rgba(139, 92, 246, .15);
+            color: #c4b5fd;
+            border-color: rgba(139, 92, 246, .25)
+        }
+
+        .badge-closed {
+            background: rgba(107, 114, 128, .15);
+            color: #d1d5db;
+            border-color: rgba(107, 114, 128, .25)
+        }
+
+        .badge-failed {
+            background: rgba(239, 68, 68, .15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, .25)
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow">
+                        <span class="text-xl">🎮</span>
+                    </span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {% if user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm font-semibold text-white/80">Hello, {{ user.username }}</span>
+                    <a href="#" aria-label="Account"
+                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
+                    {% endif %}
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-white/10 glass-dark">
+            <div class="container mx-auto px-4 py-4 space-y-2">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 font-bold uppercase">
+                        {{ user_initial }}</div>
+                    <div class="text-sm">Hello, {{ user.username }}</div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div class="mb-6 sm:mb-8 flex items-center justify-between gap-4">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span>Support • My Tickets</span>
+                    </div>
+                    <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">My Support Tickets</h1>
+                    <p class="mt-2 text-white/70">Track your requests and check their status.</p>
+                </div>
+                <a href="{% url 'ticket-submit' %}"
+                    class="shine inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all whitespace-nowrap">Submit
+                    a ticket</a>
+            </div>
+
+            <form method="get" class="mb-6">
+                <div class="glass rounded-2xl p-4 flex items-center gap-3">
+                    <label class="text-sm text-white/70" for="statusFilter">Status</label>
+                    <select id="statusFilter" name="status" onchange="this.form.submit()"
+                        class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
+                        <option value="">All</option>
+                        {# Requires "Ticket": Ticket in your context #}
+                        {% for value, label in Ticket.Status.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            {% if tickets %}
+            <ul class="space-y-4">
+                {% for t in tickets %}
+                <li class="glass rounded-2xl p-4 sm:p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <div class="text-xs text-white/50">#{{ t.reference }}</div>
+                                {% if t.status == 'OPEN' %}
+                                <span class="badge badge-open">Open</span>
+                                {% elif t.status == 'IN_PROGRESS' %}
+                                <span class="badge badge-progress">In progress</span>
+                                {% elif t.status == 'RESOLVED' %}
+                                <span class="badge badge-resolved">Resolved</span>
+                                {% elif t.status == 'CLOSED' %}
+                                <span class="badge badge-closed">Closed</span>
+                                {% elif t.status == 'PAYMENT_FAILED' %}
+                                <span class="badge badge-failed">Payment failed</span>
+                                {% else %}
+                                <span class="badge">{{ t.get_status_display }}</span>
+                                {% endif %}
+                            </div>
+                            <h2 class="mt-1 text-lg sm:text-xl font-semibold truncate">{{ t.subject }}</h2>
+                            <div class="mt-1 text-sm text-white/60 flex items-center gap-3 flex-wrap">
+                                <span>Created {{ t.created_at|date:"Y-m-d H:i" }}</span>
+                                <span>•</span>
+                                <span>Source: {{ t.get_source_display }}</span>
+                                {% if t.order_id %}
+                                <span>•</span>
+                                <span>Order #{{ t.order_id }}</span>
+                                {% endif %}
+                                {% if t.reservation %}
+                                <span>•</span>
+                                <span>Visit: {{ t.reservation.date|date:"Y-m-d" }} (
+                                    {{ t.reservation.get_slot_display}})</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                class="ticket-toggle inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"
+                                data-target="#ticket-{{ t.id }}">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ticket-{{ t.id }}" class="hidden pt-4">
+                        <div class="grid lg:grid-cols-5 gap-4">
+                            <div class="lg:col-span-3 space-y-4">
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60">Description</div>
+                                    <div class="mt-1 whitespace-pre-line">{{ t.description }}</div>
+                                </div>
+
+                                {% if t.video %}
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60 mb-2">Video</div>
+                                    <video src="{{ t.video.url }}" class="rounded-lg w-full" controls></video>
+                                </div>
+                                {% endif %}
+
+                                {% if t.photos.all %}
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60 mb-2">Photos ({{ t.photos.count }})</div>
+                                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                        {% for p in t.photos.all %}
+                                        <a href="{{ p.image.url }}" target="_blank"
+                                            class="block rounded-lg overflow-hidden border border-white/10">
+                                            <img src="{{ p.image.url }}" alt="{{ p.alt_text|default:'Ticket photo' }}"
+                                                class="w-full h-24 object-cover" />
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="lg:col-span-2 space-y-4">
+                                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60">Ticket</div>
+                                    <dl class="mt-1 text-sm space-y-1">
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Reference</dt>
+                                            <dd class="font-medium">#{{ t.reference }}</dd>
+                                        </div>
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Created</dt>
+                                            <dd class="font-medium">{{ t.created_at|date:"Y-m-d H:i" }}</dd>
+                                        </div>
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Updated</dt>
+                                            <dd class="font-medium">{{ t.updated_at|date:"Y-m-d H:i" }}</dd>
+                                        </div>
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Status</dt>
+                                            <dd class="font-medium">{{ t.get_status_display }}</dd>
+                                        </div>
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Priority</dt>
+                                            <dd class="font-medium">{{ t.get_priority_display }}</dd>
+                                        </div>
+                                        <div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Source</dt>
+                                            <dd class="font-medium">{{ t.get_source_display }}</dd>
+                                        </div>
+                                        {% if t.order_id %}<div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Order</dt>
+                                            <dd class="font-medium">#{{ t.order_id }}</dd>
+                                        </div>{% endif %}
+                                        {% if t.reservation %}<div class="flex justify-between gap-3">
+                                            <dt class="text-white/60">Visit</dt>
+                                            <dd class="font-medium">{{ t.reservation.date|date:"Y-m-d" }} (
+                                                {{t.reservation.get_slot_display }})</dd>
+                                        </div>{% endif %}
+                                    </dl>
+                                </div>
+
+                                <div
+                                    class="p-4 rounded-2xl bg-gradient-to-tr from-brand-500/15 to-cyan-400/15 border border-white/10">
+                                    <div class="font-semibold">Need more help?</div>
+                                    <p class="text-sm text-white/70 mt-1">Reply to our last email or open a new ticket.
+                                    </p>
+                                    <a href="{% url 'ticket-submit' %}"
+                                        class="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Submit
+                                        a ticket</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            {% else %}
+            <div class="glass rounded-2xl p-10 text-center min-h-[220px] flex flex-col items-center justify-center">
+                <div class="text-3xl mb-2">🧾</div>
+                <h2 class="text-xl font-bold">No tickets yet</h2>
+                <p class="text-white/70 mt-1">If something’s off with your order or game, let us know.</p>
+                <a href="{% url 'ticket-submit' %}"
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all">Submit
+                    a ticket</a>
+            </div>
+            {% endif %}
+
+            {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex items-center justify-center gap-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm">Prev</a>
+                {% else %}
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm">Prev</span>
+                {% endif %}
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/70 text-sm">Page {{ page_obj.number }} of {{
+                    page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm">Next</a>
+                {% else %}
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm">Next</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">
+            © <span id="year"></span> Virtual Lab Games.
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        document.querySelectorAll('.ticket-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-target');
+                const target = document.querySelector(id);
+                target?.classList.toggle('hidden');
+            });
+        });
+        (function () {
+            var sel = document.getElementById('statusFilter');
+            if (sel) {
+                sel.value = "{{ status_filter|default_if_none:''|escapejs }}";
+            }
+        })();
+    </script>
+</body>
+
+</html>

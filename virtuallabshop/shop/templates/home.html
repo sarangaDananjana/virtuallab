@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual Lab Games — Premium PC Games on DVDs (Sri Lanka)</title>
+    <meta name="description"
+        content="Virtual Lab Games delivers PC games on DVDs across Sri Lanka — multi‑disc sets for large AAA titles. 5+ years trusted service, #1 after‑service support, #1 rated on Daraz gaming with 200+ 5‑star ratings." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        gradient: {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background:
+                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .reveal {
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all .8s cubic-bezier(.2, .6, .2, 1);
+        }
+
+        .reveal.in {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            transform: rotate(25deg);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -60%;
+            }
+
+            100% {
+                left: 140%;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 8s ease infinite;
+        }
+
+        .card-hover {
+            transition: all .3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: .5;
+            filter: grayscale(50%);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .glass {
+                backdrop-filter: saturate(140%) blur(12px);
+                -webkit-backdrop-filter: saturate(140%) blur(12px);
+            }
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, .2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .1);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+
+    <!-- Enhanced Header -->
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="#home" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 ring-1 ring-white/10 overflow-hidden">
+                        <img src="{% static 'images/logo.png' %}" alt="Virtual Lab logo" class="w-9 h-9 object-contain"
+                            width="36" height="36" decoding="async" />
+                    </span>
+
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-8">
+                    <a href="#home" class="text-sm font-medium hover:text-brand-300 transition-colors">Home</a>
+                    <a href="#how" class="text-sm font-medium hover:text-brand-300 transition-colors">How it Works</a>
+                    <a href="#benefits" class="text-sm font-medium hover:text-brand-300 transition-colors">Why DVDs?</a>
+                    <a href="#collections"
+                        class="text-sm font-medium hover:text-brand-300 transition-colors">Collections</a>
+                    <a href="#faq" class="text-sm font-medium hover:text-brand-300 transition-colors">FAQ</a>
+                </nav>
+
+                <!-- CTA Buttons -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {% if user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm font-semibold text-white/80">
+                        Hello, {{ user.username }}
+                    </span>
+                    <a href="#" aria-label="Account"
+                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{ user_initial }}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
+                        Login
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'tickets-page' %}"
+                        class="shine inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <span class="hidden sm:inline">My</span> Tickets
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-white/10 glass-dark">
+            <div class="container mx-auto px-4 py-4 space-y-2">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 font-bold uppercase">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm">
+                        Hello, {{ user.username }}
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">Login</a>
+                {% endif %}
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section - Enhanced Responsiveness -->
+    <section id="home"
+        class="relative min-h-[calc(100vh-64px)] flex items-center py-12 sm:py-16 lg:py-20 overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-brand-500/20 rounded-full blur-3xl animate-pulse-slow">
+            </div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse-slow"
+                style="animation-delay: 2s;"></div>
+        </div>
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Content -->
+                <div class="space-y-6 sm:space-y-8 text-center lg:text-left">
+                    <!-- Badge -->
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold mx-auto lg:mx-0">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                        </span>
+                        <span>🇱🇰 Sri Lanka • PC Gaming • 5+ Years Trusted</span>
+                    </div>
+
+                    <!-- Headline -->
+                    <div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
+                            <span class="block">Big PC Games,</span>
+                            <span class="block gradient-text mt-2">Delivered on DVDs.</span>
+                        </h1>
+                        <p class="mt-4 sm:mt-6 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto lg:mx-0">
+                            Multi‑DVD sets for massive AAA titles. Skip gigantic downloads and build your physical
+                            collection with fast islandwide delivery.
+                        </p>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                        <a href="#collections"
+                            class="shine inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+                            Browse Collections
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </a>
+                        <button id="openNotify"
+                            class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-4 rounded-2xl glass hover:bg-white/20 font-semibold text-base sm:text-lg transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                            Get Notified
+                        </button>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6">
+                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                            <div class="text-2xl sm:text-3xl font-black text-brand-300">5+</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1">Years Serving</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                            <div class="text-2xl sm:text-3xl font-black text-emerald-300">#1</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1">Support Team</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                            <div class="text-2xl sm:text-3xl font-black text-cyan-300">200+</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1">5★ Reviews</div>
+                        </div>
+                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                            <div class="text-2xl sm:text-3xl font-black text-purple-300">500+</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1">Happy Gamers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Visual -->
+                <div class="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] order-first lg:order-last">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-brand-500/20 to-transparent rounded-3xl animate-float">
+                    </div>
+                    <img src="{% static 'images/hero.jpg' %}" alt="Virtual Lab"
+                        class="w-full h-full object-contain drop-shadow-2xl"
+                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 bg-gradient-to-br from-brand-500/30 to-cyan-400/30 rounded-3xl flex items-center justify-center text-6xl animate-pulse\'>🎮</div>';">
+                </div>
+            </div>
+
+            <!-- Support Banner -->
+            <div class="mt-12 sm:mt-16 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg sm:text-xl font-bold mb-1">Installation Support Included</h3>
+                        <p class="text-sm sm:text-base text-white/80">Got stuck? Submit a ticket — we respond within 24
+                            hours.</p>
+                    </div>
+                    <a href="{% url 'ticket-submit' %}"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-sm sm:text-base transition-all whitespace-nowrap">
+                        Open Support
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works - Enhanced Cards -->
+    <section id="how" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">How It Works</h2>
+                <p class="text-lg sm:text-xl text-white/70">Simple steps to get your favorite PC games</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
+                        1
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Choose Your Game</h3>
+                    <p class="text-white/70 leading-relaxed">Browse our catalog or request any PC game. We'll confirm
+                        availability and prepare your order.</p>
+                </div>
+
+                <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.1s">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
+                        2
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">We Burn Your DVDs</h3>
+                    <p class="text-white/70 leading-relaxed">Large games split across multiple labeled DVDs with clear
+                        installation instructions included.</p>
+                </div>
+
+                <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.2s">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
+                        3
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Fast Delivery</h3>
+                    <p class="text-white/70 leading-relaxed">Receive your games within 24-48 hours anywhere in Sri
+                        Lanka. Install and play immediately!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section - Improved Layout -->
+    <section id="benefits" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Stats Visual -->
+                <div class="order-2 lg:order-1">
+                    <div class="grid grid-cols-2 gap-4 sm:gap-6">
+                        <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
+                            <div class="text-4xl sm:text-5xl font-black gradient-text">0GB</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">Downloads Required</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
+                            <div class="text-4xl sm:text-5xl font-black gradient-text">24h</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">Typical Delivery</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
+                            <div class="text-4xl sm:text-5xl font-black gradient-text">10+</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">DVDs for Big Games</div>
+                        </div>
+                        <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
+                            <div class="text-4xl sm:text-5xl font-black gradient-text">∞</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">Reinstall Anytime</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="order-1 lg:order-2 space-y-6">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black">Why Choose DVD Gaming?</h2>
+                    <p class="text-lg sm:text-xl text-white/80 leading-relaxed">
+                        Perfect for Sri Lankan gamers with limited bandwidth or data caps. Build a physical collection
+                        while saving time and internet costs.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex gap-4 items-start">
+                            <span class="text-2xl mt-1">🎯</span>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">Curated Game Library</h4>
+                                <p class="text-white/70">Latest AAA titles, indie gems, and classic favorites</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <span class="text-2xl mt-1">💾</span>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">Multi-DVD Technology</h4>
+                                <p class="text-white/70">100GB+ games professionally split across labeled discs</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <span class="text-2xl mt-1">📦</span>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">Premium Packaging</h4>
+                                <p class="text-white/70">Protective sleeves with game artwork and instructions</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <span class="text-2xl mt-1">🛠️</span>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-1">Expert Support</h4>
+                                <p class="text-white/70">Installation help and troubleshooting included free</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                        <!-- CHANGED: from link to button, to open modal -->
+                        <button id="openRequestGame" type="button"
+                            class="shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+                            Request a Game
+                        </button>
+
+                        <a href="#faq"
+                            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl glass hover:bg-white/20 font-semibold transition-all">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Collections Section - Enhanced Grid -->
+    <section id="collections" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2">Game Collections</h2>
+                    <p class="text-lg sm:text-xl text-white/70">Online store launching soon!</p>
+                </div>
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+                    </span>
+                    Coming Soon
+                </span>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Collection Cards -->
+                <div class="glass rounded-3xl p-5 group disabled">
+                    <div
+                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-500/20 to-purple-500/20 flex items-center justify-center text-6xl mb-4">
+                        🎮
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">Action & Adventure</h3>
+                    <p class="text-sm text-white/60 mb-3">Epic single-player campaigns</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-white/50">50+ Games</span>
+                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl p-5 group disabled">
+                    <div
+                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 flex items-center justify-center text-6xl mb-4">
+                        🎯
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">FPS & Shooters</h3>
+                    <p class="text-sm text-white/60 mb-3">Competitive & tactical games</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-white/50">30+ Games</span>
+                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl p-5 group disabled">
+                    <div
+                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center text-6xl mb-4">
+                        🏎️
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">Racing & Sports</h3>
+                    <p class="text-sm text-white/60 mb-3">High-octane racing titles</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-white/50">25+ Games</span>
+                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl p-5 group disabled">
+                    <div
+                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center text-6xl mb-4">
+                        ⚔️
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">RPG & Strategy</h3>
+                    <p class="text-sm text-white/60 mb-3">Immersive worlds & tactics</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-white/50">40+ Games</span>
+                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waitlist Section -->
+            <div class="mt-12 glass rounded-3xl p-6 sm:p-8 lg:p-10">
+                <div class="grid lg:grid-cols-3 gap-6 items-center">
+                    <div class="lg:col-span-2 space-y-3">
+                        <h3 class="text-2xl sm:text-3xl font-bold">Be First When We Launch!</h3>
+                        <p class="text-white/70 text-base sm:text-lg">Join the waitlist for exclusive early access and
+                            special launch discounts.</p>
+                    </div>
+                    <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3">
+                        <input required type="email" name="email" placeholder="your@email.com"
+                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        <button
+                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold whitespace-nowrap hover:shadow-xl transition-all">
+                            Join Waitlist
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section - Improved Accordion -->
+    <section id="faq" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Frequently Asked Questions</h2>
+                <p class="text-lg sm:text-xl text-white/70">Everything you need to know about our service</p>
+            </div>
+
+            <div class="space-y-4">
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>How do you handle very large games (100GB+)?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        We professionally split large games across multiple DVDs (up to 10+ discs for massive titles).
+                        Each disc is clearly labeled with the installation order, and we include detailed step-by-step
+                        instructions to make the process smooth.
+                    </p>
+                </details>
+
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>Are the games safe to install?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        Yes, all our game installers are thoroughly checked and verified before burning to DVDs. We've
+                        been serving the Sri Lankan gaming community for over 5 years with thousands of satisfied
+                        customers. If you encounter any issues, our support team is always ready to help.
+                    </p>
+                </details>
+
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>What platforms do you support?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        We exclusively focus on PC (Windows) games to provide the best possible service. Our games are
+                        optimized for Windows 10 and Windows 11 systems.
+                    </p>
+                </details>
+
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>How fast is delivery?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        We offer fast delivery across Sri Lanka, typically within 24-48 hours for most locations.
+                        Express delivery options are available for Colombo and suburbs. Exact delivery times will be
+                        confirmed when you place your order.
+                    </p>
+                </details>
+
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>Do you provide installation support?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        Absolutely! We're known for our excellent after-service support. If you face any installation
+                        issues, simply open a support ticket and our team will guide you through the process within 24
+                        hours. We're here to ensure you can enjoy your games hassle-free.
+                    </p>
+                </details>
+
+                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
+                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
+                        <span>Can I request specific games?</span>
+                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </summary>
+                    <p class="mt-4 text-white/75 leading-relaxed">
+                        Yes! If you don't see a game in our catalog, you can request it through our support system.
+                        We'll check availability and prepare it for you, usually within 2-3 business days.
+                    </p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Footer -->
+    <footer class="border-t border-white/10 mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg">
+                            <span class="text-xl">🎮</span>
+                        </span>
+                        <div>
+                            <div class="font-black text-xl">Virtual Lab</div>
+                            <div class="text-xs text-white/60 -mt-1">GAMES</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white/70 leading-relaxed mb-4">
+                        Premium PC games on DVDs with multi-disc support for large titles. Serving Sri Lankan gamers
+                        since 2019.
+                    </p>
+                    <div class="flex gap-3">
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs">
+                            <span class="text-emerald-400">●</span> 5+ Years
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs">
+                            <span class="text-yellow-400">★</span> #1 Rated
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#how" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#benefits" class="hover:text-white transition-colors">Why DVDs?</a></li>
+                        <li><a href="#collections" class="hover:text-white transition-colors">Collections</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="support.html" class="hover:text-white transition-colors">Support Center</a></li>
+                        <li><a href="support.html" class="hover:text-white transition-colors">Open Ticket</a></li>
+                        <li><a href="login.html" class="hover:text-white transition-colors">Customer Login</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Installation Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Stay Updated</h4>
+                    <p class="text-sm text-white/70 mb-4">Get notified about new games and exclusive offers.</p>
+                    <form id="footerForm" class="space-y-3">
+                        <input required type="email" name="email" placeholder="your@email.com"
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-sm focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        <button
+                            class="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold text-sm hover:shadow-lg transition-all">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div
+                class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
+                <p>© <span id="year"></span> Virtual Lab Games. All rights reserved.</p>
+                <p>🇱🇰 Proudly serving Sri Lankan gamers</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Modal -->
+    <div id="notifyModal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-float">
+                <div class="flex items-start justify-between mb-6">
+                    <h3 class="text-2xl font-black">Join Waitlist</h3>
+                    <button id="closeNotify"
+                        class="text-white/60 hover:text-white transition-colors text-2xl">×</button>
+                </div>
+
+                <form id="notifyForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email Address</label>
+                        <input required type="email" name="email"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
+                            placeholder="your@email.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Favorite Game Genres (Optional)</label>
+                        <input name="genres"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
+                            placeholder="Action, RPG, Racing...">
+                    </div>
+
+                    <div class="pt-4">
+                        <button
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold hover:shadow-xl transition-all">
+                            Notify Me When Live
+                        </button>
+                        <p class="text-xs text-white/50 text-center mt-3">No spam, only important updates</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Game Modal -->
+    <div id="requestGameModal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeRequestModal()"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-float">
+                <div class="flex items-start justify-between mb-6">
+                    <h3 class="text-2xl font-black">Request a Game</h3>
+                    <button id="closeRequestGame"
+                        class="text-white/60 hover:text-white transition-colors text-2xl">×</button>
+                </div>
+
+                <form id="requestGameForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Game Name <span
+                                class="text-red-400">*</span></label>
+                        <input required name="game_name"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
+                            placeholder="e.g., Elden Ring">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Edition (Optional)</label>
+                        <input name="edition"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
+                            placeholder="Deluxe, Ultimate... (optional)">
+                    </div>
+
+                    <div class="pt-4">
+                        <button
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold hover:shadow-xl transition-all">
+                            Send Request
+                        </button>
+                        <p class="text-xs text-white/50 text-center mt-3">We’ll follow up via your account or email</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script>
+        // Set current year
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        navToggle?.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Smooth reveal animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Modal handling
+        const notifyModal = document.getElementById('notifyModal');
+        const openNotifyBtn = document.getElementById('openNotify');
+        const closeNotifyBtn = document.getElementById('closeNotify');
+
+        function closeModal() {
+            notifyModal.classList.add('hidden');
+        }
+
+        openNotifyBtn?.addEventListener('click', () => {
+            notifyModal.classList.remove('hidden');
+        });
+
+        closeNotifyBtn?.addEventListener('click', closeModal);
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bgColor} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Form submissions
+        document.getElementById('waitlistForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Successfully added to waitlist! 🎮');
+            e.target.reset();
+        });
+
+        document.getElementById('footerForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Thanks for subscribing! 📧');
+            e.target.reset();
+        });
+
+        document.getElementById('notifyForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            closeModal();
+            showToast('We\'ll notify you when the store launches! 🚀');
+            e.target.reset();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Request Game modal
+        const requestGameModal = document.getElementById('requestGameModal');
+        const openRequestGameBtn = document.getElementById('openRequestGame');
+        const closeRequestGameBtn = document.getElementById('closeRequestGame');
+
+        function closeRequestModal() {
+            requestGameModal?.classList.add('hidden');
+        }
+
+        openRequestGameBtn?.addEventListener('click', () => {
+            requestGameModal?.classList.remove('hidden');
+        });
+
+        closeRequestGameBtn?.addEventListener('click', closeRequestModal);
+
+        // Submit (real API POST)
+        document.getElementById('requestGameForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const fd = new FormData(form);
+            const game = (fd.get('game_name') || '').toString().trim();
+            const edition = (fd.get('edition') || '').toString().trim();
+
+            if (!game) { showToast('Please enter the game name', 'error'); return; }
+
+            // Optional: loading state on button
+            const btn = form.querySelector('button[type="submit"]');
+            const btnText = btn?.textContent;
+            btn && (btn.disabled = true, btn.textContent = 'Sending...');
+
+            try {
+                const res = await fetch('/api/request-game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ game, edition }) // backend also accepts game_name/edition_name
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok) {
+                    const msg = data?.detail || 'Could not submit request.';
+                    showToast(msg, 'error');
+                    return;
+                }
+
+                // Success
+                closeRequestModal();
+                showToast('Game request submitted! 🎮');
+                form.reset();
+
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = btnText; }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

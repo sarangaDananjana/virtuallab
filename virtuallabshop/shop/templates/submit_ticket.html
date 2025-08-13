@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Support Ticket — Virtual Lab Games</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background:
+                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2)
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden
+        }
+
+        .shine::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            transform: rotate(25deg);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+            animation: shine 4s infinite
+        }
+
+        @keyframes shine {
+            0% {
+                left: -60%
+            }
+
+            100% {
+                left: 140%
+            }
+        }
+
+        .disabled {
+            pointer-events: none;
+            opacity: .5;
+            filter: grayscale(50%)
+        }
+
+        /* --- Selected-state styling (desktop + mobile) --- */
+        .option,
+        .slot-label {
+            transition: background .2s, border-color .2s, box-shadow .2s, transform .1s;
+        }
+
+        /* Modern browsers: style parent when the radio inside is checked */
+        .option:has(input:checked),
+        .slot-label:has(input:checked) {
+            background: rgba(45, 134, 255, .12);
+            /* brand-ish blue tint */
+            border-color: rgba(94, 161, 255, .7);
+            box-shadow: 0 0 0 2px rgba(45, 134, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .12);
+        }
+
+        /* Optional check badge that appears on selection */
+        .checkmark {
+            margin-left: auto;
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            background: rgba(45, 134, 255, .95);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #000;
+            opacity: 0;
+            transform: scale(.85);
+            transition: opacity .15s, transform .15s;
+        }
+
+        .option:has(input:checked) .checkmark,
+        .slot-label:has(input:checked) .checkmark {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* JS fallback will toggle a .selected class */
+        .option.selected,
+        .slot-label.selected {
+            background: rgba(45, 134, 255, .12);
+            border-color: rgba(94, 161, 255, .7);
+            box-shadow: 0 0 0 2px rgba(45, 134, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .12);
+        }
+
+        .option.selected .checkmark,
+        .slot-label.selected .checkmark {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* --- Time slot layout helpers --- */
+        .slot-label {
+            position: relative;
+            /* for the badge */
+        }
+
+        .slot-time {
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            /* keep AM/PM on same line */
+        }
+
+        .slot-ampm {
+            text-transform: uppercase;
+            opacity: .7;
+            font-size: .75rem;
+            /* ~text-xs */
+            line-height: 1rem;
+        }
+
+        /* Unavailable state: subtle but clear */
+        .slot-label.unavailable {
+            opacity: .65;
+            border-style: dashed;
+            border-color: rgba(239, 68, 68, .5);
+            /* red-500/50 */
+            background-image: linear-gradient(135deg, rgba(239, 68, 68, .06), transparent 40%);
+        }
+
+        .slot-label.unavailable:hover {
+            background-image: linear-gradient(135deg, rgba(239, 68, 68, .08), transparent 40%);
+        }
+
+        .slot-label.unavailable .slot-time {
+            text-decoration: line-through;
+        }
+
+        /* Tiny pill badge that doesn't push layout */
+        .unavailable-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            font-size: 10px;
+            line-height: 1;
+            background: rgba(239, 68, 68, .15);
+            /* red */
+            color: #fecaca;
+            /* red-200 */
+            border: 1px solid rgba(239, 68, 68, .3);
+            pointer-events: none;
+        }
+
+        /* Photo slots: square, neat overlay */
+        .photo-slot {
+            aspect-ratio: 1 / 1;
+        }
+
+        .photo-slot .photo-empty {
+            transition: opacity .15s;
+        }
+
+        .photo-slot:hover .photo-empty {
+            opacity: .85;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+    <!-- Header (same structure as home) -->
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow">
+                        <span class="text-xl">🎮</span>
+                    </span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {% if user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm font-semibold text-white/80">Hello, {{ user.username }}</span>
+                    <a href="#" aria-label="Account"
+                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
+                    {% endif %}
+
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-white/10 glass-dark">
+            <div class="container mx-auto px-4 py-4 space-y-2">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 font-bold uppercase">
+                        {{ user_initial }}</div>
+                    <div class="text-sm">Hello, {{ user.username }}</div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+
+            <!-- Title -->
+            <div class="mb-6 sm:mb-8">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                    <span class="relative flex h-2 w-2"><span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                            class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                    <span>Support • Submit a Ticket</span>
+                </div>
+                <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">Open a Support Ticket</h1>
+                <p class="mt-2 text-white/70">Tell us what went wrong. We'll get back to you within 24 hours.</p>
+            </div>
+
+            <!-- Stepper -->
+            <div class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-6">
+                <ol class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <li class="step-bullet active flex items-center gap-3"><span
+                            class="w-8 h-8 rounded-full bg-brand-500 text-black font-black flex items-center justify-center">1</span><span
+                            class="text-sm">Source</span></li>
+                    <li class="step-bullet flex items-center gap-3"><span
+                            class="w-8 h-8 rounded-full bg-white/10 font-black flex items-center justify-center">2</span><span
+                            class="text-sm">Order</span></li>
+                    <li class="step-bullet flex items-center gap-3"><span
+                            class="w-8 h-8 rounded-full bg-white/10 font-black flex items-center justify-center">3</span><span
+                            class="text-sm">Details</span></li>
+                    <li class="step-bullet flex items-center gap-3"><span
+                            class="w-8 h-8 rounded-full bg-white/10 font-black flex items-center justify-center">4</span><span
+                            class="text-sm">Review</span></li>
+                </ol>
+            </div>
+
+            <!-- Form -->
+            <form id="ticketForm" action="{% url 'ticket-submit' %}" method="post" enctype="multipart/form-data"
+                class="space-y-6">
+                {% csrf_token %}
+
+                <!-- STEP 1: Source -->
+                <section class="step-panel glass rounded-2xl sm:rounded-3xl p-5 sm:p-6">
+                    <h2 class="text-xl font-bold mb-4">Where did this order come from?</h2>
+                    <!-- FIX: single grid wrapper (remove nested grid) -->
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <!-- Virtual Lab -->
+                        <label
+                            class="option relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                            <input type="radio" name="source" value="VIRTUAL_LAB" class="sr-only" />
+                            <img src="{% static 'images/logo.png' %}" alt="Virtual Lab"
+                                class="w-10 h-10 rounded-xl ring-1 ring-white/10 bg-white/10 object-contain p-1" />
+                            <div>
+                                <div class="font-semibold">Virtual Lab website</div>
+                                <div class="text-sm text-white/60">Select from your previous orders</div>
+                            </div>
+                            <span class="checkmark" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <path d="M4 10l4 4 8-8" />
+                                </svg>
+                            </span>
+                        </label>
+
+                        <!-- Daraz -->
+                        <label
+                            class="option relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                            <input type="radio" name="source" value="DARAZ" class="sr-only" />
+                            <img src="{% static 'images/Daraz.png' %}" alt="Daraz"
+                                class="w-10 h-10 rounded-xl ring-1 ring-white/10 bg-white/10 object-contain p-1" />
+                            <div>
+                                <div class="font-semibold">Daraz</div>
+                                <div class="text-sm text-white/60">Enter Daraz order details</div>
+                            </div>
+                            <span class="checkmark" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                    stroke-width="3">
+                                    <path d="M4 10l4 4 8-8" />
+                                </svg>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="mt-5 flex justify-end gap-3">
+                        <button type="button"
+                            class="btn-next shine px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">Next</button>
+                    </div>
+                </section>
+
+                <!-- STEP 2: Order info (dynamic) -->
+                <section class="step-panel glass rounded-2xl sm:rounded-3xl p-5 sm:p-6 hidden">
+                    <h2 class="text-xl font-bold mb-4">Order Details</h2>
+
+                    <!-- Virtual Lab orders selector -->
+                    <div id="vlOrderBlock" class="space-y-3 hidden">
+                        <label class="block text-sm font-medium">Select your order</label>
+                        <select name="order_id" id="orderSelect"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                            required>
+                            <option value="">— Choose an order —</option>
+                            {% for order in orders %}
+                            <option value="{{ order.id }}">Order #{{ order.id }} — {{ order.ordered_at|date:"Y-m-d" }} —
+                                {{ order.get_status_display }}</option>
+                            {% empty %}
+                            <option value="" disabled>No orders found on your account</option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-xs text-white/60">Can’t find your order? Choose Daraz in the previous step if
+                            it’s from Daraz.</p>
+                    </div>
+
+                    <!-- Daraz fields -->
+                    <div id="darazBlock" class="grid sm:grid-cols-2 gap-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Daraz Order Number</label>
+                            <input name="daraz_order_number" type="text"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                placeholder="e.g., 1234567890" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Daraz Order Date</label>
+                            <input name="daraz_order_date" type="date"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex justify-between gap-3">
+                        <button type="button"
+                            class="btn-prev px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">Back</button>
+                        <button type="button"
+                            class="btn-next shine px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">Next</button>
+                    </div>
+                </section>
+
+                <!-- STEP 3: Issue details & uploads -->
+                <!-- STEP 3: Issue details & uploads -->
+                <section class="step-panel glass rounded-2xl sm:rounded-3xl p-5 sm:p-6 hidden">
+                    <h2 class="text-xl font-bold mb-4">Issue Details</h2>
+
+                    <div class="space-y-4">
+                        <!-- Subject -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Subject (max 100 chars)</label>
+                            <input name="subject" id="subject" maxlength="100" required
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                placeholder="Brief summary of the issue" />
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Description</label>
+                            <textarea name="description" id="description" rows="6" required
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                placeholder="Explain the problem in detail..."></textarea>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <!-- Video -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Video (optional, ≤ 2 minutes)</label>
+                                <input id="videoInput" name="video" type="file" accept="video/*"
+                                    class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/10 file:text-white hover:file:bg-white/20" />
+                                <p id="videoHint" class="text-xs text-white/50 mt-2">
+                                    Accepted: mp4, mov, m4v, webm, avi • Max length 2:00
+                                </p>
+                                <video id="videoPreview" class="mt-3 rounded-lg w-full hidden" controls></video>
+                            </div>
+
+                            <!-- Photos (5 slots) -->
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Photos (up to 5)</label>
+
+                                <div id="photosGrid" class="grid grid-cols-5 gap-2">
+                                    <!-- Slot 1 -->
+                                    <label
+                                        class="photo-slot relative block rounded-lg bg-white/5 border border-white/10 overflow-hidden cursor-pointer">
+                                        <input id="photo1" class="photo-input sr-only" type="file" name="photos"
+                                            accept="image/*" />
+                                        <div
+                                            class="photo-empty absolute inset-0 flex flex-col items-center justify-center text-xs text-white/60 gap-1">
+                                            <span class="text-base">＋</span>
+                                            <span>Add</span>
+                                        </div>
+                                        <img class="photo-img hidden w-full h-full object-cover"
+                                            alt="Photo 1 preview" />
+                                        <button type="button"
+                                            class="photo-remove hidden absolute top-1 right-1 text-[10px] px-2 py-0.5 rounded-full bg-black/60 border border-white/20">Remove</button>
+                                    </label>
+
+                                    <!-- Slot 2 -->
+                                    <label
+                                        class="photo-slot relative block rounded-lg bg-white/5 border border-white/10 overflow-hidden cursor-pointer">
+                                        <input id="photo2" class="photo-input sr-only" type="file" name="photos"
+                                            accept="image/*" />
+                                        <div
+                                            class="photo-empty absolute inset-0 flex flex-col items-center justify-center text-xs text-white/60 gap-1">
+                                            <span class="text-base">＋</span>
+                                            <span>Add</span>
+                                        </div>
+                                        <img class="photo-img hidden w-full h-full object-cover"
+                                            alt="Photo 2 preview" />
+                                        <button type="button"
+                                            class="photo-remove hidden absolute top-1 right-1 text-[10px] px-2 py-0.5 rounded-full bg-black/60 border border-white/20">Remove</button>
+                                    </label>
+
+                                    <!-- Slot 3 -->
+                                    <label
+                                        class="photo-slot relative block rounded-lg bg-white/5 border border-white/10 overflow-hidden cursor-pointer">
+                                        <input id="photo3" class="photo-input sr-only" type="file" name="photos"
+                                            accept="image/*" />
+                                        <div
+                                            class="photo-empty absolute inset-0 flex flex-col items-center justify-center text-xs text-white/60 gap-1">
+                                            <span class="text-base">＋</span>
+                                            <span>Add</span>
+                                        </div>
+                                        <img class="photo-img hidden w-full h-full object-cover"
+                                            alt="Photo 3 preview" />
+                                        <button type="button"
+                                            class="photo-remove hidden absolute top-1 right-1 text-[10px] px-2 py-0.5 rounded-full bg-black/60 border border-white/20">Remove</button>
+                                    </label>
+
+                                    <!-- Slot 4 -->
+                                    <label
+                                        class="photo-slot relative block rounded-lg bg-white/5 border border-white/10 overflow-hidden cursor-pointer">
+                                        <input id="photo4" class="photo-input sr-only" type="file" name="photos"
+                                            accept="image/*" />
+                                        <div
+                                            class="photo-empty absolute inset-0 flex flex-col items-center justify-center text-xs text-white/60 gap-1">
+                                            <span class="text-base">＋</span>
+                                            <span>Add</span>
+                                        </div>
+                                        <img class="photo-img hidden w-full h-full object-cover"
+                                            alt="Photo 4 preview" />
+                                        <button type="button"
+                                            class="photo-remove hidden absolute top-1 right-1 text-[10px] px-2 py-0.5 rounded-full bg-black/60 border border-white/20">Remove</button>
+                                    </label>
+
+                                    <!-- Slot 5 -->
+                                    <label
+                                        class="photo-slot relative block rounded-lg bg-white/5 border border-white/10 overflow-hidden cursor-pointer">
+                                        <input id="photo5" class="photo-input sr-only" type="file" name="photos"
+                                            accept="image/*" />
+                                        <div
+                                            class="photo-empty absolute inset-0 flex flex-col items-center justify-center text-xs text-white/60 gap-1">
+                                            <span class="text-base">＋</span>
+                                            <span>Add</span>
+                                        </div>
+                                        <img class="photo-img hidden w-full h-full object-cover"
+                                            alt="Photo 5 preview" />
+                                        <button type="button"
+                                            class="photo-remove hidden absolute top-1 right-1 text-[10px] px-2 py-0.5 rounded-full bg-black/60 border border-white/20">Remove</button>
+                                    </label>
+                                </div>
+
+                                <p class="mt-2 text-xs text-white/60">Tap a slot to add a photo. Use “Remove” to clear a
+                                    slot.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex justify-between gap-3">
+                        <button type="button"
+                            class="btn-prev px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">Back</button>
+                        <button type="button"
+                            class="btn-next shine px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">Next</button>
+                    </div>
+                </section>
+
+
+                <!-- STEP 4: Review -->
+                <!-- STEP 4: Review -->
+                <section class="step-panel glass rounded-2xl sm:rounded-3xl p-5 sm:p-6 hidden">
+                    <h2 class="text-xl font-bold mb-4">Review & Submit</h2>
+
+                    <!-- Date + Time slot -->
+                    <div class="grid sm:grid-cols-3 gap-4 mb-5">
+                        <!-- Preferred date -->
+                        <div class="sm:col-span-1">
+                            <label for="visitDate" class="block text-sm font-medium mb-2">Preferred date</label>
+                            <input id="visitDate" name="visit_date" type="date"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                required />
+                            <p class="mt-2 text-xs text-white/60">We’ll schedule a call on this date.</p>
+                        </div>
+
+                        <!-- Time slot -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium mb-2">Time slot</label>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup"
+                                aria-label="Select a time slot">
+                                <label
+                                    class="slot-label group relative flex items-center justify-between gap-3 h-12 px-4 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                                    <input type="radio" class="sr-only" name="slot" value="09:00-10:00" required />
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="slot-time text-sm font-semibold">9:00–10:00</span>
+                                        <span class="slot-ampm">AM</span>
+                                    </div>
+                                    <span class="checkmark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            stroke-width="3">
+                                            <path d="M4 10l4 4 8-8" />
+                                        </svg>
+                                    </span>
+                                </label>
+
+                                <label
+                                    class="slot-label group relative flex items-center justify-between gap-3 h-12 px-4 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                                    <input type="radio" class="sr-only" name="slot" value="21:00-22:00" required />
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="slot-time text-sm font-semibold">9:00–10:00</span>
+                                        <span class="slot-ampm">PM</span>
+                                    </div>
+                                    <span class="checkmark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            stroke-width="3">
+                                            <path d="M4 10l4 4 8-8" />
+                                        </svg>
+                                    </span>
+                                </label>
+
+                                <label
+                                    class="slot-label group relative flex items-center justify-between gap-3 h-12 px-4 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                                    <input type="radio" class="sr-only" name="slot" value="22:00-23:00" required />
+                                    <div class="flex items-baseline gap-1.5">
+                                        <span class="slot-time text-sm font-semibold">10:00–11:00</span>
+                                        <span class="slot-ampm">PM</span>
+                                    </div>
+                                    <span class="checkmark" aria-hidden="true">
+                                        <svg viewBox="0 0 20 20" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            stroke-width="3">
+                                            <path d="M4 10l4 4 8-8" />
+                                        </svg>
+                                    </span>
+                                </label>
+
+                            </div>
+
+                            <!-- Small hint to reduce confusion -->
+                            <p class="mt-2 text-xs text-white/60">Unavailable slots for the chosen date will be disabled
+                                automatically.</p>
+                        </div>
+                    </div>
+
+                    <!-- Review summary (unchanged) -->
+                    <div class="space-y-4">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60">Source</div>
+                                <div id="revSource" class="font-semibold mt-1">—</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60">Order</div>
+                                <div id="revOrder" class="font-semibold mt-1">—</div>
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                            <div class="text-xs text-white/60">Subject</div>
+                            <div id="revSubject" class="font-semibold mt-1">—</div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                            <div class="text-xs text-white/60">Description</div>
+                            <div id="revDescription" class="mt-1 whitespace-pre-line">—</div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                            <div class="text-xs text-white/60">Preferred Time</div>
+                            <div id="revSlot" class="font-semibold mt-1">—</div>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60 mb-2">Video</div>
+                                <video id="revVideo" class="rounded-lg w-full hidden" controls></video>
+                                <div id="revVideoNone" class="text-white/50 text-sm">No video attached</div>
+                            </div>
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60 mb-2">Photos</div>
+                                <div id="revPhotos" class="grid grid-cols-5 gap-2"></div>
+                                <div id="revPhotosNone" class="text-white/50 text-sm">No photos attached</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-between gap-3">
+                        <button type="button"
+                            class="btn-prev px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">Back</button>
+                        <button type="submit"
+                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">
+                            Submit Ticket
+                        </button>
+                    </div>
+                </section>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer (short) -->
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">
+            © <span id="year"></span> Virtual Lab Games.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle (same behavior as home)
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // Toast helper (mirrors the style used on home page)
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // Wizard logic
+        const form = document.getElementById('ticketForm');
+        const panels = Array.from(document.querySelectorAll('.step-panel'));
+        const bullets = Array.from(document.querySelectorAll('.step-bullet'));
+        let step = 0;
+
+        function setStep(n) {
+            step = Math.max(0, Math.min(panels.length - 1, n));
+            panels.forEach((p, i) => p.classList.toggle('hidden', i !== step));
+            bullets.forEach((b, i) => {
+                const circle = b.querySelector('span');
+                if (i <= step) { circle.classList.add('bg-brand-500', 'text-black'); circle.classList.remove('bg-white/10'); }
+                else { circle.classList.remove('bg-brand-500', 'text-black'); circle.classList.add('bg-white/10'); }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (step === 3) buildReview();
+        }
+
+        function next() { if (validateStep(step)) setStep(step + 1); }
+        function prev() { setStep(step - 1); }
+
+        document.querySelectorAll('.btn-next').forEach(btn => btn.addEventListener('click', next));
+        document.querySelectorAll('.btn-prev').forEach(btn => btn.addEventListener('click', prev));
+
+        // Step 1: source
+        const sourceRadios = document.querySelectorAll('input[name="source"]');
+
+        // Step 2 blocks
+        const vlBlock = document.getElementById('vlOrderBlock');
+        const darazBlock = document.getElementById('darazBlock');
+        const orderSelect = document.getElementById('orderSelect');
+        const darazNumber = form.querySelector('[name="daraz_order_number"]');
+        const darazDate = form.querySelector('[name="daraz_order_date"]');
+
+        sourceRadios.forEach(r => r.addEventListener('change', () => {
+            if (r.checked && r.value === 'VIRTUAL_LAB') {
+                vlBlock.classList.remove('hidden');
+                darazBlock.classList.add('hidden');
+                // set requirements
+                orderSelect?.setAttribute('required', 'required');
+                darazNumber?.removeAttribute('required');
+                darazDate?.removeAttribute('required');
+            }
+            if (r.checked && r.value === 'DARAZ') {
+                darazBlock.classList.remove('hidden');
+                vlBlock.classList.add('hidden');
+                orderSelect?.removeAttribute('required');
+                darazNumber?.setAttribute('required', 'required');
+                darazDate?.setAttribute('required', 'required');
+            }
+        }));
+
+        function getSource() {
+            const s = Array.from(sourceRadios).find(r => r.checked);
+            return s ? s.value : '';
+        }
+
+        function getSelectedSlotValue() {
+            const r = Array.from(slotRadios).find(r => r.checked);
+            return r ? r.value : '';
+        }
+
+        function slotHuman(v) {
+            if (v === '09:00-10:00') return '9:00–10:00 AM';
+            if (v === '21:00-22:00') return '9:00–10:00 PM';
+            if (v === '22:00-23:00') return '10:00–11:00 PM';
+            return v || '';
+        }
+
+        // Step 3: uploads & validation
+        const videoInput = document.getElementById('videoInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoHint = document.getElementById('videoHint');
+
+
+        // Step 4: scheduling
+        const visitDate = document.getElementById('visitDate');
+        const slotRadios = document.querySelectorAll('input[name="slot"]');
+        // NEW: Five independent photo slots
+        const photoInputs = Array.from(document.querySelectorAll('.photo-input'));
+
+        function wirePhotoSlot(slotEl) {
+            const input = slotEl.querySelector('.photo-input');
+            const empty = slotEl.querySelector('.photo-empty');
+            const img = slotEl.querySelector('.photo-img');
+            const remove = slotEl.querySelector('.photo-remove');
+
+            function clearSlot() {
+                input.value = '';
+                img.removeAttribute('src');
+                img.classList.add('hidden');
+                remove.classList.add('hidden');
+                empty.classList.remove('hidden');
+            }
+
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (!file) { clearSlot(); return; }
+                const url = URL.createObjectURL(file);
+                img.src = url;
+                img.classList.remove('hidden');
+                empty.classList.add('hidden');
+                remove.classList.remove('hidden');
+            });
+
+            remove.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearSlot();
+            });
+        }
+
+        // Setup all slots
+        document.querySelectorAll('.photo-slot').forEach(wirePhotoSlot);
+
+        // Helper to clear all slots after submit
+        function resetPhotoSlots() {
+            document.querySelectorAll('.photo-slot').forEach(slot => {
+                const remove = slot.querySelector('.photo-remove');
+                if (!remove.classList.contains('hidden')) remove.click();
+            });
+        }
+
+
+        videoInput?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) { videoPreview.classList.add('hidden'); videoPreview.removeAttribute('src'); return; }
+            const ok = await checkVideoDuration(file, 120);
+            if (!ok) {
+                showToast('Video must be 2 minutes or less.', 'error');
+                e.target.value = '';
+                videoPreview.classList.add('hidden');
+                videoPreview.removeAttribute('src');
+                return;
+            }
+            const url = URL.createObjectURL(file);
+            videoPreview.src = url;
+            videoPreview.classList.remove('hidden');
+        });
+
+
+
+        function checkVideoDuration(file, maxSeconds) {
+            return new Promise((resolve) => {
+                const v = document.createElement('video');
+                v.preload = 'metadata';
+                v.onloadedmetadata = () => {
+                    URL.revokeObjectURL(v.src);
+                    resolve((v.duration || 0) <= maxSeconds);
+                };
+                v.onerror = () => resolve(false);
+                v.src = URL.createObjectURL(file);
+            });
+        }
+
+        function validateStep(s) {
+            if (s === 0) {
+                if (!getSource()) { showToast('Please select a source', 'error'); return false; }
+            }
+            if (s === 1) {
+                const src = getSource();
+                if (src === 'VIRTUAL_LAB' && (!orderSelect || !orderSelect.value)) { showToast('Please select your Virtual Lab order', 'error'); return false; }
+                if (src === 'DARAZ') {
+                    if (!darazNumber.value) { showToast('Please enter Daraz order number', 'error'); return false; }
+                    if (!darazDate.value) { showToast('Please enter Daraz order date', 'error'); return false; }
+                }
+            }
+            if (s === 2) {
+                const subject = document.getElementById('subject');
+                const description = document.getElementById('description');
+                if (!subject.value.trim()) { showToast('Subject is required', 'error'); return false; }
+                if (!description.value.trim()) { showToast('Description is required', 'error'); return false; }
+            }
+            return true;
+        }
+
+        function buildReview() {
+            const src = getSource();
+            document.getElementById('revSource').textContent = src === 'VIRTUAL_LAB' ? 'Virtual Lab website' : 'Daraz';
+            if (src === 'VIRTUAL_LAB') {
+                const txt = orderSelect?.selectedOptions[0]?.text || '—';
+                document.getElementById('revOrder').textContent = txt;
+            } else {
+                const parts = [];
+                if (darazNumber.value) parts.push(`#${darazNumber.value}`);
+                if (darazDate.value) parts.push(new Date(darazDate.value).toISOString().slice(0, 10));
+                document.getElementById('revOrder').textContent = parts.join(' • ') || '—';
+            }
+            document.getElementById('revSubject').textContent = document.getElementById('subject').value || '—';
+            document.getElementById('revDescription').textContent = document.getElementById('description').value || '—';
+
+            // Preferred time
+            const selectedSlot = getSelectedSlotValue();
+            const dateText = (visitDate && visitDate.value) ? new Date(visitDate.value).toISOString().slice(0, 10) : '';
+            const human = slotHuman(selectedSlot);
+            const revSlot = document.getElementById('revSlot');
+            revSlot.textContent = (dateText && human) ? `${dateText} • ${human}` : '—';
+
+            // Video
+            const revVideo = document.getElementById('revVideo');
+            const revVideoNone = document.getElementById('revVideoNone');
+            if (videoInput.files && videoInput.files[0]) {
+                revVideo.src = URL.createObjectURL(videoInput.files[0]);
+                revVideo.classList.remove('hidden');
+                revVideoNone.classList.add('hidden');
+            } else {
+                revVideo.removeAttribute('src');
+                revVideo.classList.add('hidden');
+                revVideoNone.classList.remove('hidden');
+            }
+
+            // Photos
+            // Photos (collect up to 5 from the five inputs)
+            const revPhotos = document.getElementById('revPhotos');
+            const revPhotosNone = document.getElementById('revPhotosNone');
+            revPhotos.innerHTML = '';
+
+            const photoFiles = photoInputs.map(inp => inp.files[0]).filter(Boolean);
+            if (photoFiles.length) {
+                photoFiles.forEach(f => {
+                    const url = URL.createObjectURL(f);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = f.name;
+                    img.className = 'w-full h-16 object-cover rounded-lg';
+                    const wrap = document.createElement('div');
+                    wrap.className = 'rounded-lg overflow-hidden border border-white/10';
+                    wrap.appendChild(img);
+                    revPhotos.appendChild(wrap);
+                });
+                revPhotosNone.classList.add('hidden');
+            } else {
+                revPhotosNone.classList.remove('hidden');
+            }
+        }
+
+        // Initialize
+        // Default date to today (YYYY-MM-DD)
+        if (visitDate && !visitDate.value) {
+            const t = new Date();
+            const yyyy = t.getFullYear();
+            const mm = String(t.getMonth() + 1).padStart(2, '0');
+            const dd = String(t.getDate()).padStart(2, '0');
+            visitDate.value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        // === NEW: slots availability (fetch + UI updates) ===
+        const slotsApiUrl = "{% url 'api-reserved-slots' %}"; // e.g. /api/slots/
+
+        function applyUnavailable(dateStr, unavailable) {
+            // Clean previous state and (re)apply disabled + red note
+            slotRadios.forEach((radio) => {
+                const label = radio.parentElement;
+                // remove prior note
+                const old = label.querySelector('.slot-note');
+                if (old) old.remove();
+
+                const isUnavailable = unavailable.includes(radio.value);
+                radio.disabled = isUnavailable;
+                label.classList.toggle('disabled', isUnavailable);
+
+                if (isUnavailable) {
+                    if (radio.checked) radio.checked = false; // unselect if just became unavailable
+                    const note = document.createElement('span');
+                    note.className = 'slot-note text-[11px] text-red-300 ml-auto';
+                    note.textContent = `Unavailable on ${dateStr}`;
+                    label.appendChild(note);
+                }
+            });
+            if (step === 3) buildReview();
+        }
+
+        async function refreshSlots(dateStr) {
+            try {
+                const res = await fetch(`${slotsApiUrl}?date=${encodeURIComponent(dateStr)}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('Failed to load slots');
+                const data = await res.json();
+                applyUnavailable(data.date, data.unavailable || []);
+            } catch (e) {
+                console.error(e);
+                showToast('Could not load time slots. Please try again.', 'error');
+            }
+        }
+
+        // Set min date to today and fetch initial availability
+        if (visitDate) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            visitDate.min = `${yyyy}-${mm}-${dd}`;
+            refreshSlots(visitDate.value);
+        }
+
+        // Update preview when scheduling changes on step 4
+        visitDate?.addEventListener('change', () => {
+            refreshSlots(visitDate.value);
+            if (step === 3) buildReview();
+        });
+        slotRadios.forEach(r => r.addEventListener('change', () => { if (step === 3) buildReview(); }));
+
+        // ---- Selected-state JS fallback (source options + time slots) ----
+        function syncCheckedStyles() {
+            document.querySelectorAll('label.option').forEach(l => {
+                const isChecked = !!l.querySelector('input[type="radio"]:checked');
+                l.classList.toggle('selected', isChecked);
+            });
+            document.querySelectorAll('label.slot-label').forEach(l => {
+                const isChecked = !!l.querySelector('input[type="radio"]:checked');
+                l.classList.toggle('selected', isChecked);
+            });
+        }
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('input[name="source"], input[name="slot"]')) {
+                syncCheckedStyles();
+            }
+        });
+        syncCheckedStyles();
+
+
+        setStep(0);
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(form);
+
+            try {
+                const res = await fetch("{% url 'api-ticket-create' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCookie('csrftoken') },
+                    body: fd
+                });
+                const json = await res.json();
+
+                if (!res.ok || !json.ok) {
+                    throw new Error(json.error || "Could not submit ticket");
+                }
+
+                showToast(`Ticket ${json.ticket.reference} submitted!`);
+                // Optional: redirect to a confirmation page
+                // window.location.href = `{% url 'ticket-submit' %}?ref=${encodeURIComponent(json.ticket.reference)}`;
+
+                // Reset UI bits (photos/video previews)
+                form.reset();
+                resetPhotoSlots();
+                document.getElementById('photosPreview').innerHTML = "";
+                const videoPreview = document.getElementById('videoPreview');
+                if (videoPreview) { videoPreview.removeAttribute('src'); videoPreview.classList.add('hidden'); }
+
+            } catch (err) {
+                console.error(err);
+                showToast(err.message, 'error');
+            }
+        });
+
+        function applyUnavailable(dateStr, unavailable) {
+            slotRadios.forEach((radio) => {
+                const label = radio.closest('label.slot-label');
+                // cleanup previous state
+                label.querySelector('.unavailable-badge')?.remove();
+                label.classList.remove('unavailable', 'disabled');
+                label.removeAttribute('aria-disabled');
+                radio.disabled = false;
+
+                // apply unavailability
+                const isUnavailable = unavailable.includes(radio.value);
+                if (isUnavailable) {
+                    if (radio.checked) radio.checked = false;
+                    radio.disabled = true;
+                    label.classList.add('unavailable', 'disabled');  // disabled = pointer-events:none (you already have CSS)
+                    label.setAttribute('aria-disabled', 'true');
+
+                    const badge = document.createElement('span');
+                    badge.className = 'unavailable-badge';
+                    badge.textContent = 'Unavailable';
+                    label.appendChild(badge);
+                }
+            });
+
+            if (step === 3) buildReview();
+        }
+
+    </script>
+</body>
+
+</html>
