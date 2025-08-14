@@ -1,0 +1,385 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Cart — Virtual Lab Games</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' } },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite' },
+                    keyframes: { float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } } }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background: radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .04));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            transform: rotate(25deg);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -60%
+            }
+
+            100% {
+                left: 140%
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+    <!-- Header (matching the rest of the site) -->
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow"><span
+                            class="text-xl">🎮</span></span>
+                    <div class="flex flex-col"><span class="font-black text-lg sm:text-xl tracking-tight">Virtual
+                            Lab</span><span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {% if user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm font-semibold text-white/80">Hello, {{ user.username }}</span>
+                    <a href="#" aria-label="Account"
+                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
+                    {% endif %}
+                    <a href="{% url 'tickets-page' %}"
+                        class="shine inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all"><span
+                            class="hidden sm:inline">My</span> Tickets</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <!-- Title + trust microcopy -->
+            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span>Cart • Ready to play</span>
+                    </div>
+                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black">Review your picks</h1>
+                    <p class="mt-1 text-white/70">Skip long downloads. Get premium DVDs with step‑by‑step install
+                        support.</p>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-4 sm:gap-5">
+                <!-- LEFT: Direct purchase items -->
+                <section class="lg:col-span-2 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl sm:text-2xl font-bold">Buy games directly</h2>
+                        <span class="text-xs px-2 py-1 rounded-lg bg-white/10">Pay per game</span>
+                    </div>
+                    <div id="left-items" class="mt-3 divide-y divide-white/10"></div>
+                    <div class="mt-4 flex items-center justify-between font-semibold">
+                        <span class="text-white/80">Direct subtotal</span>
+                        <span id="direct-total">—</span>
+                    </div>
+                </section>
+
+                <!-- RIGHT: Storage device bundle -->
+                <aside class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                    <h2 class="text-xl sm:text-2xl font-bold">Device bundle (games included free)</h2>
+                    <p class="mt-1 text-sm text-white/70">Pick a storage device and load it up — you pay only for the
+                        device.</p>
+
+                    <div id="device-block" class="mt-4"></div>
+
+                    <div id="capacity-block" class="hidden mt-4">
+                        <div class="flex items-center justify-between text-xs text-white/70">
+                            <span>Used</span><span><span id="used-gb">0</span> GB • <span id="used-pct">0</span>%</span>
+                        </div>
+                        <div class="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                            <div id="bar" class="h-full rounded-full bg-gradient-to-r from-brand-500 to-cyan-400"
+                                style="width:0%"></div>
+                        </div>
+                        <div class="mt-1 text-xs text-white/70">Remaining: <span id="rem-gb">0</span> GB</div>
+                    </div>
+
+                    <div id="right-items" class="mt-4 divide-y divide-white/10"></div>
+
+                    <div class="mt-4 flex items-center justify-between font-semibold">
+                        <span class="text-white/80">Device</span>
+                        <span id="device-price">—</span>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-1 gap-2">
+                        <a href="{% url 'pick_storage' %}"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">Select
+                            / change device</a>
+                        <button id="btnRemoveDevice"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-red-500/40 text-red-200 font-semibold">Remove
+                            device</button>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Totals / Checkout -->
+            <div class="mt-4 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <div class="text-sm text-white/70">Grand total</div>
+                        <div id="grand-total" class="text-2xl sm:text-3xl font-black">—</div>
+                        <div class="mt-1 text-xs text-white/60">Installation help included • Fast islandwide delivery
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <a href="/shop"
+                            class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">Continue
+                            shopping</a>
+                        <button id="btnCheckout"
+                            class="shine px-5 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold shadow-lg hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed">Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        // ---------- Helpers ----------
+        const CHECKOUT_URL = '/checkout/'; // change if your checkout URL differs
+        const fmt = (x) => (x === null || x === undefined) ? '0.00' : String(x);
+        function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
+        const csrftoken = getCookie('csrftoken');
+
+        // ---------- Row renderers ----------
+        function productRowLeft(item) {
+            const p = item.product;
+            const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
+            const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
+            return `
+        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto auto;">
+          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+          <div>
+            <div class="font-semibold">${p.title}</div>
+            <div class="text-xs text-white/60">Qty: ${item.quantity}${size ? ` • ${size}` : ''}</div>
+          </div>
+          <div class="font-semibold">${fmt(item.subtotal)} ${p.currency || ''}</div>
+          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-left" data-id="${item.id}">Remove</button>
+        </article>`;
+        }
+
+        function productRowRight(item) {
+            const p = item.product;
+            const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
+            const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
+            return `
+        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto;">
+          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+          <div>
+            <div class="font-semibold">${p.title}</div>
+            ${size ? `<div class=\"mt-1 text-xs text-white/60\">Size: ${size}</div>` : ''}
+          </div>
+          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-on-device" data-id="${item.id}">Remove</button>
+        </article>`;
+        }
+
+        function deviceBlock(device) {
+            if (!device) return `<p class="text-sm text-white/70">Choose a storage device and add games to it. Capacity updates automatically.</p>`;
+            const img = device.image_url || "{% static 'images/drive-placeholder.jpg' %}";
+            return `
+        <div class="flex items-center gap-3">
+          <img src="${img}" alt="${device.name}" class="w-16 h-20 object-cover rounded-xl ring-1 ring-white/10 bg-white/5" />
+          <div>
+            <div class="font-semibold">${device.name}</div>
+            <div class="text-xs text-white/60">${device.category_display || ''}</div>
+            <div class="text-xs text-white/60">Capacity: ${fmt(device.true_capacity_gb)} GB</div>
+          </div>
+        </div>`;
+        }
+
+        // ---------- API calls ----------
+        async function removeOnDevice(storageItemId) {
+            const res = await fetch("{% url 'api_cart_remove_from_device' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ storage_item_id: storageItemId }) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+        async function removeLeftItem(itemId) {
+            const res = await fetch("{% url 'api_remove_product_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ item_id: itemId }) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+        async function removeDevice() {
+            const res = await fetch("{% url 'api_remove_storage_device_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({}) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove device' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+
+        // ---------- Load + bind ----------
+        async function loadCart() {
+            const res = await fetch("{% url 'api_cart' %}", { credentials: 'same-origin' });
+            const data = await res.json();
+
+            // Left
+            const leftEl = document.getElementById('left-items');
+            leftEl.innerHTML = (data.left_items && data.left_items.length) ? data.left_items.map(productRowLeft).join('') : `<p class="text-sm text-white/70">No direct purchases yet.</p>`;
+            const directTotal = parseFloat(data.direct_total || '0');
+            document.getElementById('direct-total').textContent = fmt(directTotal.toFixed(2));
+
+            // Right
+            document.getElementById('device-block').innerHTML = deviceBlock(data.device);
+            const rightItemsEl = document.getElementById('right-items');
+            rightItemsEl.innerHTML = (data.right_items && data.right_items.length) ? data.right_items.map(productRowRight).join('') : `<p class="text-sm text-white/70">No games added to the device yet.</p>`;
+
+            // Totals
+            const devicePrice = parseFloat(data.storage_device_price || '0');
+            document.getElementById('device-price').textContent = fmt(devicePrice.toFixed(2));
+            const grand = directTotal + devicePrice; // games on device are free
+            document.getElementById('grand-total').textContent = fmt(grand.toFixed(2));
+
+            // Capacity
+            const capBlock = document.getElementById('capacity-block');
+            if (data.device) {
+                capBlock.classList.remove('hidden');
+                const cap = parseFloat(data.device_capacity_gb || '0');
+                const used = parseFloat(data.device_used_gb || '0');
+                const pct = Math.max(0, Math.min(100, parseFloat(data.device_percent_used || '0')));
+                document.getElementById('used-gb').textContent = fmt(used.toFixed(2));
+                document.getElementById('rem-gb').textContent = fmt(Math.max(0, cap - used).toFixed(2));
+                document.getElementById('used-pct').textContent = String(Math.round(pct));
+                document.getElementById('bar').style.width = pct + '%';
+            } else {
+                capBlock.classList.add('hidden');
+            }
+
+            // Enable/disable checkout
+            const checkout = document.getElementById('btnCheckout');
+            checkout.disabled = !(grand > 0);
+        }
+
+        // Delegated remove actions
+        document.addEventListener('click', async (e) => {
+            const devBtn = e.target.closest('[data-action="remove-on-device"]');
+            if (devBtn) {
+                const id = devBtn.getAttribute('data-id');
+                devBtn.disabled = true; const old = devBtn.textContent; devBtn.textContent = 'Removing…';
+                try { await removeOnDevice(id); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove'); }
+                finally { devBtn.disabled = false; devBtn.textContent = old; }
+                return;
+            }
+            const leftBtn = e.target.closest('[data-action="remove-left"]');
+            if (leftBtn) {
+                const id = leftBtn.getAttribute('data-id');
+                leftBtn.disabled = true; const old = leftBtn.textContent; leftBtn.textContent = 'Removing…';
+                try { await removeLeftItem(id); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove'); }
+                finally { leftBtn.disabled = false; leftBtn.textContent = old; }
+                return;
+            }
+        });
+
+        // Remove device
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btnRemoveDevice')?.addEventListener('click', async () => {
+                if (!confirm('Remove the selected device and all games on it?')) return;
+                const btn = document.getElementById('btnRemoveDevice');
+                btn.disabled = true; const old = btn.textContent; btn.textContent = 'Removing…';
+                try { await removeDevice(); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove device'); }
+                finally { btn.disabled = false; btn.textContent = old; }
+            });
+            document.getElementById('btnCheckout')?.addEventListener('click', () => { window.location.href = CHECKOUT_URL; });
+            document.getElementById('year').textContent = new Date().getFullYear();
+            loadCart().catch(console.error);
+        });
+    </script>
+</body>
+
+</html>

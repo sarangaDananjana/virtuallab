@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ slug }} – Virtual Lab Games</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background:
+                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4, 0, .2, 1), box-shadow .25s;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, .35)
+        }
+
+        .hide-scrollbar {
+            scrollbar-width: none;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+    <!-- Header (minimal to match site palette) -->
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow"><span
+                            class="text-xl">🎮</span></span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all"><span
+                        class="hidden sm:inline">My</span> Tickets</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <a href="/shop" class="inline-flex items-center text-white/70 hover:text-white mb-6">← Back to Shop</a>
+
+            <!-- Top: Primary image (3:4, smaller) + product info on the right -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+                <!-- Primary image -->
+                <div class="lg:col-span-5">
+                    <!-- Smaller max width to avoid pixelation -->
+                    <div class="mx-auto w-full max-w-[280px] sm:max-w-[300px] md:max-w-[320px] lg:max-w-[340px]">
+                        <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
+                            <img id="primaryImg" alt="Cover" src="{% static 'images/cover-placeholder.jpg' %}"
+                                class="absolute inset-0 w-full h-full object-cover" />
+                        </div>
+                        <p class="mt-2 text-xs text-white/50">Cover — 3:4</p>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="lg:col-span-7">
+                    <h1 id="title" class="text-2xl sm:text-3xl font-black leading-tight">&nbsp;</h1>
+                    <p id="edition" class="mt-1 text-sm sm:text-base text-white/70">&nbsp;</p>
+
+                    <div class="mt-4 flex items-center gap-2 flex-wrap">
+                        <div id="price" class="text-xl sm:text-2xl font-extrabold">&nbsp;</div>
+                        <span
+                            class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs uppercase tracking-wide bg-white/10 text-white/80">or</span>
+                        <div id="size" class="text-sm sm:text-base text-white/80">&nbsp;</div>
+                    </div>
+
+                    <dl id="meta" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm"></dl>
+
+                    <!-- PURCHASE / STORAGE SPLIT -->
+                    <!-- PURCHASE / STORAGE SPLIT -->
+                    <section class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Left: Direct purchase -->
+                        <div class="rounded-2xl glass p-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold">Direct purchase</h3>
+                                <span id="purchasePriceBadge"
+                                    class="px-2 py-1 rounded-lg bg-white/10 text-xs font-semibold"></span>
+                            </div>
+                            <p class="mt-2 text-sm text-white/70">Pay the listed price and download/install.</p>
+
+                            <!-- Add OR Remove will toggle via JS -->
+                            <button id="btnAddToCart"
+                                class="mt-4 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">
+                                Add Game to Cart
+                            </button>
+                            <button id="btnRemoveFromCart"
+                                class="mt-4 w-full px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-red-500/40 text-red-200 font-semibold hidden">
+                                Remove from Cart
+                            </button>
+                        </div>
+
+                        <!-- Right: Storage device path -->
+                        <div class="rounded-2xl glass p-4" id="storagePane">
+                            <!-- Shown when NO device is selected -->
+                            <div id="storageEmpty" class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-semibold">Use a storage device</h3>
+                                </div>
+                                <p id="storageHint" class="text-sm text-white/70">
+                                    Requires a storage device in your cart.
+                                </p>
+                                <a href="{% url 'pick_storage' %}" id="btnChooseStorage"
+                                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15">
+                                    Choose a storage device
+                                </a>
+                                <button id="btnAddToStorage"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/10 opacity-50 cursor-not-allowed"
+                                    disabled>
+                                    Add to storage
+                                </button>
+                            </div>
+
+                            <!-- Shown when a device IS selected -->
+                            <div id="storageSelected" class="hidden">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-semibold">Your storage device</h3>
+                                    <span id="storageName" class="text-xs px-2 py-1 rounded-lg bg-white/10"></span>
+                                </div>
+
+                                <div class="mt-3">
+                                    <div class="flex items-center justify-between text-xs text-white/70">
+                                        <span id="capacityLabel">Capacity</span>
+                                        <span id="capacityValues">0 / 0 GB</span>
+                                    </div>
+                                    <div class="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                                        <div id="capacityBar"
+                                            class="h-full rounded-full bg-gradient-to-r from-brand-500 to-cyan-400"
+                                            style="width: 0%"></div>
+                                    </div>
+                                    <p id="capacityNote" class="mt-2 text-xs text-white/60"></p>
+                                </div>
+
+                                <!-- One of these two buttons will be visible -->
+                                <div class="mt-4 grid grid-cols-1 gap-2">
+                                    <button id="btnAddToStorageReady"
+                                        class="w-full px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15">
+                                        Add to storage
+                                    </button>
+                                    <button id="btnRemoveFromStorage"
+                                        class="w-full px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-red-500/40 text-red-200 font-semibold hidden">
+                                        Remove from storage
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- Landscape gallery slider (EXCLUDES primary) -->
+            <section class="mt-10">
+                <h2 class="text-xl font-bold">In‑game gallery</h2>
+                <div id="galleryWrap" class="relative mt-4">
+                    <button type="button" id="prevBtn"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/10">‹</button>
+                    <div id="slider"
+                        class="hide-scrollbar flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2">
+                    </div>
+                    <button type="button" id="nextBtn"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/10">›</button>
+                </div>
+            </section>
+
+            <!-- Description -->
+            <section class="mt-10">
+                <h2 class="text-xl font-bold">About</h2>
+                <p id="desc" class="mt-3 text-white/80 whitespace-pre-line"></p>
+            </section>
+
+            <!-- DLCs (3:4) ABOVE system requirements -->
+            <section id="dlcSection" class="mt-10 hidden">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Add‑ons & DLC</h2>
+                </div>
+                <div id="dlcGrid" class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            </section>
+
+            <!-- System requirements -->
+            <section id="sys" class="mt-10 hidden">
+                <h2 class="text-xl font-bold">System requirements</h2>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="rounded-xl glass p-4">
+                        <h3 class="font-semibold mb-2">Minimum</h3>
+                        <ul id="sysMin" class="space-y-1 text-sm text-white/80"></ul>
+                    </div>
+                    <div class="rounded-xl glass p-4">
+                        <h3 class="font-semibold mb-2">Recommended</h3>
+                        <ul id="sysRec" class="space-y-1 text-sm text-white/80"></ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        const API = (slug) => `/api/products/${slug}/`;
+        const API_CART = "{% url 'api_cart' %}";
+        const API_ADD_DIRECT = "{% url 'api_cart_add_direct' %}";
+        const API_ADD_TO_DEVICE = "{% url 'api_cart_add_to_device' %}";
+        const CART_URL = "{% url 'cart_page' %}";
+        const API_REMOVE_LEFT = "{% url 'api_remove_product_from_cart' %}";
+        const API_REMOVE_FROM_DEVICE = "{% url 'api_cart_remove_from_device' %}";
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`.split(`; ${name}=`);
+            if (value.length === 2) return value.pop().split(';').shift();
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        async function postJSON(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                body: JSON.stringify(body || {})
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const msg = data.detail || 'Request failed';
+                throw new Error(msg);
+            }
+            return data;
+        }
+
+        // helpers
+        function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val || ''; }
+        function addMeta(label, value) { if (!value) return; const dl = document.getElementById('meta'); const dt = document.createElement('div'); const dd = document.createElement('div'); dt.className = 'text-white/60'; dd.className = 'font-medium'; dt.textContent = label; dd.textContent = value; dl.appendChild(dt); dl.appendChild(dd); }
+        function li(text) { const li = document.createElement('li'); li.textContent = text; return li; }
+
+        function slideEl(src, alt) {
+            const w = document.createElement('button');
+            w.className = 'group shrink-0 w-[78vw] sm:w-[60vw] md:w-[480px] lg:w-[640px] aspect-[16/9] rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5 snap-start card-hover';
+            w.innerHTML = `<img src="${src}" alt="${alt || ''}" class="w-full h-full object-cover"/>`;
+            w.addEventListener('click', () => { const cover = document.getElementById('primaryImg'); if (cover) cover.src = src; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+            return w;
+        }
+
+        function wireSlider() {
+            const slider = document.getElementById('slider');
+            const prev = document.getElementById('prevBtn');
+            const next = document.getElementById('nextBtn');
+            const by = () => Math.max(280, Math.floor(slider.clientWidth * 0.9));
+            function scrollBy(delta) { slider.scrollBy({ left: delta, behavior: 'smooth' }); }
+            prev?.addEventListener('click', () => scrollBy(-by()));
+            next?.addEventListener('click', () => scrollBy(by()));
+
+            const updateArrows = () => {
+                const over = slider.scrollWidth > slider.clientWidth + 8;
+                prev?.classList.toggle('hidden', !over);
+                next?.classList.toggle('hidden', !over);
+            };
+            const ro = new ResizeObserver(updateArrows); ro.observe(slider);
+            slider.addEventListener('scroll', updateArrows);
+            updateArrows();
+
+            // drag to scroll (desktop)
+            let isDown = false, startX = 0, startLeft = 0;
+            slider.addEventListener('pointerdown', (e) => { isDown = true; startX = e.clientX; startLeft = slider.scrollLeft; slider.setPointerCapture(e.pointerId); slider.style.cursor = 'grabbing'; });
+            slider.addEventListener('pointermove', (e) => { if (!isDown) return; const dx = e.clientX - startX; slider.scrollLeft = startLeft - dx; });
+            slider.addEventListener('pointerup', (e) => { isDown = false; slider.releasePointerCapture(e.pointerId); slider.style.cursor = ''; });
+            slider.addEventListener('pointercancel', () => { isDown = false; slider.style.cursor = ''; });
+        }
+
+        function dlcCard(d) {
+            const src = d.image_url || (d.image && d.image.url) || d.image || '{% static "images/cover-placeholder.jpg" %}';
+            const title = d.title || '';
+            const desc = d.description || '';
+            return `
+        <div class="group rounded-2xl glass overflow-hidden card-hover">
+          <div class="relative aspect-[3/4] overflow-hidden">
+            <img src="${src}" alt="${title}" class="absolute inset-0 w-full h-full object-cover"/>
+          </div>
+          <div class="p-3 sm:p-4">
+            <h3 class="font-semibold leading-snug whitespace-normal break-words">${title}</h3>
+            ${desc ? `<p class="mt-1 text-xs sm:text-sm text-white/70">${desc}</p>` : ''}
+          </div>
+        </div>`;
+        }
+
+        // --- New: Storage pane renderer (purely visual; hook to real cart later) ---
+        function renderStoragePane(p) {
+            // Expect a global window.SELECTED_STORAGE set by your cart layer later, e.g.:
+            // window.SELECTED_STORAGE = { name: 'Seagate Portable 1TB', true_capacity_gb: 931.51, used_gb: 120 };
+            const s = window.SELECTED_STORAGE || null;
+
+            const empty = document.getElementById('storageEmpty');
+            const filled = document.getElementById('storageSelected');
+
+            // Help text (how much GB needed)
+            const hint = document.getElementById('storageHint');
+            if (hint && p.game_size_gb) { hint.textContent = `Requires a storage device in your cart with ≥ ${p.game_size_gb} GB free.`; }
+
+            // Price badge on left card
+            const priceBadge = document.getElementById('purchasePriceBadge');
+            if (priceBadge) { priceBadge.textContent = `${p.currency || 'LKR'} ${Number(p.price || 0).toFixed(2)}`; }
+
+            if (!s) {
+                // No storage selected: show choose button + disabled add-to-storage
+                empty.classList.remove('hidden');
+                filled.classList.add('hidden');
+                const btn = document.getElementById('btnAddToStorage');
+                if (btn) { btn.setAttribute('disabled', 'disabled'); btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+                return;
+            }
+
+            // Storage present: show progress + enabled add-to-storage
+            empty.classList.add('hidden');
+            filled.classList.remove('hidden');
+
+            const nameEl = document.getElementById('storageName');
+            const capLabel = document.getElementById('capacityLabel');
+            const capValues = document.getElementById('capacityValues');
+            const capBar = document.getElementById('capacityBar');
+            const capNote = document.getElementById('capacityNote');
+
+            const total = Number(s.true_capacity_gb || 0);
+            const used = Number(s.used_gb || 0);
+            const need = Number(p.game_size_gb || 0);
+            const available = Math.max(total - used, 0);
+            const after = Math.max(available - need, 0);
+            const percent = total > 0 ? Math.min(100, Math.max(0, (used / total) * 100)) : 0;
+
+            nameEl.textContent = s.name || 'Selected device';
+            capLabel.textContent = 'Capacity';
+            capValues.textContent = `${used.toFixed(0)} / ${total.toFixed(0)} GB used`;
+            capBar.style.width = `${percent}%`;
+
+            let note = `Available: ${available.toFixed(0)} GB`;
+            if (need) { note += ` • Needs: ${need.toFixed(0)} GB`; }
+            if (available < need) { note += ' • Not enough space'; }
+            capNote.textContent = note;
+
+            const readyBtn = document.getElementById('btnAddToStorageReady');
+            if (readyBtn) {
+                const can = available >= need && need > 0;
+                readyBtn.disabled = !can;
+                readyBtn.classList.toggle('opacity-50', !can);
+                readyBtn.classList.toggle('cursor-not-allowed', !can);
+            }
+        }
+
+        async function loadProduct() {
+            const slug = `{{ slug|escapejs }}`;
+            const res = await fetch(API(slug));
+            if (!res.ok) { console.error('Failed to load product', res.status); return; }
+            const p = await res.json();
+
+            // title / edition
+            setText('title', p.title);
+            setText('edition', p.edition);
+
+            // purchase row values
+            const price = `${p.currency || 'LKR'} ${Number(p.price || 0).toFixed(2)}`;
+            const size = p.game_size_gb ? `Hard disk • ${p.game_size_gb} GB` : 'Hard disk option available';
+            setText('price', price);
+            setText('size', size);
+
+            // meta
+            addMeta('Developer', p.developer);
+            addMeta('Publisher', p.publisher);
+            if (p.genres && p.genres.length) addMeta('Genres', p.genres.join(', '));
+
+            // primary image (3:4)
+            const imgs = Array.isArray(p.images) ? p.images : [];
+            const primary = imgs.find(i => i.is_primary) || imgs[0];
+            const coverUrl = p.cover_url || (primary && primary.url);
+            if (coverUrl) document.getElementById('primaryImg').src = coverUrl;
+
+            // landscape gallery (EXCLUDES primary by flag OR same URL)
+            const slider = document.getElementById('slider');
+            slider.innerHTML = '';
+            const landscapes = imgs.filter(i => (!i.is_primary) && i.url !== coverUrl);
+            landscapes.forEach(i => slider.appendChild(slideEl(i.url, i.alt)));
+            if (landscapes.length === 0) { document.getElementById('galleryWrap').classList.add('hidden'); }
+            wireSlider();
+
+            // about
+            setText('desc', p.description || '');
+
+            // DLCs
+            const dlcs = Array.isArray(p.dlcs) ? p.dlcs : [];
+            if (dlcs.length) {
+                const grid = document.getElementById('dlcGrid');
+                grid.innerHTML = '';
+                dlcs.forEach(d => grid.insertAdjacentHTML('beforeend', dlcCard(d)));
+                document.getElementById('dlcSection').classList.remove('hidden');
+            }
+
+            // system requirements
+            if (p.system_requirements) {
+                const sys = p.system_requirements;
+                const min = sys.minimum || {}; const rec = sys.recommended || {};
+                const minUl = document.getElementById('sysMin');
+                const recUl = document.getElementById('sysRec');
+                minUl.innerHTML = ''; recUl.innerHTML = '';
+                if (min.cpu) minUl.appendChild(li(`CPU: ${min.cpu}`));
+                if (min.ram_gb) minUl.appendChild(li(`RAM: ${min.ram_gb} GB`));
+                if (min.gpu) minUl.appendChild(li(`GPU: ${min.gpu}`));
+                if (min.storage_gb) minUl.appendChild(li(`Storage: ${min.storage_gb} GB`));
+                if (min.os) minUl.appendChild(li(`OS: ${min.os}`));
+                if (rec.cpu) recUl.appendChild(li(`CPU: ${rec.cpu}`));
+                if (rec.ram_gb) recUl.appendChild(li(`RAM: ${rec.ram_gb} GB`));
+                if (rec.gpu) recUl.appendChild(li(`GPU: ${rec.gpu}`));
+                if (rec.storage_gb) recUl.appendChild(li(`Storage: ${rec.storage_gb} GB`));
+                if (rec.os) recUl.appendChild(li(`OS: ${rec.os}`));
+                document.getElementById('sys').classList.remove('hidden');
+            }
+
+            // Final: render the storage pane visuals
+            await (async () => {
+                try {
+                    const cr = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
+                    // Feed your existing renderer the minimal info it expects:
+                    if (cr && cr.device) {
+                        window.SELECTED_STORAGE = {
+                            name: cr.device.name,
+                            true_capacity_gb: parseFloat(cr.device_capacity_gb || '0'),
+                            used_gb: parseFloat(cr.device_used_gb || '0')
+                        };
+                    } else {
+                        window.SELECTED_STORAGE = null;
+                    }
+                } catch (e) {
+                    console.warn('Cart fetch failed', e);
+                    window.SELECTED_STORAGE = null;
+                }
+                renderStoragePane(p);
+            })();
+
+            // (You can wire buttons later)
+            // document.getElementById('btnAddToCart')?.addEventListener('click', () => {/* add to cart with price */});
+            // document.getElementById('btnChooseStorage')?.addEventListener('click', () => {/* go to storage selection */});
+            // document.getElementById('btnAddToStorageReady')?.addEventListener('click', () => {/* add to storage */});
+        }
+
+        loadProduct();
+
+        function gotoCart() { window.location.href = CART_URL; }
+
+        async function togglePurchaseStorageUI(product) {
+            const cart = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
+
+            // Keep storage renderer in sync with real values
+            window.SELECTED_STORAGE = (cart && cart.device)
+                ? {
+                    name: cart.device.name,
+                    true_capacity_gb: parseFloat(cart.device_capacity_gb || '0'),
+                    used_gb: parseFloat(cart.device_used_gb || '0')
+                }
+                : null;
+            renderStoragePane(product);
+
+            // Find this product on left/right
+            const leftItem = (cart.left_items || []).find(ci => ci.product.id === product.id);
+            const rightItem = (cart.right_items || []).find(si => si.product.id === product.id);
+
+            // Elements
+            const addLeft = document.getElementById('btnAddToCart');
+            const remLeft = document.getElementById('btnRemoveFromCart');
+            const addRight = document.getElementById('btnAddToStorageReady');
+            const remRight = document.getElementById('btnRemoveFromStorage');
+            const storageEmpty = document.getElementById('storageEmpty');
+            const storageSelected = document.getElementById('storageSelected');
+
+            // Left toggle
+            if (leftItem) {
+                addLeft.classList.add('hidden');
+                remLeft.classList.remove('hidden');
+                remLeft.dataset.productId = product.id;
+            } else {
+                remLeft.classList.add('hidden');
+                addLeft.classList.remove('hidden');
+            }
+
+            // Right toggle
+            if (cart.device) {
+                storageEmpty.classList.add('hidden');
+                storageSelected.classList.remove('hidden');
+
+                if (rightItem) {
+                    addRight.classList.add('hidden');
+                    remRight.classList.remove('hidden');
+                    remRight.dataset.productId = product.id;     // API accepts product_id or storage_item_id
+                } else {
+                    remRight.classList.add('hidden');
+                    addRight.classList.remove('hidden');
+                }
+            } else {
+                storageSelected.classList.add('hidden');
+                storageEmpty.classList.remove('hidden');
+            }
+        }
+
+        // Actions for the four buttons
+        (function wirePurchaseStorageActions() {
+            const addLeft = document.getElementById('btnAddToCart');
+            const remLeft = document.getElementById('btnRemoveFromCart');
+            const addRight = document.getElementById('btnAddToStorageReady');
+            const remRight = document.getElementById('btnRemoveFromStorage');
+
+            let PRODUCT_CACHE = null;
+            async function ensureProduct() {
+                if (PRODUCT_CACHE) return PRODUCT_CACHE;
+                const slug = `{{ slug|escapejs }}`;
+                PRODUCT_CACHE = await fetch(API(slug)).then(r => r.json());
+                return PRODUCT_CACHE;
+            }
+
+            addLeft?.addEventListener('click', async () => {
+                const p = await ensureProduct();
+                addLeft.disabled = true; addLeft.textContent = 'Adding…';
+                try {
+                    await postJSON(API_ADD_DIRECT, { product_id: p.id, quantity: 1 });
+                    await togglePurchaseStorageUI(p);
+                } catch (e) {
+                    alert(e.message || 'Could not add to cart');
+                } finally {
+                    addLeft.disabled = false; addLeft.textContent = 'Add Game to Cart';
+                }
+            });
+
+            remLeft?.addEventListener('click', async () => {
+                const p = await ensureProduct();
+                remLeft.disabled = true; remLeft.textContent = 'Removing…';
+                try {
+                    await postJSON(API_REMOVE_LEFT, { product_id: p.id });
+                    await togglePurchaseStorageUI(p);
+                } catch (e) {
+                    alert(e.message || 'Could not remove from cart');
+                } finally {
+                    remLeft.disabled = false; remLeft.textContent = 'Remove from Cart';
+                }
+            });
+
+            addRight?.addEventListener('click', async () => {
+                const p = await ensureProduct();
+                addRight.disabled = true; addRight.textContent = 'Adding…';
+                try {
+                    await postJSON(API_ADD_TO_DEVICE, { product_id: p.id, quantity: 1 });
+                    await togglePurchaseStorageUI(p);
+                } catch (e) {
+                    alert(e.message || 'Could not add to device (check capacity)');
+                } finally {
+                    addRight.disabled = false; addRight.textContent = 'Add to storage';
+                }
+            });
+
+            remRight?.addEventListener('click', async () => {
+                const p = await ensureProduct();
+                remRight.disabled = true; remRight.textContent = 'Removing…';
+                try {
+                    await postJSON(API_REMOVE_FROM_DEVICE, { product_id: p.id });
+                    await togglePurchaseStorageUI(p);
+                } catch (e) {
+                    alert(e.message || 'Could not remove from storage');
+                } finally {
+                    remRight.disabled = false; remRight.textContent = 'Remove from storage';
+                }
+            });
+
+            // First render pass once product details are available
+            (async () => {
+                const p = await ensureProduct();
+                await togglePurchaseStorageUI(p);
+            })();
+        })();
+
+        // Kick off initial load
+        loadProduct();
+    </script>
+</body>
+
+</html>

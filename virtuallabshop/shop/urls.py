@@ -8,6 +8,13 @@ urlpatterns = [
     path('register/', views.register_page, name='register-page'),
     path("support/my-tickets/", views.tickets_page, name="tickets-page"),
     path("support/submit/", views.ticket_submit_page, name="ticket-submit"),
+    path("shop/", views.shop_page, name="shop-page"),
+    path("products/<slug:slug>/", views.product_page, name="product-page"),
+    path("cart/", views.cart_page, name="cart_page"),
+    path("storage/select/", views.storage_pick_page, name="pick_storage"),
+
+
+
 
 
 
@@ -18,4 +25,24 @@ urlpatterns = [
     path("api/tickets/", views.api_create_ticket, name="api-ticket-create"),
     path("api/my-tickets/", views.api_my_tickets, name="api-my-tickets"),
     path("api/request-game", views.api_request_game, name="api-request-game"),
+    path("api/products/", views.api_products, name="api-products"),
+    path("api/products/<slug:slug>/",
+         views.api_product_detail_by_slug, name="api-product-detail"),
+    path("api/storage-devices/", views.api_storage_devices,
+         name="api-storage-devices"),
+    path("api/cart/", views.api_cart, name="api_cart"),
+    path("api/cart/select-storage/", views.api_cart_select_storage,
+         name="api_cart_select_storage"),
+    path("api/cart/add-direct/", views.api_cart_add_direct,
+         name="api_cart_add_direct"),
+    path("api/cart/add-to-device/", views.api_cart_add_to_device,
+         name="api_cart_add_to_device"),
+    path("api/cart/remove-from-device/", views.api_cart_remove_from_device,
+         name="api_cart_remove_from_device"),
+    path("api/cart/remove-product/", views.api_remove_product_from_cart,
+         name="api_remove_product_from_cart"),
+    path("api/cart/remove-storage-device/", views.api_remove_storage_device_from_cart,
+         name="api_remove_storage_device_from_cart"),
+
+
 ]

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop — Virtual Lab Games</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --noise-opacity: .04;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .bg-aurora {
+            background:
+                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+            background-attachment: fixed;
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: var(--noise-opacity);
+            mix-blend-mode: soft-light;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        }
+
+        .glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+            backdrop-filter: saturate(150%) blur(16px);
+            -webkit-backdrop-filter: saturate(150%) blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .glass-dark {
+            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+            backdrop-filter: saturate(150%) blur(20px);
+            -webkit-backdrop-filter: saturate(150%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            transform: rotate(25deg);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -60%
+            }
+
+            100% {
+                left: 140%
+            }
+        }
+
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4, 0, .2, 1), box-shadow .25s;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #fff, #8bd5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <span
+                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow"><span
+                            class="text-xl">🎮</span></span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {% if user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm font-semibold text-white/80">Hello, {{ user.username }}</span>
+                    <a href="#" aria-label="Account"
+                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial}}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
+                    {% endif %}
+                    <a href="{% url 'tickets-page' %}"
+                        class="shine inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all"><span
+                            class="hidden sm:inline">My</span> Tickets</a>
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
+                        aria-label="Open menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-white/10 glass-dark">
+            <div class="container mx-auto px-4 py-4 space-y-2">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 font-bold uppercase">
+                        {{ user_initial }}</div>
+                    <div class="text-sm">Hello, {{ user.username }}</div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span>Store • Games</span>
+                    </div>
+                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black">Shop</h1>
+                    <p class="mt-1 text-white/70">Browse and add games to your collection.</p>
+                </div>
+
+                <form id="filterForm" class="w-full sm:w-auto" onsubmit="event.preventDefault(); loadGames(1)">
+                    <div class="glass rounded-2xl p-2 flex items-center gap-2">
+                        <input type="search" id="q" placeholder="Search games..."
+                            class="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
+                        <select id="genre"
+                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
+                            <option value="">All Genres</option>
+                            <option>Action</option>
+                            <option>RPG</option>
+                            <option>Racing</option>
+                            <option>Shooter</option>
+                        </select>
+                        <button
+                            class="shine px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold">Search</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Games Grid -->
+            <div id="gamesGrid"
+                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5">
+            </div>
+
+            <!-- Pagination -->
+            <nav id="pager" class="mt-8 flex items-center justify-center gap-2"></nav>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        const API_URL = '/api/products/'; // make sure this URL is added in urls.py
+        const perPage = 10;
+
+        function toCurrency(value, currency) {
+            const n = Number(value);
+            if (Number.isNaN(n)) return `${currency || ''} ${value}`;
+            return `${currency || ''} ${n.toFixed(2)}`.trim();
+        }
+
+        // 3:4 image on top, text BELOW the image: Title, Edition, then a row: [Price]  or  [Hard disk • Size]
+        function gameCard(g) {
+            const cover = g.cover_url || '{% static "images/cover-placeholder.jpg" %}';
+            const detail = g.url || `/products/${g.slug}/`;
+            const price = g.price_display || toCurrency(g.price, g.currency);
+            const size = g.size_display || (g.game_size_gb ? `${g.game_size_gb} GB` : '');
+            const edition = g.edition || 'Standard Edition';
+
+            return `
+        <a href="${detail}" class="group block rounded-3xl card-hover">
+          <div class="relative aspect-[3/4] rounded-2xl overflow-hidden">
+            <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+          </div>
+          <div class="mt-3 p-3 sm:p-4">
+            <h3 class="font-semibold leading-snug whitespace-normal break-words">${g.title}</h3>
+            <p class="mt-1 text-xs sm:text-sm text-white/70 whitespace-normal break-words">${edition}</p>
+            <div class="mt-3 flex items-center gap-2 flex-wrap">
+              <div class="font-bold text-sm sm:text-base">${price}</div>
+              <span class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs uppercase tracking-wide bg-white/10 text-white/80">or</span>
+              ${size ? `<div class="text-[11px] sm:text-xs text-white/70">Hard disk • ${size}</div>` : '<div class="text-[11px] sm:text-xs text-white/70">Hard disk option available</div>'}
+            </div>
+          </div>
+        </a>`;
+        }
+
+        function setGridLoading() {
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                grid.innerHTML += `<div class="rounded-3xl">
+          <div class="aspect-[3/4] rounded-2xl bg-white/5 animate-pulse"></div>
+          <div class="mt-3 p-3">
+            <div class="h-4 bg-white/10 rounded w-3/4"></div>
+            <div class="mt-2 h-3 bg-white/10 rounded w-1/2"></div>
+          </div>
+        </div>`;
+            }
+        }
+
+        function renderPager(totalPages, current) {
+            const nav = document.getElementById('pager');
+            nav.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const makeBtn = (label, page, disabled = false, active = false) => {
+                const base = 'px-3 py-2 rounded-lg text-sm';
+                const cls = disabled ? 'bg-white/5 text-white/40' : (active ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15');
+                const btn = document.createElement('button');
+                btn.className = `${base} ${cls}`;
+                btn.textContent = label;
+                btn.disabled = disabled;
+                if (!disabled && !active) { btn.addEventListener('click', () => loadGames(page)); }
+                return btn;
+            };
+
+            nav.appendChild(makeBtn('Prev', Math.max(1, current - 1), current === 1));
+            for (let i = 1; i <= totalPages; i++) { nav.appendChild(makeBtn(String(i), i, false, i === current)); }
+            nav.appendChild(makeBtn('Next', Math.min(totalPages, current + 1), current === totalPages));
+        }
+
+        async function loadGames(page = 1) {
+            const q = document.getElementById('q').value.trim();
+            const genre = document.getElementById('genre').value.trim();
+            setGridLoading();
+            const url = new URL(API_URL, window.location.origin);
+            url.searchParams.set('page', page);
+            url.searchParams.set('per_page', perPage);
+            if (q) url.searchParams.set('q', q);
+            if (genre) url.searchParams.set('genre', genre);
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            const grid = document.getElementById('gamesGrid');
+            grid.innerHTML = '';
+            (data.results || []).forEach(g => grid.insertAdjacentHTML('beforeend', gameCard(g)));
+
+            renderPager(Number(data.total_pages || 1), Number(data.page || 1));
+            const params = new URLSearchParams(location.search);
+            params.set('page', data.page);
+            history.replaceState(null, '', `${location.pathname}?${params.toString()}`);
+        }
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        const initialPage = Number(new URLSearchParams(location.search).get('page') || '1');
+        loadGames(initialPage);
+    </script>
+</body>
+
+</html>
