@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-okb1mhljv--^gb_tpu0qg&yqw$uc__3-fjuy^m4p$)jpui(a_h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["www.virtuallabgames.com", "virtuallabgames.com"]
 
 
 # Application definition
@@ -111,6 +111,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://virtuallabgames.com",
+    "https://www.virtuallabgames.com",
+    "http://virtuallabgames.com",
+    "http://www.virtuallabgames.com",
 ]
 
 
