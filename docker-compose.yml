@@ -54,7 +54,7 @@ services:
     volumes:
       - static_volume:/static
       - media_volume:/media
-      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${NGINX_CONF}:/etc/nginx/conf.d/default.conf:ro
       - certbot-web:/var/www/certbot
       - letsencrypt:/etc/letsencrypt
 

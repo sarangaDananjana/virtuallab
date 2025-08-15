@@ -5,9 +5,9 @@
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Virtual Lab Games — Premium PC Games on DVDs (Sri Lanka)</title>
+    <title>Virtual Lab Games – PC Games on DVDs & Hard Disks (Sri Lanka)</title>
     <meta name="description"
-        content="Virtual Lab Games delivers PC games on DVDs across Sri Lanka — multi‑disc sets for large AAA titles. 5+ years trusted service, #1 after‑service support, #1 rated on Daraz gaming with 200+ 5‑star ratings." />
+        content="Virtual Lab Games delivers PC games on DVDs and Hard Disks across Sri Lanka. Choose your preferred format – multi-disc DVDs or pre-loaded HDDs. 5+ years trusted service, #1 after-service support." />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,12 +18,16 @@
                     colors: {
                         brand: {
                             50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559'
+                        },
+                        gold: {
+                            50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F'
                         }
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
                     },
                     keyframes: {
                         float: {
@@ -33,6 +37,10 @@
                         gradient: {
                             '0%, 100%': { 'background-position': '0% 50%' },
                             '50%': { 'background-position': '100% 50%' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
                         }
                     }
                 }
@@ -65,7 +73,7 @@
         .bg-aurora {
             background:
                 radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
-                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(16, 185, 129, .3), transparent 50%),
+                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
                 radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
                 linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
             background-attachment: fixed;
@@ -87,6 +95,62 @@
             -webkit-backdrop-filter: saturate(150%) blur(16px);
             border: 1px solid rgba(255, 255, 255, .15);
             box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        /* ===============================
+     NAVBAR — Glassy #584a1f + subtle gradient
+     =============================== */
+        .header-blend {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            /* glassy background: base color with a faint gold wash */
+            background:
+                linear-gradient(180deg, rgba(88, 74, 31, .82) 0%, rgba(88, 74, 31, .68) 100%),
+                linear-gradient(90deg, rgba(246, 205, 69, .10) 0%, rgba(246, 205, 69, 0) 60%);
+            backdrop-filter: saturate(160%) blur(14px);
+            -webkit-backdrop-filter: saturate(160%) blur(14px);
+            border-bottom: none;
+            /* no separator line */
+            box-shadow: none;
+            /* no shadow edge */
+        }
+
+        /* no decorative hairline */
+        .header-blend::after {
+            content: none !important;
+        }
+
+        /* keep a matching look if you ever toggle .header-solid */
+        .header-solid {
+            background:
+                linear-gradient(180deg, rgba(88, 74, 31, .90) 0%, rgba(88, 74, 31, .78) 100%),
+                linear-gradient(90deg, rgba(246, 205, 69, .12) 0%, rgba(246, 205, 69, 0) 60%);
+            border-bottom: none;
+            box-shadow: none;
+        }
+
+        /* force white text inside the top bar only (doesn't touch mobile menu) */
+        .header-blend>.container,
+        .header-blend>.container * {
+            color: #ffffff !important;
+        }
+
+        .header-blend>.container svg {
+            color: #ffffff;
+            stroke: #ffffff;
+        }
+
+        .header-blend nav a:hover {
+            opacity: .9;
+        }
+
+        .glass-white {
+            background: linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .85));
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, .3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
         }
 
         .glass-dark {
@@ -135,7 +199,7 @@
         }
 
         .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #f6cd45 25%, #f093fb 50%, #667eea 75%, #f6cd45 100%);
             background-size: 400% 400%;
             -webkit-background-clip: text;
             background-clip: text;
@@ -158,15 +222,30 @@
             filter: grayscale(50%);
         }
 
-        /* Mobile optimizations */
+        .delivery-option {
+            transition: all .3s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .delivery-option:hover {
+            transform: translateY(-8px) scale(1.05);
+        }
+
+        .delivery-option.selected {
+            border-color: #f6cd45;
+            background: linear-gradient(135deg, rgba(246, 205, 69, .15), rgba(246, 205, 69, .05));
+        }
+
         @media (max-width: 640px) {
             .glass {
                 backdrop-filter: saturate(140%) blur(12px);
                 -webkit-backdrop-filter: saturate(140%) blur(12px);
             }
+
+            .glass-white {
+                background: linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .88));
+            }
         }
 
-        /* Smooth scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -184,44 +263,39 @@
             background: rgba(255, 255, 255, .2);
         }
     </style>
+
 </head>
 
-<body class="bg-aurora text-white selection:bg-brand-500/30 selection:text-white noise">
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
 
-    <!-- Enhanced Header -->
-    <header class="sticky top-0 z-50 glass-dark border-b border-white/10">
+    <!-- Navbar: changed to .header-blend (white but harmonizes with the dark backdrop) -->
+    <header class="header-blend">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <a href="#home" class="flex items-center gap-2 sm:gap-3 group">
-                    <span
-                        class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 ring-1 ring-white/10 overflow-hidden">
-                        <img src="{% static 'images/logo.png' %}" alt="Virtual Lab logo" class="w-9 h-9 object-contain"
-                            width="36" height="36" decoding="async" />
-                    </span>
-
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo (PNG only, no background container) -->
+                <a href="#home" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
                     <div class="flex flex-col">
-                        <span class="font-black text-lg sm:text-xl tracking-tight">Virtual Lab</span>
-                        <span class="text-[10px] sm:text-xs text-white/60 font-medium -mt-1">GAMES</span>
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
                     </div>
                 </a>
 
                 <!-- Desktop Navigation -->
-                <nav class="hidden lg:flex items-center gap-8">
-                    <a href="#home" class="text-sm font-medium hover:text-brand-300 transition-colors">Home</a>
-                    <a href="#how" class="text-sm font-medium hover:text-brand-300 transition-colors">How it Works</a>
-                    <a href="#benefits" class="text-sm font-medium hover:text-brand-300 transition-colors">Why DVDs?</a>
-                    <a href="#collections"
-                        class="text-sm font-medium hover:text-brand-300 transition-colors">Collections</a>
-                    <a href="#faq" class="text-sm font-medium hover:text-brand-300 transition-colors">FAQ</a>
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="#home" class="text-sm font-semibold transition-colors">Home</a>
+                    <a href="#delivery" class="text-sm font-semibold transition-colors">Delivery Options</a>
+                    <a href="#how" class="text-sm font-semibold transition-colors">How it Works</a>
+                    <a href="#benefits" class="text-sm font-semibold transition-colors">Why Choose Us?</a>
+                    <a href="#collections" class="text-sm font-semibold transition-colors">Collections</a>
+                    <a href="#faq" class="text-sm font-semibold transition-colors">FAQ</a>
                 </nav>
 
                 <!-- CTA Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     {% if user.is_authenticated %}
-                    <span class="hidden sm:inline text-sm font-semibold text-white/80">
-                        Hello, {{ user.username }}
-                    </span>
+                    <span class="hidden sm:inline text-sm font-semibold">Hello, {{ user.username }}</span>
                     <a href="#" aria-label="Account"
                         class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
                         {{ user_initial }}
@@ -234,7 +308,11 @@
                     {% endif %}
 
                     <a href="{% url 'tickets-page' %}"
-                        class="shine inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
                         <span class="hidden sm:inline">My</span> Tickets
                     </a>
 
@@ -243,42 +321,58 @@
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
+                                d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-white/10 glass-dark">
+        <!-- Mobile Menu (unchanged; stays light) -->
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
             <div class="container mx-auto px-4 py-4 space-y-2">
                 {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 font-bold uppercase">
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
                         {{ user_initial }}
                     </div>
-                    <div class="text-sm">
-                        Hello, {{ user.username }}
-                    </div>
+                    <div class="text-sm text-gray-700">Hello, {{ user.username }}</div>
                 </div>
                 {% else %}
                 <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">Login</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Login</a>
                 {% endif %}
 
+                <a href="#home"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Home</a>
+                <a href="#delivery"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Delivery
+                    Options</a>
+                <a href="#how"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">How it
+                    Works</a>
+                <a href="#benefits"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Why Choose
+                    Us?</a>
+                <a href="#collections"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Collections</a>
+                <a href="#faq"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">FAQ</a>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section - Enhanced Responsiveness -->
+
+
+    <!-- Hero Section - Enhanced with Delivery Options -->
     <section id="home"
         class="relative min-h-[calc(100vh-64px)] flex items-center py-12 sm:py-16 lg:py-20 overflow-hidden">
         <!-- Animated Background Elements -->
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute -top-40 -right-40 w-80 h-80 bg-brand-500/20 rounded-full blur-3xl animate-pulse-slow">
             </div>
-            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse-slow"
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gold-400/20 rounded-full blur-3xl animate-pulse-slow"
                 style="animation-delay: 2s;"></div>
         </div>
 
@@ -291,36 +385,52 @@
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold mx-auto lg:mx-0">
                         <span class="relative flex h-2 w-2">
                             <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-gold-400"></span>
                         </span>
-                        <span>🇱🇰 Sri Lanka • PC Gaming • 5+ Years Trusted</span>
+                        <span>🇱🇰 Sri Lanka • PC Gaming • DVDs & HDDs • 5+ Years Trusted</span>
                     </div>
 
                     <!-- Headline -->
                     <div>
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
                             <span class="block">Big PC Games,</span>
-                            <span class="block gradient-text mt-2">Delivered on DVDs.</span>
+                            <span class="block gradient-text mt-2">Your Way.</span>
                         </h1>
                         <p class="mt-4 sm:mt-6 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto lg:mx-0">
-                            Multi‑DVD sets for massive AAA titles. Skip gigantic downloads and build your physical
-                            collection with fast islandwide delivery.
+                            Choose your format: Multi-DVD sets or pre-loaded Hard Disks. Skip gigantic downloads and get
+                            gaming faster with islandwide delivery.
                         </p>
+                    </div>
+
+                    <!-- Delivery Options Preview -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto lg:mx-0">
+                        <div
+                            class="glass rounded-2xl p-4 text-center card-hover border-2 border-transparent hover:border-gold-400">
+                            <div class="text-3xl mb-2">💿</div>
+                            <div class="font-bold text-sm sm:text-base">DVD Sets</div>
+                            <div class="text-xs text-white/70 mt-1">Multi-disc format</div>
+                        </div>
+                        <div
+                            class="glass rounded-2xl p-4 text-center card-hover border-2 border-transparent hover:border-gold-400">
+                            <div class="text-3xl mb-2">💾</div>
+                            <div class="font-bold text-sm sm:text-base">Hard Disks</div>
+                            <div class="text-xs text-white/70 mt-1">Pre-loaded HDDs</div>
+                        </div>
                     </div>
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-                        <a href="#collections"
-                            class="shine inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
-                            Browse Collections
+                        <a href="#delivery"
+                            class="shine inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+                            View Options
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                             </svg>
                         </a>
                         <button id="openNotify"
-                            class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-4 rounded-2xl glass hover:bg-white/20 font-semibold text-base sm:text-lg transition-all">
+                            class="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl glass hover:bg-white/20 font-semibold text-base sm:text-lg transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -332,33 +442,31 @@
 
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6">
-                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                        <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-brand-300">5+</div>
                             <div class="text-xs sm:text-sm text-white/70 mt-1">Years Serving</div>
                         </div>
-                        <div class="glass rounded-2xl p-4 text-center card-hover">
-                            <div class="text-2xl sm:text-3xl font-black text-emerald-300">#1</div>
+                        <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
+                            <div class="text-2xl sm:text-3xl font-black text-gold-400">#1</div>
                             <div class="text-xs sm:text-sm text-white/70 mt-1">Support Team</div>
                         </div>
-                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                        <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-cyan-300">200+</div>
-                            <div class="text-xs sm:text-sm text-white/70 mt-1">5★ Reviews</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1">5⭐ Reviews</div>
                         </div>
-                        <div class="glass rounded-2xl p-4 text-center card-hover">
+                        <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-purple-300">500+</div>
                             <div class="text-xs sm:text-sm text-white/70 mt-1">Happy Gamers</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hero Visual -->
-                <div class="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] order-first lg:order-last">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-brand-500/20 to-transparent rounded-3xl animate-float">
-                    </div>
-                    <img src="{% static 'images/hero.jpg' %}" alt="Virtual Lab"
-                        class="w-full h-full object-contain drop-shadow-2xl"
-                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 bg-gradient-to-br from-brand-500/30 to-cyan-400/30 rounded-3xl flex items-center justify-center text-6xl animate-pulse\'>🎮</div>';">
+                <!-- Hero Visual (rounded + overflow to fix corner mismatch) -->
+                <div
+                    class="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] order-first lg:order-last rounded-3xl overflow-hidden ring-1 ring-white/10 bg-white/5">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gold-400/20 to-transparent"></div>
+                    <img src="{% static 'images/hero2.jpg' %}" alt="Virtual Lab" class="w-full h-full object-contain"
+                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 bg-gradient-to-br from-brand-500/30 to-gold-400/30 rounded-3xl flex items-center justify-center text-6xl animate-pulse\'>🎮</div>';">
                 </div>
             </div>
 
@@ -367,17 +475,190 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <div class="flex-1">
                         <h3 class="text-lg sm:text-xl font-bold mb-1">Installation Support Included</h3>
-                        <p class="text-sm sm:text-base text-white/80">Got stuck? Submit a ticket — we respond within 24
+                        <p class="text-sm sm:text-base text-white/80">Got stuck? Submit a ticket – we respond within 24
                             hours.</p>
                     </div>
                     <a href="{% url 'ticket-submit' %}"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-sm sm:text-base transition-all whitespace-nowrap">
+                        class="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-sm sm:text-base transition-all whitespace-nowrap">
                         Open Support
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                             </path>
                         </svg>
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Delivery Options Section -->
+    <section id="delivery" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Choose Your Format</h2>
+                <p class="text-lg sm:text-xl text-white/70">Select the delivery option that works best for you</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+                <!-- DVD Option -->
+                <div class="delivery-option glass rounded-3xl p-6 sm:p-8 cursor-pointer border-2 border-white/10 hover:border-gold-400"
+                    data-option="dvd">
+                    <div class="flex items-center justify-between mb-6">
+                        <div
+                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-600/20 flex items-center justify-center text-4xl sm:text-5xl">
+                            💿
+                        </div>
+                        <span
+                            class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs sm:text-sm font-semibold">Popular</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">DVD Sets</h3>
+                    <p class="text-white/70 mb-6 text-sm sm:text-base">Perfect for collectors and those who prefer
+                        physical media</p>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Compatible with all DVD drives</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Lightweight and portable</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Includes detailed instructions</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Build your collection</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                        <div class="text-sm text-white/60">From</div>
+                        <div class="text-2xl font-bold text-gold-400">Rs. 500</div>
+                    </div>
+                </div>
+
+                <!-- Hard Disk Option -->
+                <div class="delivery-option glass rounded-3xl p-6 sm:p-8 cursor-pointer border-2 border-white/10 hover:border-gold-400"
+                    data-option="hdd">
+                    <div class="flex items-center justify-between mb-6">
+                        <div
+                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-gold-400/20 to-gold-500/20 flex items-center justify-center text-4xl sm:text-5xl">
+                            💾
+                        </div>
+                        <span
+                            class="px-3 py-1 rounded-full bg-gold-400/20 text-gold-300 text-xs sm:text-sm font-semibold">Premium</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">Hard Disks</h3>
+                    <p class="text-white/70 mb-6 text-sm sm:text-base">Pre-loaded external drives for instant gaming</p>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Games ready to install</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Multiple games per drive</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Faster than DVDs</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm sm:text-base">Reusable storage</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                        <div class="text-sm text-white/60">From</div>
+                        <div class="text-2xl font-bold text-gold-400">Rs. 2,500</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Chart -->
+            <div class="mt-12 sm:mt-16 glass rounded-3xl p-6 sm:p-8">
+                <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8">Quick Comparison</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="pb-4 text-sm sm:text-base font-semibold">Feature</th>
+                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">💿 DVDs</th>
+                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">💾 Hard Disks</th>
+                            </tr>
+                        </thead>
+                        <tbody class="space-y-4">
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 text-sm sm:text-base text-white/80">Installation Speed</td>
+                                <td class="py-3 text-center text-sm sm:text-base">Standard</td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Fast ⚡
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 text-sm sm:text-base text-white/80">Storage Capacity</td>
+                                <td class="py-3 text-center text-sm sm:text-base">4.7GB per disc</td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">500GB -
+                                    2TB</td>
+                            </tr>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 text-sm sm:text-base text-white/80">Games per Order</td>
+                                <td class="py-3 text-center text-sm sm:text-base">1 Game</td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Multiple
+                                    Games</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 text-sm sm:text-base text-white/80">Best For</td>
+                                <td class="py-3 text-center text-sm sm:text-base">Collectors</td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Heavy
+                                    Gamers</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -397,19 +678,19 @@
                         class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
                         1
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Choose Your Game</h3>
-                    <p class="text-white/70 leading-relaxed">Browse our catalog or request any PC game. We'll confirm
-                        availability and prepare your order.</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Choose Your Format</h3>
+                    <p class="text-white/70 leading-relaxed">Select between DVD sets for collection or Hard Disks for
+                        convenience. Browse our catalog or request any PC game.</p>
                 </div>
 
                 <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.1s">
                     <div
-                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
                         2
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold mb-3">We Burn Your DVDs</h3>
-                    <p class="text-white/70 leading-relaxed">Large games split across multiple labeled DVDs with clear
-                        installation instructions included.</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">We Prepare Your Order</h3>
+                    <p class="text-white/70 leading-relaxed">DVDs: Burned and labeled professionally. HDDs: Pre-loaded
+                        with your chosen games and ready to install.</p>
                 </div>
 
                 <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.2s">
@@ -424,6 +705,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Benefits Section - Improved Layout -->
     <section id="benefits" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
@@ -441,8 +723,8 @@
                             <div class="text-sm sm:text-base text-white/70 mt-2">Typical Delivery</div>
                         </div>
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
-                            <div class="text-4xl sm:text-5xl font-black gradient-text">10+</div>
-                            <div class="text-sm sm:text-base text-white/70 mt-2">DVDs for Big Games</div>
+                            <div class="text-4xl sm:text-5xl font-black gradient-text">2TB</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">Max HDD Storage</div>
                         </div>
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
                             <div class="text-4xl sm:text-5xl font-black gradient-text">∞</div>
@@ -453,32 +735,32 @@
 
                 <!-- Content -->
                 <div class="order-1 lg:order-2 space-y-6">
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black">Why Choose DVD Gaming?</h2>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black">Why Choose Us?</h2>
                     <p class="text-lg sm:text-xl text-white/80 leading-relaxed">
-                        Perfect for Sri Lankan gamers with limited bandwidth or data caps. Build a physical collection
-                        while saving time and internet costs.
+                        Perfect for Sri Lankan gamers with limited bandwidth or data caps. Choose your preferred format
+                        and build your gaming library without the wait.
                     </p>
 
                     <div class="space-y-4">
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">🎯</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Curated Game Library</h4>
-                                <p class="text-white/70">Latest AAA titles, indie gems, and classic favorites</p>
+                                <h4 class="font-semibold text-lg mb-1">Multiple Format Options</h4>
+                                <p class="text-white/70">DVD sets for collectors, Hard Disks for convenience</p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">💾</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Multi-DVD Technology</h4>
-                                <p class="text-white/70">100GB+ games professionally split across labeled discs</p>
+                                <h4 class="font-semibold text-lg mb-1">Professional Preparation</h4>
+                                <p class="text-white/70">Properly labeled DVDs or pre-loaded HDDs ready to use</p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">📦</span>
                             <div>
                                 <h4 class="font-semibold text-lg mb-1">Premium Packaging</h4>
-                                <p class="text-white/70">Protective sleeves with game artwork and instructions</p>
+                                <p class="text-white/70">Protective cases with game artwork and instructions</p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
@@ -491,9 +773,8 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                        <!-- CHANGED: from link to button, to open modal -->
                         <button id="openRequestGame" type="button"
-                            class="shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
+                            class="shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
                             Request a Game
                         </button>
 
@@ -507,22 +788,21 @@
         </div>
     </section>
 
-
     <!-- Collections Section - Enhanced Grid -->
     <section id="collections" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
                 <div>
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2">Game Collections</h2>
-                    <p class="text-lg sm:text-xl text-white/70">Online store launching soon!</p>
+                    <p class="text-lg sm:text-xl text-white/70">Available in both DVD sets and Hard Disk formats</p>
                 </div>
                 <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
                     <span class="relative flex h-2 w-2">
                         <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gold-400"></span>
                     </span>
-                    Coming Soon
+                    Online Store Coming Soon
                 </span>
             </div>
 
@@ -556,7 +836,7 @@
 
                 <div class="glass rounded-3xl p-5 group disabled">
                     <div
-                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center text-6xl mb-4">
+                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-gold-400/20 to-orange-500/20 flex items-center justify-center text-6xl mb-4">
                         🏎️
                     </div>
                     <h3 class="font-bold text-lg mb-1">Racing & Sports</h3>
@@ -587,13 +867,13 @@
                     <div class="lg:col-span-2 space-y-3">
                         <h3 class="text-2xl sm:text-3xl font-bold">Be First When We Launch!</h3>
                         <p class="text-white/70 text-base sm:text-lg">Join the waitlist for exclusive early access and
-                            special launch discounts.</p>
+                            special launch discounts on both DVD and Hard Disk formats.</p>
                     </div>
                     <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3">
                         <input required type="email" name="email" placeholder="your@email.com"
                             class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
                         <button
-                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold whitespace-nowrap hover:shadow-xl transition-all">
+                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold whitespace-nowrap hover:shadow-xl transition-all">
                             Join Waitlist
                         </button>
                     </form>
@@ -613,7 +893,7 @@
             <div class="space-y-4">
                 <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
                     <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>How do you handle very large games (100GB+)?</span>
+                        <span>Which format should I choose?</span>
                         <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
@@ -621,40 +901,10 @@
                         </svg>
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
-                        We professionally split large games across multiple DVDs (up to 10+ discs for massive titles).
-                        Each disc is clearly labeled with the installation order, and we include detailed step-by-step
-                        instructions to make the process smooth.
-                    </p>
-                </details>
-
-                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
-                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>Are the games safe to install?</span>
-                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </summary>
-                    <p class="mt-4 text-white/75 leading-relaxed">
-                        Yes, all our game installers are thoroughly checked and verified before burning to DVDs. We've
-                        been serving the Sri Lankan gaming community for over 5 years with thousands of satisfied
-                        customers. If you encounter any issues, our support team is always ready to help.
-                    </p>
-                </details>
-
-                <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
-                    <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>What platforms do you support?</span>
-                        <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </summary>
-                    <p class="mt-4 text-white/75 leading-relaxed">
-                        We exclusively focus on PC (Windows) games to provide the best possible service. Our games are
-                        optimized for Windows 10 and Windows 11 systems.
+                        Choose <strong>DVDs</strong> if you're a collector, have limited budget, or prefer physical
+                        media.
+                        Choose <strong>Hard Disks</strong> if you want multiple games at once, faster installation, or
+                        plan to order frequently. Both formats include our full support and installation assistance.
                     </p>
                 </details>
 
@@ -701,7 +951,8 @@
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
                         Yes! If you don't see a game in our catalog, you can request it through our support system.
-                        We'll check availability and prepare it for you, usually within 2-3 business days.
+                        We'll check availability and prepare it for you in your preferred format (DVD or Hard Disk),
+                        usually within 2-3 business days.
                     </p>
                 </details>
             </div>
@@ -716,7 +967,7 @@
                 <div class="lg:col-span-1">
                     <div class="flex items-center gap-3 mb-4">
                         <span
-                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 shadow-lg">
+                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-gold-400 shadow-lg">
                             <span class="text-xl">🎮</span>
                         </span>
                         <div>
@@ -725,7 +976,7 @@
                         </div>
                     </div>
                     <p class="text-sm text-white/70 leading-relaxed mb-4">
-                        Premium PC games on DVDs with multi-disc support for large titles. Serving Sri Lankan gamers
+                        Premium PC games on DVDs and Hard Disks with multiple format options. Serving Sri Lankan gamers
                         since 2019.
                     </p>
                     <div class="flex gap-3">
@@ -743,8 +994,9 @@
                     <h4 class="font-semibold text-white mb-4">Quick Links</h4>
                     <ul class="space-y-2 text-sm text-white/70">
                         <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#delivery" class="hover:text-white transition-colors">Delivery Options</a></li>
                         <li><a href="#how" class="hover:text-white transition-colors">How It Works</a></li>
-                        <li><a href="#benefits" class="hover:text-white transition-colors">Why DVDs?</a></li>
+                        <li><a href="#benefits" class="hover:text-white transition-colors">Why Choose Us?</a></li>
                         <li><a href="#collections" class="hover:text-white transition-colors">Collections</a></li>
                         <li><a href="#faq" class="hover:text-white transition-colors">FAQ</a></li>
                     </ul>
@@ -754,9 +1006,12 @@
                 <div>
                     <h4 class="font-semibold text-white mb-4">Support</h4>
                     <ul class="space-y-2 text-sm text-white/70">
-                        <li><a href="support.html" class="hover:text-white transition-colors">Support Center</a></li>
-                        <li><a href="support.html" class="hover:text-white transition-colors">Open Ticket</a></li>
-                        <li><a href="login.html" class="hover:text-white transition-colors">Customer Login</a></li>
+                        <li><a href="{% url 'tickets-page' %}" class="hover:text-white transition-colors">Support
+                                Center</a></li>
+                        <li><a href="{% url 'ticket-submit' %}" class="hover:text-white transition-colors">Open
+                                Ticket</a></li>
+                        <li><a href="{% url 'login-page' %}" class="hover:text-white transition-colors">Customer
+                                Login</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Installation Guide</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
                     </ul>
@@ -770,7 +1025,7 @@
                         <input required type="email" name="email" placeholder="your@email.com"
                             class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-sm focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
                         <button
-                            class="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold text-sm hover:shadow-lg transition-all">
+                            class="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold text-sm hover:shadow-lg transition-all">
                             Subscribe
                         </button>
                     </form>
@@ -790,7 +1045,7 @@
     <div id="notifyModal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeModal()"></div>
         <div class="relative flex items-center justify-center min-h-screen p-4">
-            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-float">
+            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-slide-up">
                 <div class="flex items-start justify-between mb-6">
                     <h3 class="text-2xl font-black">Join Waitlist</h3>
                     <button id="closeNotify"
@@ -806,6 +1061,17 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium mb-2">Preferred Format (Optional)</label>
+                        <select name="format"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            <option value="">Select preference</option>
+                            <option value="dvd">DVD Sets</option>
+                            <option value="hdd">Hard Disks</option>
+                            <option value="both">Both Options</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium mb-2">Favorite Game Genres (Optional)</label>
                         <input name="genres"
                             class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
@@ -814,7 +1080,7 @@
 
                     <div class="pt-4">
                         <button
-                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold hover:shadow-xl transition-all">
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold hover:shadow-xl transition-all">
                             Notify Me When Live
                         </button>
                         <p class="text-xs text-white/50 text-center mt-3">No spam, only important updates</p>
@@ -828,7 +1094,7 @@
     <div id="requestGameModal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeRequestModal()"></div>
         <div class="relative flex items-center justify-center min-h-screen p-4">
-            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-float">
+            <div class="glass rounded-3xl p-6 sm:p-8 max-w-md w-full mx-auto animate-slide-up">
                 <div class="flex items-start justify-between mb-6">
                     <h3 class="text-2xl font-black">Request a Game</h3>
                     <button id="closeRequestGame"
@@ -845,6 +1111,16 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium mb-2">Preferred Format</label>
+                        <select name="format"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            <option value="">No preference</option>
+                            <option value="dvd">DVD Sets</option>
+                            <option value="hdd">Hard Disk</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium mb-2">Edition (Optional)</label>
                         <input name="edition"
                             class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all"
@@ -853,16 +1129,15 @@
 
                     <div class="pt-4">
                         <button
-                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold hover:shadow-xl transition-all">
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold hover:shadow-xl transition-all">
                             Send Request
                         </button>
-                        <p class="text-xs text-white/50 text-center mt-3">We’ll follow up via your account or email</p>
+                        <p class="text-xs text-white/50 text-center mt-3">We'll follow up via your account or email</p>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 
     <!-- Scripts -->
     <script>
@@ -877,13 +1152,13 @@
         // Mobile menu toggle
         const navToggle = document.getElementById('navToggle');
         const mobileMenu = document.getElementById('mobileMenu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
 
         navToggle?.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        mobileLinks.forEach(link => {
+        // Close mobile menu when clicking links
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
             });
@@ -911,9 +1186,16 @@
         const notifyModal = document.getElementById('notifyModal');
         const openNotifyBtn = document.getElementById('openNotify');
         const closeNotifyBtn = document.getElementById('closeNotify');
+        const requestGameModal = document.getElementById('requestGameModal');
+        const openRequestGameBtn = document.getElementById('openRequestGame');
+        const closeRequestGameBtn = document.getElementById('closeRequestGame');
 
         function closeModal() {
             notifyModal.classList.add('hidden');
+        }
+
+        function closeRequestModal() {
+            requestGameModal?.classList.add('hidden');
         }
 
         openNotifyBtn?.addEventListener('click', () => {
@@ -921,6 +1203,12 @@
         });
 
         closeNotifyBtn?.addEventListener('click', closeModal);
+
+        openRequestGameBtn?.addEventListener('click', () => {
+            requestGameModal?.classList.remove('hidden');
+        });
+
+        closeRequestGameBtn?.addEventListener('click', closeRequestModal);
 
         // Toast notification
         function showToast(message, type = 'success') {
@@ -956,6 +1244,58 @@
             e.target.reset();
         });
 
+        // Request Game form submission
+        document.getElementById('requestGameForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const fd = new FormData(form);
+            const game = (fd.get('game_name') || '').toString().trim();
+            const edition = (fd.get('edition') || '').toString().trim();
+            const format = (fd.get('format') || '').toString().trim();
+
+            if (!game) {
+                showToast('Please enter the game name', 'error');
+                return;
+            }
+
+            const btn = form.querySelector('button[type="submit"]');
+            const btnText = btn?.textContent;
+            btn && (btn.disabled = true, btn.textContent = 'Sending...');
+
+            try {
+                const res = await fetch('/api/request-game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ game, edition, format })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok) {
+                    const msg = data?.detail || 'Could not submit request.';
+                    showToast(msg, 'error');
+                    return;
+                }
+
+                closeRequestModal();
+                showToast('Game request submitted! 🎮');
+                form.reset();
+
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = btnText;
+                }
+            }
+        });
+
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -970,66 +1310,19 @@
             });
         });
 
-        // Request Game modal
-        const requestGameModal = document.getElementById('requestGameModal');
-        const openRequestGameBtn = document.getElementById('openRequestGame');
-        const closeRequestGameBtn = document.getElementById('closeRequestGame');
-
-        function closeRequestModal() {
-            requestGameModal?.classList.add('hidden');
-        }
-
-        openRequestGameBtn?.addEventListener('click', () => {
-            requestGameModal?.classList.remove('hidden');
-        });
-
-        closeRequestGameBtn?.addEventListener('click', closeRequestModal);
-
-        // Submit (real API POST)
-        document.getElementById('requestGameForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const form = e.target;
-            const fd = new FormData(form);
-            const game = (fd.get('game_name') || '').toString().trim();
-            const edition = (fd.get('edition') || '').toString().trim();
-
-            if (!game) { showToast('Please enter the game name', 'error'); return; }
-
-            // Optional: loading state on button
-            const btn = form.querySelector('button[type="submit"]');
-            const btnText = btn?.textContent;
-            btn && (btn.disabled = true, btn.textContent = 'Sending...');
-
-            try {
-                const res = await fetch('/api/request-game', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ game, edition }) // backend also accepts game_name/edition_name
+        // Delivery option selection (visual feedback)
+        document.querySelectorAll('.delivery-option').forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options
+                document.querySelectorAll('.delivery-option').forEach(opt => {
+                    opt.classList.remove('selected');
                 });
+                // Add selected class to clicked option
+                option.classList.add('selected');
 
-                const data = await res.json().catch(() => ({}));
-
-                if (!res.ok) {
-                    const msg = data?.detail || 'Could not submit request.';
-                    showToast(msg, 'error');
-                    return;
-                }
-
-                // Success
-                closeRequestModal();
-                showToast('Game request submitted! 🎮');
-                form.reset();
-
-            } catch (err) {
-                showToast('Network error. Please try again.', 'error');
-            } finally {
-                if (btn) { btn.disabled = false; btn.textContent = btnText; }
-            }
+                const optionType = option.dataset.option;
+                showToast(`${optionType === 'dvd' ? 'DVD Sets' : 'Hard Disks'} selected! 💿`);
+            });
         });
 
     </script>
