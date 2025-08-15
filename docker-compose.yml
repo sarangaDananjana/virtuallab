@@ -1,22 +1,6 @@
 version: "3.9"
 
 services:
-  db:
-    image: mysql:8.0
-    command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
-    environment:
-      MYSQL_DATABASE: ${DB_NAME:-shopdb}
-      MYSQL_USER: ${DB_USER:-shopuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-shoppass}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
-    volumes:
-      - dbdata:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent" ]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   web:
     build: .
     container_name: shop_web
@@ -28,21 +12,14 @@ services:
       DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-*}
       # DB
-      DB_ENGINE: django.db.backends.mysql
-      DB_NAME: ${DB_NAME:-shopdb}
-      DB_USER: ${DB_USER:-shopuser}
-      DB_PASSWORD: ${DB_PASSWORD:-shoppass}
-      DB_HOST: db
-      DB_PORT: "3306"
+      DATABASE_URL: ${DATABASE_URL}
+      DB_SSL_REQUIRE: ${DB_SSL_REQUIRE:-1}
     volumes:
       - ./virtuallabshop:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     ports:
       - "8000"
-    depends_on:
-      db:
-        condition: service_healthy
 
   nginx:
     image: nginx:alpine
@@ -61,7 +38,6 @@ services:
       - ./certbot/www:/var/www/certbot
 
 volumes:
-  dbdata:
   static_volume:
   media_volume:
   certbot-web:

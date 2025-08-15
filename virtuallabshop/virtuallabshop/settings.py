@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,11 +39,6 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
-
-    SECURE_HSTS_SECONDS = 60               # try 60s first
-    # set True only if ALL subdomains use HTTPS
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-    SECURE_HSTS_PRELOAD = False
 
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True   # only if every subdomain is HTTPS
@@ -96,22 +93,31 @@ WSGI_APPLICATION = 'virtuallabshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DBS_DEFAULTS = {
-    "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.mysql"),
-    "NAME": os.environ.get("DB_NAME", "shopdb"),
-    "USER": os.environ.get("DB_USER", "shopuser"),
-    "PASSWORD": os.environ.get("DB_PASSWORD", "shoppass"),
-    "HOST": os.environ.get("DB_HOST", "db"),
-    "PORT": os.environ.get("DB_PORT", "3306"),
-    "OPTIONS": {
-        "charset": "utf8mb4",
-        "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-    },
-}
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-DATABASES = {
-    "default": DBS_DEFAULTS
-}
+if DATABASE_URL:
+    # If your provider requires SSL, leave DB_SSL_REQUIRE=1 (default).
+    # Set DB_SSL_REQUIRE=0 if your server disallows SSL.
+    ssl_require = os.getenv("DB_SSL_REQUIRE", "1") == "1"
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=60,       # keep connections warm to remote DB
+            ssl_require=ssl_require
+        )
+    }
+else:
+    # (Optional) local/dev fallback envs if DATABASE_URL is not set
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME", "postgres"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
