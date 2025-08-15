@@ -46,7 +46,8 @@ logs/
 
 # Ignore sensitive information (e.g., configuration files with credentials)
 config.local.php
-.env
+.env.dev
+.env.prod
 *.key
 *.pem
 
