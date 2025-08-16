@@ -5,11 +5,12 @@
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Virtual Lab Games – PC Games on DVDs & Hard Disks (Sri Lanka)</title>
+
     <meta name="description"
         content="Virtual Lab Games delivers PC games on DVDs and Hard Disks across Sri Lanka. Choose your preferred format – multi-disc DVDs or pre-loaded HDDs. 5+ years trusted service, #1 after-service support." />
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -48,231 +49,51 @@
         }
     </script>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
         rel="stylesheet">
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
     <style>
-        :root {
-            --noise-opacity: .04;
+        .lang-si {
+            display: none;
         }
 
-        * {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        body.sinhala-mode .lang-en {
+            display: none;
         }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
+        body.sinhala-mode .lang-si {
+            display: inline;
         }
 
-        .bg-aurora {
-            background:
-                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
-                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
-                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
-                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
-            background-attachment: fixed;
+        /* Fix for block elements like headlines */
+        .block-lang.lang-si {
+            display: none;
         }
 
-        .noise::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: var(--noise-opacity);
-            mix-blend-mode: soft-light;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
         }
 
-        .glass {
-            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
-            backdrop-filter: saturate(150%) blur(16px);
-            -webkit-backdrop-filter: saturate(150%) blur(16px);
-            border: 1px solid rgba(255, 255, 255, .15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
-        }
-
-        /* ===============================
-     NAVBAR — Glassy #584a1f + subtle gradient
-     =============================== */
-        .header-blend {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            /* glassy background: base color with a faint gold wash */
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .82) 0%, rgba(88, 74, 31, .68) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .10) 0%, rgba(246, 205, 69, 0) 60%);
-            backdrop-filter: saturate(160%) blur(14px);
-            -webkit-backdrop-filter: saturate(160%) blur(14px);
-            border-bottom: none;
-            /* no separator line */
-            box-shadow: none;
-            /* no shadow edge */
-        }
-
-        /* no decorative hairline */
-        .header-blend::after {
-            content: none !important;
-        }
-
-        /* keep a matching look if you ever toggle .header-solid */
-        .header-solid {
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .90) 0%, rgba(88, 74, 31, .78) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .12) 0%, rgba(246, 205, 69, 0) 60%);
-            border-bottom: none;
-            box-shadow: none;
-        }
-
-        /* force white text inside the top bar only (doesn't touch mobile menu) */
-        .header-blend>.container,
-        .header-blend>.container * {
-            color: #ffffff !important;
-        }
-
-        .header-blend>.container svg {
-            color: #ffffff;
-            stroke: #ffffff;
-        }
-
-        .header-blend nav a:hover {
-            opacity: .9;
-        }
-
-        .glass-white {
-            background: linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .85));
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border: 1px solid rgba(255, 255, 255, .3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
-        }
-
-        .glass-dark {
-            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
-            backdrop-filter: saturate(150%) blur(20px);
-            -webkit-backdrop-filter: saturate(150%) blur(20px);
-            border: 1px solid rgba(255, 255, 255, .08);
-        }
-
-        .reveal {
-            transform: translateY(30px);
-            opacity: 0;
-            transition: all .8s cubic-bezier(.2, .6, .2, 1);
-        }
-
-        .reveal.in {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .shine {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .shine::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -60%;
-            width: 30%;
-            height: 200%;
-            transform: rotate(25deg);
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
-            animation: shine 4s infinite;
-        }
-
-        @keyframes shine {
-            0% {
-                left: -60%;
-            }
-
-            100% {
-                left: 140%;
-            }
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #f6cd45 25%, #f093fb 50%, #667eea 75%, #f6cd45 100%);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient 8s ease infinite;
-        }
-
-        .card-hover {
-            transition: all .3s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .card-hover:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
-        }
-
-        .disabled {
-            pointer-events: none;
-            opacity: .5;
-            filter: grayscale(50%);
-        }
-
-        .delivery-option {
-            transition: all .3s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .delivery-option:hover {
-            transform: translateY(-8px) scale(1.05);
-        }
-
-        .delivery-option.selected {
-            border-color: #f6cd45;
-            background: linear-gradient(135deg, rgba(246, 205, 69, .15), rgba(246, 205, 69, .05));
-        }
-
-        @media (max-width: 640px) {
-            .glass {
-                backdrop-filter: saturate(140%) blur(12px);
-                -webkit-backdrop-filter: saturate(140%) blur(12px);
-            }
-
-            .glass-white {
-                background: linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .88));
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, .2);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, .1);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, .2);
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
         }
     </style>
-
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
 
-    <!-- Navbar: changed to .header-blend (white but harmonizes with the dark backdrop) -->
     <header class="header-blend">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo (PNG only, no background container) -->
                 <a href="#home" class="flex items-center gap-2 sm:gap-3">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
@@ -282,41 +103,64 @@
                     </div>
                 </a>
 
-                <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
-                    <a href="#home" class="text-sm font-semibold transition-colors">Home</a>
-                    <a href="#delivery" class="text-sm font-semibold transition-colors">Delivery Options</a>
-                    <a href="#how" class="text-sm font-semibold transition-colors">How it Works</a>
-                    <a href="#benefits" class="text-sm font-semibold transition-colors">Why Choose Us?</a>
-                    <a href="#collections" class="text-sm font-semibold transition-colors">Collections</a>
-                    <a href="#faq" class="text-sm font-semibold transition-colors">FAQ</a>
+                    <a href="#home" class="text-sm font-semibold transition-colors"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="#delivery" class="text-sm font-semibold transition-colors"><span class="lang-en">Delivery
+                            Options</span><span class="lang-si">මොකක්ද හොඳ?</span></a>
+                    <a href="#how" class="text-sm font-semibold transition-colors"><span class="lang-en">How it
+                            Works</span><span class="lang-si">ගන්නෙ කොහොමද?</span></a>
+                    <a href="#benefits" class="text-sm font-semibold transition-colors"><span class="lang-en">Why Choose
+                            Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></a>
+                    <a href="#collections" class="text-sm font-semibold transition-colors"><span
+                            class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></a>
+                    <a href="#faq" class="text-sm font-semibold transition-colors"><span class="lang-en">FAQ</span><span
+                            class="lang-si">ප්‍රශ්න සහ පිලිතුරු</span></a>
                 </nav>
 
-                <!-- CTA Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    {% if user.is_authenticated %}
-                    <span class="hidden sm:inline text-sm font-semibold">Hello, {{ user.username }}</span>
-                    <a href="#" aria-label="Account"
-                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
-                        {{ user_initial }}
-                    </a>
-                    {% else %}
-                    <a href="{% url 'login-page' %}"
-                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
-                        Login
-                    </a>
-                    {% endif %}
+                    <!-- Language Toggle Button - Far left of this group -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">
+                        EN
+                    </button>
 
+                    <!-- My Tickets Button -->
                     <a href="{% url 'tickets-page' %}"
                         class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <span class="hidden sm:inline">My</span> Tickets
+                        <span class="hidden sm:inline"><span class="lang-en">My</span><span
+                                class="lang-si">මගේ</span></span> <span class="lang-en">Tickets</span><span
+                            class="lang-si">ගැටලු</span>
                     </a>
 
-                    <!-- Mobile Menu Button -->
+                    <!-- Store Button - Most prominent -->
+                    <a href="#collections"
+                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                    </a>
+
+                    <!-- Login/Avatar - Far right -->
+                    {% if user.is_authenticated %}
+                    <a href="#" aria-label="Account"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{ user_initial }}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
+                        <span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Mobile Nav Toggle -->
                     <button id="navToggle"
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +172,6 @@
             </div>
         </div>
 
-        <!-- Mobile Menu (unchanged; stays light) -->
         <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
             <div class="container mx-auto px-4 py-4 space-y-2">
                 {% if user.is_authenticated %}
@@ -337,38 +180,46 @@
                         class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
                         {{ user_initial }}
                     </div>
-                    <div class="text-sm text-gray-700">Hello, {{ user.username }}</div>
+                    <div class="text-sm text-gray-700"><span class="lang-en">Hello</span><span
+                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
                 </div>
                 {% else %}
                 <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Login</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">Login</span><span class="lang-si">Login</span></a>
                 {% endif %}
 
                 <a href="#home"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Home</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">Home</span><span class="lang-si">Home</span></a>
                 <a href="#delivery"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Delivery
-                    Options</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">Delivery Options</span><span class="lang-si">මොකක්ද හොඳ?</span></a>
                 <a href="#how"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">How it
-                    Works</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">How it Works</span><span class="lang-si">ගන්නෙ කොහොමද?</span></a>
                 <a href="#benefits"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Why Choose
-                    Us?</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">Why Choose Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></a>
                 <a href="#collections"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Collections</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></a>
                 <a href="#faq"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">FAQ</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
+                        class="lang-en">FAQ</span><span class="lang-si">ප්‍රශ්න සහ පිලිතුරු</span></a>
+
+                <button id="langToggleBtnMobile"
+                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors font-bold">
+                    EN
+                </button>
             </div>
         </div>
     </header>
 
 
 
-    <!-- Hero Section - Enhanced with Delivery Options -->
     <section id="home"
         class="relative min-h-[calc(100vh-64px)] flex items-center py-12 sm:py-16 lg:py-20 overflow-hidden">
-        <!-- Animated Background Elements -->
         <div class="absolute inset-0 overflow-hidden">
             <div class="absolute -top-40 -right-40 w-80 h-80 bg-brand-500/20 rounded-full blur-3xl animate-pulse-slow">
             </div>
@@ -376,11 +227,9 @@
                 style="animation-delay: 2s;"></div>
         </div>
 
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-100">
             <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                <!-- Content -->
                 <div class="space-y-6 sm:space-y-8 text-center lg:text-left">
-                    <!-- Badge -->
                     <div
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold mx-auto lg:mx-0">
                         <span class="relative flex h-2 w-2">
@@ -388,42 +237,55 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-gold-400"></span>
                         </span>
-                        <span>🇱🇰 Sri Lanka • PC Gaming • DVDs & HDDs • 5+ Years Trusted</span>
+                        <span><span class="lang-en">🇱🇰 Sri Lanka • PC Gaming • DVDs & HDDs • 5+ Years
+                                Trusted</span><span class="lang-si">🇱🇰 ශ්‍රී ලංකාවේ • පරිඝනක ක්‍රීඩා • වසර 5+
+                                •විශ්වාසය </span></span>
                     </div>
 
-                    <!-- Headline -->
                     <div>
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
-                            <span class="block">Big PC Games,</span>
-                            <span class="block gradient-text mt-2">Your Way.</span>
+                            <span class="block block-lang lang-en">Big PC Games,</span>
+                            <span class="block block-lang lang-si">පරිඝණක ක්‍රීඩා,</span>
+                            <span class="block gradient-text mt-[-20] block-lang lang-en">Your Way.</span>
+                            <span class="block gradient-text mt-[-20] block-lang lang-si">ඔබ කැමති විදිහට.</span>
+
                         </h1>
-                        <p class="mt-4 sm:mt-6 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto lg:mx-0">
-                            Choose your format: Multi-DVD sets or pre-loaded Hard Disks. Skip gigantic downloads and get
-                            gaming faster with islandwide delivery.
+
+                        <p class="mt-10 sm:mt-12 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto lg:mx-0">
+                            <span class="lang-en">
+                                Choose your format: Multi-DVD sets or pre-loaded Hard Disks. Skip gigantic downloads and
+                                get
+                                gaming faster with islandwide delivery.
+                            </span>
+                            <span class="lang-si">
+                                ඔබ කැමති පරිඝණක ක්‍රීඩාව ඔබ කැමතිම විදිහට 100% විශ්වාසයකින් අඩුම මුදලට අපෙන් ලබා ගන්න.
+                            </span>
                         </p>
                     </div>
 
-                    <!-- Delivery Options Preview -->
                     <div class="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg mx-auto lg:mx-0">
                         <div
                             class="glass rounded-2xl p-4 text-center card-hover border-2 border-transparent hover:border-gold-400">
                             <div class="text-3xl mb-2">💿</div>
-                            <div class="font-bold text-sm sm:text-base">DVD Sets</div>
-                            <div class="text-xs text-white/70 mt-1">Multi-disc format</div>
+                            <div class="font-bold text-sm sm:text-base"><span class="lang-en">DVD Sets</span><span
+                                    class="lang-si">DVD ආකාරයට</span></div>
+                            <div class="text-xs text-white/70 mt-1"><span class="lang-en">Multi-disc format</span><span
+                                    class="lang-si">DVD පැක් එකක් ආකාරයට</span></div>
                         </div>
                         <div
                             class="glass rounded-2xl p-4 text-center card-hover border-2 border-transparent hover:border-gold-400">
                             <div class="text-3xl mb-2">💾</div>
-                            <div class="font-bold text-sm sm:text-base">Hard Disks</div>
-                            <div class="text-xs text-white/70 mt-1">Pre-loaded HDDs</div>
+                            <div class="font-bold text-sm sm:text-base"><span class="lang-en">Hard Disks</span><span
+                                    class="lang-si">හාඩ් ඩිස්ක්</span></div>
+                            <div class="text-xs text-white/70 mt-1"><span class="lang-en">Pre-loaded HDDs</span><span
+                                    class="lang-si">ගේම් ඉන්ස්ටෝල් කරන ලද හාඩ් ඩිස්ක්</span></div>
                         </div>
                     </div>
 
-                    <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
                         <a href="#delivery"
                             class="shine inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold text-base sm:text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
-                            View Options
+                            <span class="lang-en">View Options</span><span class="lang-si">ගේම්ස් වර්ග</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -436,32 +298,34 @@
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                                 </path>
                             </svg>
-                            Get Notified
+                            <span class="lang-en">Get Notified</span><span class="lang-si">දැනුම් දෙන්න</span>
                         </button>
                     </div>
 
-                    <!-- Stats Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6">
                         <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-brand-300">5+</div>
-                            <div class="text-xs sm:text-sm text-white/70 mt-1">Years Serving</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1"><span class="lang-en">Years
+                                    Serving</span><span class="lang-si">වසරක සේවය</span></div>
                         </div>
                         <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-gold-400">#1</div>
-                            <div class="text-xs sm:text-sm text-white/70 mt-1">Support Team</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1"><span class="lang-en">Support
+                                    Team</span><span class="lang-si">ගේම් ඉන්ස්ටෝල් කිරීමට සහය</span></div>
                         </div>
                         <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-cyan-300">200+</div>
-                            <div class="text-xs sm:text-sm text-white/70 mt-1">5⭐ Reviews</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1"><span class="lang-en">5⭐
+                                    Reviews</span><span class="lang-si">5⭐ Reviews</span></div>
                         </div>
                         <div class="glass rounded-2xl p-3 sm:p-4 text-center card-hover">
                             <div class="text-2xl sm:text-3xl font-black text-purple-300">500+</div>
-                            <div class="text-xs sm:text-sm text-white/70 mt-1">Happy Gamers</div>
+                            <div class="text-xs sm:text-sm text-white/70 mt-1"><span class="lang-en">Happy
+                                    Gamers</span><span class="lang-si">Happy Gamers</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hero Visual (rounded + overflow to fix corner mismatch) -->
                 <div
                     class="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] order-first lg:order-last rounded-3xl overflow-hidden ring-1 ring-white/10 bg-white/5">
                     <div class="absolute inset-0 bg-gradient-to-t from-gold-400/20 to-transparent"></div>
@@ -470,17 +334,20 @@
                 </div>
             </div>
 
-            <!-- Support Banner -->
             <div class="mt-12 sm:mt-16 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <div class="flex-1">
-                        <h3 class="text-lg sm:text-xl font-bold mb-1">Installation Support Included</h3>
-                        <p class="text-sm sm:text-base text-white/80">Got stuck? Submit a ticket – we respond within 24
-                            hours.</p>
+                        <h3 class="text-lg sm:text-xl font-bold mb-1"><span class="lang-en">Installation Support
+                                Included</span><span class="lang-si">ගේම් එක ඉන්ස්ටෝල් කරගන්න තේරෙන්නෙ නැද්ද?</span>
+                        </h3>
+                        <p class="text-sm sm:text-base text-white/80">
+                            <span class="lang-en">Got stuck? Submit a ticket – we respond within 24 hours.</span>
+                            <span class="lang-si">ගේම් එකේ Error එකක් එනවද? අපිට කියන්න - අපි හදලා දෙන්නම්.</span>
+                        </p>
                     </div>
                     <a href="{% url 'ticket-submit' %}"
                         class="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-sm sm:text-base transition-all whitespace-nowrap">
-                        Open Support
+                        <span class="lang-en">Open Support</span><span class="lang-si">සහය ලබා ගන්න</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                             </path>
@@ -495,8 +362,14 @@
     <section id="delivery" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Choose Your Format</h2>
-                <p class="text-lg sm:text-xl text-white/70">Select the delivery option that works best for you</p>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
+                    <span class="lang-en">Choose Your Format</span>
+                    <span class="lang-si">මොකක්ද හොඳ?</span>
+                </h2>
+                <p class="text-lg sm:text-xl text-white/70">
+                    <span class="lang-en">Select the delivery option that works best for you</span>
+                    <span class="lang-si">ඔබට වඩාත් ගැලපෙන විකල්පය තෝරන්න</span>
+                </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
@@ -509,11 +382,19 @@
                             💿
                         </div>
                         <span
-                            class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs sm:text-sm font-semibold">Popular</span>
+                            class="px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs sm:text-sm font-semibold">
+                            <span class="lang-en">Popular</span>
+                            <span class="lang-si">අඩු වියදම්</span>
+                        </span>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">DVD Sets</h3>
-                    <p class="text-white/70 mb-6 text-sm sm:text-base">Perfect for collectors and those who prefer
-                        physical media</p>
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">
+                        <span class="lang-en">DVD Sets</span>
+                        <span class="lang-si">DVD කට්ටල</span>
+                    </h3>
+                    <p class="text-white/70 mb-6 text-sm sm:text-base">
+                        <span class="lang-en">Perfect for collectors and those who prefer physical media</span>
+                        <span class="lang-si">අඩු මුදලට සහ පරිඝණක ක්‍රීඩා මුලින්ම ප්ලේ කරන අයට</span>
+                    </p>
 
                     <div class="space-y-3 mb-6">
                         <div class="flex items-start gap-3">
@@ -523,7 +404,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Compatible with all DVD drives</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Compatible with all DVD drives</span>
+                                <span class="lang-si">ඕනෑම DVD Writter එකක් සමඟ ක්‍රියා කරයි</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -532,7 +416,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Lightweight and portable</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Lightweight and portable</span>
+                                <span class="lang-si">ගේම් එකට අදාල අලංකාර කවරයක් සහිතය</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -541,7 +428,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Includes detailed instructions</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Includes detailed instructions</span>
+                                <span class="lang-si">සවිස්තරාත්මක උපදෙස් ඇතුළත් වේ</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -550,13 +440,22 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Build your collection</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Build your collection</span>
+                                <span class="lang-si">නොමිලේ ගේම් පෝස්ටර් එකක්</span>
+                            </span>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between pt-4 border-t border-white/10">
-                        <div class="text-sm text-white/60">From</div>
-                        <div class="text-2xl font-bold text-gold-400">Rs. 500</div>
+                        <div class="text-sm text-white/60">
+                            <span class="lang-en">From</span>
+                            <span class="lang-si">සිට</span>
+                        </div>
+                        <div class="text-2xl font-bold text-gold-400">
+                            <span class="lang-en">Rs. 500</span>
+                            <span class="lang-si">රු. 500</span>
+                        </div>
                     </div>
                 </div>
 
@@ -569,10 +468,19 @@
                             💾
                         </div>
                         <span
-                            class="px-3 py-1 rounded-full bg-gold-400/20 text-gold-300 text-xs sm:text-sm font-semibold">Premium</span>
+                            class="px-3 py-1 rounded-full bg-gold-400/20 text-gold-300 text-xs sm:text-sm font-semibold">
+                            <span class="lang-en">Premium</span>
+                            <span class="lang-si">ඉතා පහසු</span>
+                        </span>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">Hard Disks</h3>
-                    <p class="text-white/70 mb-6 text-sm sm:text-base">Pre-loaded external drives for instant gaming</p>
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-3">
+                        <span class="lang-en">Hard Disks</span>
+                        <span class="lang-si">හාඩ් ඩිස්ක්</span>
+                    </h3>
+                    <p class="text-white/70 mb-6 text-sm sm:text-base">
+                        <span class="lang-en">Pre-loaded external drives for instant gaming</span>
+                        <span class="lang-si">ගත්තා ගැහුවා ප්ලේ කලා</span>
+                    </p>
 
                     <div class="space-y-3 mb-6">
                         <div class="flex items-start gap-3">
@@ -582,7 +490,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Games ready to install</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Games ready to install</span>
+                                <span class="lang-si">පැය ගණන් install කිරීමට අවශ්‍ය නැත</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -591,7 +502,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Multiple games per drive</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Multiple games per drive</span>
+                                <span class="lang-si">එකවර ගේම්ස් විශාල ප්‍රමාණයක් ලබා ගත හැක</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -600,7 +514,10 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Faster than DVDs</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Brand New Hard Disks</span>
+                                <span class="lang-si">අලුත්ම හාඩ් ඩිස්ක්</span>
+                            </span>
                         </div>
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="currentColor"
@@ -609,53 +526,106 @@
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm sm:text-base">Reusable storage</span>
+                            <span class="text-sm sm:text-base">
+                                <span class="lang-en">Reusable storage</span>
+                                <span class="lang-si">හාඩ් ඩිස්ක් එකක් පිරෙන්නම නොමිලේ ගේම්ස්</span>
+                            </span>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between pt-4 border-t border-white/10">
-                        <div class="text-sm text-white/60">From</div>
-                        <div class="text-2xl font-bold text-gold-400">Rs. 2,500</div>
+                        <div class="text-sm text-white/60">
+                            <span class="lang-en">From</span>
+                            <span class="lang-si">සිට</span>
+                        </div>
+                        <div class="text-2xl font-bold text-gold-400">
+                            <span class="lang-en">Rs. 2,500</span>
+                            <span class="lang-si">රු. 2,500</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Comparison Chart -->
             <div class="mt-12 sm:mt-16 glass rounded-3xl p-6 sm:p-8">
-                <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8">Quick Comparison</h3>
+                <h3 class="text-2xl sm:text-3xl font-bold text-center mb-8">
+                    <span class="lang-en">Quick Comparison</span>
+                    <span class="lang-si">වෙනස්කම්</span>
+                </h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="border-b border-white/10">
-                                <th class="pb-4 text-sm sm:text-base font-semibold">Feature</th>
-                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">💿 DVDs</th>
-                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">💾 Hard Disks</th>
+                                <th class="pb-4 text-sm sm:text-base font-semibold">
+                                    <span class="lang-en">Feature</span>
+                                    <span class="lang-si">විශේෂාංගය</span>
+                                </th>
+                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">
+                                    <span class="lang-en">💿 DVDs</span>
+                                    <span class="lang-si">💿 DVD</span>
+                                </th>
+                                <th class="pb-4 text-center text-sm sm:text-base font-semibold">
+                                    <span class="lang-en">💾 Hard Disks</span>
+                                    <span class="lang-si">💾 දෘඪ තැටි</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="space-y-4">
                             <tr class="border-b border-white/5">
-                                <td class="py-3 text-sm sm:text-base text-white/80">Installation Speed</td>
-                                <td class="py-3 text-center text-sm sm:text-base">Standard</td>
-                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Fast ⚡
+                                <td class="py-3 text-sm sm:text-base text-white/80">
+                                    <span class="lang-en">Installation Speed</span>
+                                    <span class="lang-si">ස්ථාපන වේගය</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base">
+                                    <span class="lang-en">Standard</span>
+                                    <span class="lang-si">සාමාන්‍ය</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">
+                                    <span class="lang-en">Fast ⚡</span>
+                                    <span class="lang-si">වේගවත් ⚡</span>
                                 </td>
                             </tr>
                             <tr class="border-b border-white/5">
-                                <td class="py-3 text-sm sm:text-base text-white/80">Storage Capacity</td>
-                                <td class="py-3 text-center text-sm sm:text-base">4.7GB per disc</td>
-                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">500GB -
-                                    2TB</td>
+                                <td class="py-3 text-sm sm:text-base text-white/80">
+                                    <span class="lang-en">Storage Capacity</span>
+                                    <span class="lang-si">ගබඩා ධාරිතාව</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base">
+                                    <span class="lang-en">4.7GB per disc</span>
+                                    <span class="lang-si">DVD එකක්: 4.7GB</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">
+                                    <span class="lang-en">500GB - 2TB</span>
+                                    <span class="lang-si">500GB - 2TB</span>
+                                </td>
                             </tr>
                             <tr class="border-b border-white/5">
-                                <td class="py-3 text-sm sm:text-base text-white/80">Games per Order</td>
-                                <td class="py-3 text-center text-sm sm:text-base">1 Game</td>
-                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Multiple
-                                    Games</td>
+                                <td class="py-3 text-sm sm:text-base text-white/80">
+                                    <span class="lang-en">Games per Order</span>
+                                    <span class="lang-si">එක් ඇනවුමකට ක්‍රීඩා</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base">
+                                    <span class="lang-en">1 Game</span>
+                                    <span class="lang-si">එකක්</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">
+                                    <span class="lang-en">Multiple Games</span>
+                                    <span class="lang-si">ක්‍රීඩා කිහිපයක්</span>
+                                </td>
                             </tr>
                             <tr>
-                                <td class="py-3 text-sm sm:text-base text-white/80">Best For</td>
-                                <td class="py-3 text-center text-sm sm:text-base">Collectors</td>
-                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">Heavy
-                                    Gamers</td>
+                                <td class="py-3 text-sm sm:text-base text-white/80">
+                                    <span class="lang-en">Best For</span>
+                                    <span class="lang-si">වඩාත් සුදුසු</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base">
+                                    <span class="lang-en">Collectors</span>
+                                    <span class="lang-si">අලුත් ක්‍රීඩකයන්</span>
+                                </td>
+                                <td class="py-3 text-center text-sm sm:text-base text-gold-400 font-semibold">
+                                    <span class="lang-en">Heavy Gamers</span>
+                                    <span class="lang-si">ලගදිම දිග නිවාඩුවක් එන්න ඉන්න අය</span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -665,11 +635,18 @@
     </section>
 
     <!-- How It Works - Enhanced Cards -->
+    <!-- How It Works - Enhanced Cards -->
     <section id="how" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">How It Works</h2>
-                <p class="text-lg sm:text-xl text-white/70">Simple steps to get your favorite PC games</p>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
+                    <span class="lang-en">How It Works</span>
+                    <span class="lang-si">ගන්නෙ කොහොමද?</span>
+                </h2>
+                <p class="text-lg sm:text-xl text-white/70">
+                    <span class="lang-en">Simple steps to get your favorite PC games</span>
+                    <span class="lang-si">ඔබේ කැමතිම පරිගණක ක්‍රීඩා ලබා ගැනීමට සරල පියවර</span>
+                </p>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -678,9 +655,16 @@
                         class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
                         1
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Choose Your Format</h3>
-                    <p class="text-white/70 leading-relaxed">Select between DVD sets for collection or Hard Disks for
-                        convenience. Browse our catalog or request any PC game.</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">
+                        <span class="lang-en">Choose Your Format</span>
+                        <span class="lang-si">කැමති ගේම්ස් තෝරන්න</span>
+                    </h3>
+                    <p class="text-white/70 leading-relaxed">
+                        <span class="lang-en">Select between DVD sets for collection or Hard Disks for
+                            convenience. Browse our catalog or request any PC game.</span>
+                        <span class="lang-si">ඔබ කැමතිම ගේම්ස් තෝරන්න. ඔබ් හොයන එක නැත්නම් අපිට ගේම් රික්වෙස්ට් එකක්
+                            දාන්න</span>
+                    </p>
                 </div>
 
                 <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.1s">
@@ -688,9 +672,16 @@
                         class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
                         2
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold mb-3">We Prepare Your Order</h3>
-                    <p class="text-white/70 leading-relaxed">DVDs: Burned and labeled professionally. HDDs: Pre-loaded
-                        with your chosen games and ready to install.</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">
+                        <span class="lang-en">We Prepare Your Order</span>
+                        <span class="lang-si">ඇණවුම සූදානම් කිරීම</span>
+                    </h3>
+                    <p class="text-white/70 leading-relaxed">
+                        <span class="lang-en">DVDs: Burned and labeled professionally. HDDs: Pre-loaded
+                            with your chosen games and ready to install.</span>
+                        <span class="lang-si">DVD: ලේබල් කර ආරක්ශිතව අසුරනු ලැබේ. HDD: ඔබ තෝරාගත් ගේම්ස් ඉන්ස්ටෝල් කර
+                            සූදානම් කර ඇත.</span>
+                    </p>
                 </div>
 
                 <div class="reveal glass rounded-3xl p-6 sm:p-8 card-hover group" style="animation-delay: 0.2s">
@@ -698,9 +689,16 @@
                         class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-2xl font-black mb-4 group-hover:scale-110 transition-transform">
                         3
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold mb-3">Fast Delivery</h3>
-                    <p class="text-white/70 leading-relaxed">Receive your games within 24-48 hours anywhere in Sri
-                        Lanka. Install and play immediately!</p>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-3">
+                        <span class="lang-en">Fast Delivery</span>
+                        <span class="lang-si">වේගවත් බෙදාහැරීම</span>
+                    </h3>
+                    <p class="text-white/70 leading-relaxed">
+                        <span class="lang-en">Receive your games within 24-48 hours anywhere in Sri
+                            Lanka. Install and play immediately!</span>
+                        <span class="lang-si">ශ්‍රී ලංකාවේ ඕනෑම තැනකට පැය 24-48 අතර කාලයකදී ඔබේ ක්‍රීඩා ලබා ගන්න. දැන්ම
+                            ඇණවුම් කරන්න!</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -716,58 +714,104 @@
                     <div class="grid grid-cols-2 gap-4 sm:gap-6">
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
                             <div class="text-4xl sm:text-5xl font-black gradient-text">0GB</div>
-                            <div class="text-sm sm:text-base text-white/70 mt-2">Downloads Required</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">
+                                <span class="lang-en">Downloads Required</span>
+                                <span class="lang-si">බාගත කිරීම් අවශ්‍ය නැත</span>
+                            </div>
                         </div>
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
                             <div class="text-4xl sm:text-5xl font-black gradient-text">24h</div>
-                            <div class="text-sm sm:text-base text-white/70 mt-2">Typical Delivery</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">
+                                <span class="lang-en">Typical Delivery</span>
+                                <span class="lang-si">සාමාන්‍ය බෙදාහැරීම</span>
+                            </div>
                         </div>
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
                             <div class="text-4xl sm:text-5xl font-black gradient-text">2TB</div>
-                            <div class="text-sm sm:text-base text-white/70 mt-2">Max HDD Storage</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">
+                                <span class="lang-en">Max HDD Storage</span>
+                                <span class="lang-si">උපරිම HDD ධාරිතාව</span>
+                            </div>
                         </div>
                         <div class="glass rounded-2xl p-6 sm:p-8 text-center card-hover">
                             <div class="text-4xl sm:text-5xl font-black gradient-text">∞</div>
-                            <div class="text-sm sm:text-base text-white/70 mt-2">Reinstall Anytime</div>
+                            <div class="text-sm sm:text-base text-white/70 mt-2">
+                                <span class="lang-en">Reinstall Anytime</span>
+                                <span class="lang-si">ඕනෑම විටක නැවත ස්ථාපනය</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Content -->
                 <div class="order-1 lg:order-2 space-y-6">
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black">Why Choose Us?</h2>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black">
+                        <span class="lang-en">Why Choose Us?</span>
+                        <span class="lang-si">අපි විශේෂ ඇයි?</span>
+                    </h2>
                     <p class="text-lg sm:text-xl text-white/80 leading-relaxed">
-                        Perfect for Sri Lankan gamers with limited bandwidth or data caps. Choose your preferred format
-                        and build your gaming library without the wait.
+                        <span class="lang-en">
+                            Perfect for Sri Lankan gamers with limited bandwidth or data caps. Choose your preferred
+                            format
+                            and build your gaming library without the wait.
+                        </span>
+                        <span class="lang-si">
+                            සීමිත අන්තර්ජාල වේගයක් හෝ ඩේටා ලිමිට් ඇති ශ්‍රී ලාංකික ක්‍රීඩකයින් සඳහා වඩාත් සුදුසුයි. ඔබ
+                            කැමති පරිඝණක ක්‍රීඩාව තෝරාගෙන, දැන්ම ඇණවුම් කරන්න .
+                        </span>
                     </p>
 
                     <div class="space-y-4">
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">🎯</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Multiple Format Options</h4>
-                                <p class="text-white/70">DVD sets for collectors, Hard Disks for convenience</p>
+                                <h4 class="font-semibold text-lg mb-1">
+                                    <span class="lang-en">Multiple Format Options</span>
+                                    <span class="lang-si">තෝරා ගැනීමට ගේම්ස් සිය ගණනක්</span>
+                                </h4>
+                                <p class="text-white/70">
+                                    <span class="lang-en">DVD sets for collectors, Hard Disks for convenience</span>
+                                    <span class="lang-si">ඔබ කැමතිම පරිඝණක ක්‍රීඩා එකම තැනකින් ලබා ගන්න</span>
+                                </p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">💾</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Professional Preparation</h4>
-                                <p class="text-white/70">Properly labeled DVDs or pre-loaded HDDs ready to use</p>
+                                <h4 class="font-semibold text-lg mb-1">
+                                    <span class="lang-en">Professional Preparation</span>
+                                    <span class="lang-si">නියමාකාර පරික්ශාවකින් පසු එවනු ලබන ඇණවුම්</span>
+                                </h4>
+                                <p class="text-white/70">
+                                    <span class="lang-en">Properly labeled DVDs or pre-loaded HDDs ready to use</span>
+                                    <span class="lang-si">නිසි ලෙස ලේබල් කළ DVD හෝ භාවිතයට සූදානම් HDD</span>
+                                </p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">📦</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Premium Packaging</h4>
-                                <p class="text-white/70">Protective cases with game artwork and instructions</p>
+                                <h4 class="font-semibold text-lg mb-1">
+                                    <span class="lang-en">Premium Packaging</span>
+                                    <span class="lang-si">විශිෂ්ට ඇසුරුම්</span>
+                                </h4>
+                                <p class="text-white/70">
+                                    <span class="lang-en">Protective cases with game artwork and instructions</span>
+                                    <span class="lang-si">ක්‍රීඩාවේ කවරය සහ උපදෙස් සහිත ආරක්ෂිත කවර</span>
+                                </p>
                             </div>
                         </div>
                         <div class="flex gap-4 items-start">
                             <span class="text-2xl mt-1">🛠️</span>
                             <div>
-                                <h4 class="font-semibold text-lg mb-1">Expert Support</h4>
-                                <p class="text-white/70">Installation help and troubleshooting included free</p>
+                                <h4 class="font-semibold text-lg mb-1">
+                                    <span class="lang-en">Expert Support</span>
+                                    <span class="lang-si">අලෙවියෙන් පසු සේවාව</span>
+                                </h4>
+                                <p class="text-white/70">
+                                    <span class="lang-en">Installation help and troubleshooting included free</span>
+                                    <span class="lang-si">ගේම් ඉන්ස්ටෝල් කිරීමට සහාය සහ දෝශ නිරාකරණය නොමිලේ</span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -775,12 +819,14 @@
                     <div class="flex flex-col sm:flex-row gap-3 pt-4">
                         <button id="openRequestGame" type="button"
                             class="shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
-                            Request a Game
+                            <span class="lang-en">Request a Game</span>
+                            <span class="lang-si">ගේම් රික්වෙස්ට්</span>
                         </button>
 
                         <a href="#faq"
                             class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl glass hover:bg-white/20 font-semibold transition-all">
-                            Learn More
+                            <span class="lang-en">Learn More</span>
+                            <span class="lang-si">තවත් දැනගන්න</span>
                         </a>
                     </div>
                 </div>
@@ -793,8 +839,14 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
                 <div>
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2">Game Collections</h2>
-                    <p class="text-lg sm:text-xl text-white/70">Available in both DVD sets and Hard Disk formats</p>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2">
+                        <span class="lang-en">Game Collections</span>
+                        <span class="lang-si">ගේම් එකතුව</span>
+                    </h2>
+                    <p class="text-lg sm:text-xl text-white/70">
+                        <span class="lang-en">Available in both DVD sets and Hard Disk formats</span>
+                        <span class="lang-si">DVD සහ HDD දෙආකාරයෙන් ලබා ගත හැක</span>
+                    </p>
                 </div>
                 <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
                     <span class="relative flex h-2 w-2">
@@ -886,14 +938,23 @@
     <section id="faq" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
             <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">Frequently Asked Questions</h2>
-                <p class="text-lg sm:text-xl text-white/70">Everything you need to know about our service</p>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
+                    <span class="lang-en">Frequently Asked Questions</span>
+                    <span class="lang-si">නිතර අසන ප්‍රශ්න</span>
+                </h2>
+                <p class="text-lg sm:text-xl text-white/70">
+                    <span class="lang-en">Everything you need to know about our service</span>
+                    <span class="lang-si">අපගේ සේවාව ගැන ඔබ දැනගත යුතු සියල්ල</span>
+                </p>
             </div>
 
             <div class="space-y-4">
                 <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
                     <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>Which format should I choose?</span>
+                        <span>
+                            <span class="lang-en">Which format should I choose?</span>
+                            <span class="lang-si">මා තෝරාගත යුත්තේ කුමන ආකෘතියද?</span>
+                        </span>
                         <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
@@ -901,16 +962,28 @@
                         </svg>
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
-                        Choose <strong>DVDs</strong> if you're a collector, have limited budget, or prefer physical
-                        media.
-                        Choose <strong>Hard Disks</strong> if you want multiple games at once, faster installation, or
-                        plan to order frequently. Both formats include our full support and installation assistance.
+                        <span class="lang-en">
+                            Choose <strong>DVDs</strong> if you're a collector, have limited budget, or prefer physical
+                            media.
+                            Choose <strong>Hard Disks</strong> if you want multiple games at once, faster installation,
+                            or
+                            plan to order frequently. Both formats include our full support and installation assistance.
+                        </span>
+                        <span class="lang-si">
+                            ඔබ එකතු කරන්නෙකු නම්, සීමිත අයවැයක් ඇත්නම්, හෝ භෞතික මාධ්‍යවලට කැමති නම්
+                            <strong>DVD</strong> තෝරන්න.
+                            ඔබට එකවර ක්‍රීඩා කිහිපයක්, වේගවත් ස්ථාපනයක් අවශ්‍ය නම්, හෝ නිතර ඇණවුම් කිරීමට අදහස් කරන්නේ
+                            නම් <strong>දෘඪ තැටි</strong> තෝරන්න. ආකෘති දෙකටම අපගේ පූර්ණ සහාය සහ ස්ථාපන සහාය ඇතුළත් වේ.
+                        </span>
                     </p>
                 </details>
 
                 <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
                     <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>How fast is delivery?</span>
+                        <span>
+                            <span class="lang-en">How fast is delivery?</span>
+                            <span class="lang-si">බෙදාහැරීම කොතරම් වේගවත්ද?</span>
+                        </span>
                         <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
@@ -918,15 +991,26 @@
                         </svg>
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
-                        We offer fast delivery across Sri Lanka, typically within 24-48 hours for most locations.
-                        Express delivery options are available for Colombo and suburbs. Exact delivery times will be
-                        confirmed when you place your order.
+                        <span class="lang-en">
+                            We offer fast delivery across Sri Lanka, typically within 24-48 hours for most locations.
+                            Express delivery options are available for Colombo and suburbs. Exact delivery times will be
+                            confirmed when you place your order.
+                        </span>
+                        <span class="lang-si">
+                            අපි ශ්‍රී ලංකාව පුරා වේගවත් බෙදාහැරීමක් ලබා දෙන අතර, බොහෝ ස්ථාන සඳහා සාමාන්‍යයෙන් පැය
+                            24-48ක් ගතවේ.
+                            කොළඹ සහ තදාසන්න ප්‍රදේශ සඳහා සීඝ්‍රගාමී බෙදාහැරීමේ විකල්ප තිබේ. ඔබ ඇණවුම ලබා දෙන විට නිශ්චිත
+                            බෙදාහැරීමේ වේලාවන් තහවුරු කරනු ලැබේ.
+                        </span>
                     </p>
                 </details>
 
                 <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
                     <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>Do you provide installation support?</span>
+                        <span>
+                            <span class="lang-en">Do you provide installation support?</span>
+                            <span class="lang-si">ඔබ ස්ථාපන සහාය ලබා දෙනවාද?</span>
+                        </span>
                         <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
@@ -934,15 +1018,27 @@
                         </svg>
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
-                        Absolutely! We're known for our excellent after-service support. If you face any installation
-                        issues, simply open a support ticket and our team will guide you through the process within 24
-                        hours. We're here to ensure you can enjoy your games hassle-free.
+                        <span class="lang-en">
+                            Absolutely! We're known for our excellent after-service support. If you face any
+                            installation
+                            issues, simply open a support ticket and our team will guide you through the process within
+                            24
+                            hours. We're here to ensure you can enjoy your games hassle-free.
+                        </span>
+                        <span class="lang-si">
+                            අනිවාර්යයෙන්ම! අපි අපගේ විශිෂ්ට අලෙවියෙන් පසු සේවාව සඳහා ප්‍රසිද්ධයි. ඔබට කිසියම් ස්ථාපන
+                            ගැටලුවකට මුහුණ දීමට සිදුවුවහොත්, සහාය ටිකට් පතක් විවෘත කරන්න, අපගේ කණ්ඩායම පැය 24ක් ඇතුළත
+                            ඔබට මග පෙන්වනු ඇත. ඔබගේ ක්‍රීඩා කිසිදු කරදරයකින් තොරව භුක්ති විඳීමට අපි මෙහි සිටිමු.
+                        </span>
                     </p>
                 </details>
 
                 <details class="glass rounded-2xl p-5 sm:p-6 group cursor-pointer">
                     <summary class="flex items-center justify-between font-semibold text-base sm:text-lg list-none">
-                        <span>Can I request specific games?</span>
+                        <span>
+                            <span class="lang-en">Can I request specific games?</span>
+                            <span class="lang-si">මට නිශ්චිත ක්‍රීඩා ඉල්ලා සිටිය හැකිද?</span>
+                        </span>
                         <svg class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
@@ -950,9 +1046,16 @@
                         </svg>
                     </summary>
                     <p class="mt-4 text-white/75 leading-relaxed">
-                        Yes! If you don't see a game in our catalog, you can request it through our support system.
-                        We'll check availability and prepare it for you in your preferred format (DVD or Hard Disk),
-                        usually within 2-3 business days.
+                        <span class="lang-en">
+                            Yes! If you don't see a game in our catalog, you can request it through our support system.
+                            We'll check availability and prepare it for you in your preferred format (DVD or Hard Disk),
+                            usually within 2-3 business days.
+                        </span>
+                        <span class="lang-si">
+                            ඔව්! අපගේ නාමාවලියෙහි ක්‍රීඩාවක් නොමැති නම්, ඔබට එය අපගේ සහාය පද්ධතිය හරහා ඉල්ලා සිටිය හැක.
+                            අපි එහි ඇති බව පරීක්ෂා කර, ඔබ කැමති ආකෘතියෙන් (DVD හෝ දෘඪ තැටි) එය ඔබ වෙනුවෙන් සූදානම්
+                            කරන්නෙමු, සාමාන්‍යයෙන් ව්‍යාපාරික දින 2-3ක් ඇතුළත.
+                        </span>
                     </p>
                 </details>
             </div>
@@ -1139,7 +1242,7 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+
     <script>
         // Set current year
         function getCookie(name) {
@@ -1313,18 +1416,72 @@
         // Delivery option selection (visual feedback)
         document.querySelectorAll('.delivery-option').forEach(option => {
             option.addEventListener('click', () => {
-                // Remove selected class from all options
                 document.querySelectorAll('.delivery-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
-                // Add selected class to clicked option
                 option.classList.add('selected');
 
                 const optionType = option.dataset.option;
-                showToast(`${optionType === 'dvd' ? 'DVD Sets' : 'Hard Disks'} selected! 💿`);
+                const lang = document.body.classList.contains('sinhala-mode') ? 'si' : 'en';
+                const message = lang === 'si'
+                    ? `${optionType === 'dvd' ? 'DVD කට්ටල' : 'දෘඪ තැටි'} තෝරා ගන්නා ලදී! 💿`
+                    : `${optionType === 'dvd' ? 'DVD Sets' : 'Hard Disks'} selected! 💿`;
+                showToast(message);
             });
         });
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
+            const body = document.body;
+
+            const enTitle = "Virtual Lab Games – PC Games on DVDs & Hard Disks (Sri Lanka)";
+            const siTitle = "Virtual Lab Games – PC ක්‍රීඩා DVD සහ දෘඪ තැටි (ශ්‍රී ලංකාව)";
+            const enDesc = "Virtual Lab Games delivers PC games on DVDs and Hard Disks across Sri Lanka. Choose your preferred format – multi-disc DVDs or pre-loaded HDDs. 5+ years trusted service, #1 after-service support.";
+            const siDesc = "Virtual Lab Games ශ්‍රී ලංකාව පුරා PC ක්‍රීඩා DVD සහ දෘඪ තැටි මගින් බෙදා හරියි. ඔබ කැමති ආකෘතිය තෝරන්න - බහු-තැටි DVD හෝ පෙර-පූරණය කළ HDD. වසර 5+ විශ්වාසනීය සේවය, #1 අලෙවියෙන් පසු සහාය.";
+
+            const metaDescription = document.querySelector('meta[name="description"]');
+
+            const setLanguage = (lang) => {
+                if (lang === 'si') {
+                    body.classList.add('sinhala-mode');
+                    body.classList.add('font-sinhala'); // From home.css
+                    langToggleBtn.textContent = 'EN';
+                    langToggleBtnMobile.textContent = 'EN';
+                    document.title = siTitle;
+                    metaDescription.setAttribute('content', siDesc);
+                    localStorage.setItem('language', 'si');
+                } else {
+                    body.classList.remove('sinhala-mode');
+                    body.classList.remove('font-sinhala');
+                    langToggleBtn.textContent = 'සිංහල';
+                    langToggleBtnMobile.textContent = 'සිංහල';
+                    document.title = enTitle;
+                    metaDescription.setAttribute('content', enDesc);
+                    localStorage.setItem('language', 'en');
+                }
+            };
+
+            const toggleLanguage = () => {
+                const currentLang = localStorage.getItem('language') || 'en';
+                const newLang = currentLang === 'en' ? 'si' : 'en';
+                setLanguage(newLang);
+            };
+
+            langToggleBtn.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile.addEventListener('click', toggleLanguage);
+
+            // Set initial language based on localStorage
+            const savedLang = localStorage.getItem('language');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                setLanguage('en'); // Default to English
+            }
+        });
     </script>
 </body>
 

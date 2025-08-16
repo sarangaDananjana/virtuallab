@@ -1,0 +1,245 @@
+/* SINHALA FONT FIXES */
+/* This is the main rule to set the Sinhala font */
+.font-sinhala * {
+    font-family: 'Maname', sans-serif !important;
+}
+
+/* 1. FIX: Headline Spacing */
+/* The 'Maname' font needs more vertical space. This increases the line-height for the main headline */
+/* only when in Sinhala mode to prevent text from overlapping. */
+body.sinhala-mode #home h1 {
+    line-height: 1.5 !important;
+}
+
+/* 2. FIX: Button & Icon Alignment */
+/* This ensures that text and icons inside flex containers (like buttons) are perfectly centered vertically */
+/* when using the 'Maname' font. */
+body.sinhala-mode .inline-flex {
+    align-items: center;
+}
+
+
+/* =============================== */
+/* Your existing styles below...   */
+/* =============================== */
+
+:root {
+    --noise-opacity: .04;
+}
+
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+}
+
+.bg-aurora {
+    background:
+        radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
+        radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
+        radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
+        linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
+    background-attachment: fixed;
+}
+
+.noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    mix-blend-mode: soft-light;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+}
+
+.glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
+    backdrop-filter: saturate(150%) blur(16px);
+    -webkit-backdrop-filter: saturate(150%) blur(16px);
+    border: 1px solid rgba(255, 255, 255, .15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+}
+
+.header-blend {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background:
+        linear-gradient(180deg, rgba(88, 74, 31, .82) 0%, rgba(88, 74, 31, .68) 100%),
+        linear-gradient(90deg, rgba(246, 205, 69, .10) 0%, rgba(246, 205, 69, 0) 60%);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.header-blend::after {
+    content: none !important;
+}
+
+.header-solid {
+    background:
+        linear-gradient(180deg, rgba(88, 74, 31, .90) 0%, rgba(88, 74, 31, .78) 100%),
+        linear-gradient(90deg, rgba(246, 205, 69, .12) 0%, rgba(246, 205, 69, 0) 60%);
+    border-bottom: none;
+    box-shadow: none;
+}
+
+.header-blend>.container,
+.header-blend>.container * {
+    color: #ffffff !important;
+}
+
+.header-blend>.container svg {
+    color: #ffffff;
+    stroke: #ffffff;
+}
+
+.header-blend nav a:hover {
+    opacity: .9;
+}
+
+.glass-white {
+    background: linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .85));
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, .3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+}
+
+.glass-dark {
+    background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+    backdrop-filter: saturate(150%) blur(20px);
+    -webkit-backdrop-filter: saturate(150%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.reveal {
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all .8s cubic-bezier(.2, .6, .2, 1);
+}
+
+.reveal.in {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 30%;
+    height: 200%;
+    transform: rotate(25deg);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+    animation: shine 4s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -60%;
+    }
+
+    100% {
+        left: 140%;
+    }
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #f6cd45 25%, #f093fb 50%, #667eea 75%, #f6cd45 100%);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient 8s ease infinite;
+}
+
+.card-hover {
+    transition: all .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: .5;
+    filter: grayscale(50%);
+}
+
+.delivery-option {
+    transition: all .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+.delivery-option:hover {
+    transform: translateY(-8px) scale(1.05);
+}
+
+.delivery-option.selected {
+    border-color: #f6cd45;
+    background: linear-gradient(135deg, rgba(246, 205, 69, .15), rgba(246, 205, 69, .05));
+}
+
+@media (max-width: 640px) {
+    .glass {
+        backdrop-filter: saturate(140%) blur(12px);
+        -webkit-backdrop-filter: saturate(140%) blur(12px);
+    }
+
+    .glass-white {
+        background: linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .88));
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, .2);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .1);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .2);
+}
+
+.store-pop {
+    position: relative;
+}
+
+.store-pop::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(246, 205, 69, 0.6), rgba(45, 134, 255, 0.4), rgba(246, 205, 69, 0.6));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.store-pop:hover::before {
+    opacity: 1;
+}
