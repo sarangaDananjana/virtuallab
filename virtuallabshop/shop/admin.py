@@ -12,7 +12,9 @@ from .models import (
     Order,
     OrderItem,
     ReservedSlot,
-    GameRequest
+    GameRequest,
+    DLC,
+    StorageDevice
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -111,12 +113,21 @@ class CompanyAdmin(admin.ModelAdmin):
     ordering = ("name",)
 
 
+@admin.register(DLC)
+class DLCAdmin(admin.ModelAdmin):
+    list_display = ("product", "title", "description", "image")
+    list_filter = ("product",)
+    search_fields = ("title",)
+    ordering = ("product",)
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, SystemRequirementsInline]
 
     list_display = (
         "title",
+        "edition",
         "sku",
         "price",
         "currency",
@@ -125,24 +136,19 @@ class ProductAdmin(admin.ModelAdmin):
         "publisher",
         "game_size_gb",
         "image_count",
-        "dlc_count",
         "created_at",
     )
     list_filter = ("is_active", "developer", "publisher", "genres")
     search_fields = ("title", "sku", "description")
     list_select_related = ("developer", "publisher")
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["developer", "publisher", "genres", "dlcs"]
+    autocomplete_fields = ["developer", "publisher", "genres"]
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"
 
     @admin.display(description="Images", ordering=None)
     def image_count(self, obj):
         return obj.images.count()
-
-    @admin.display(description="DLCs", ordering=None)
-    def dlc_count(self, obj):
-        return obj.dlcs.count()
 
     actions = [
         "activate_products",
@@ -341,3 +347,11 @@ class GameRequestAdmin(admin.ModelAdmin):
                      "user__username", "user__email")
     autocomplete_fields = ("user",)
     ordering = ("-request_date",)
+
+
+@admin.register(StorageDevice)
+class StorageDeviceAdmin(admin.ModelAdmin):
+    list_display = ("name", "category", "true_capacity_gb",
+                    "marketing_capacity_gb")
+    list_filter = ("category",)
+    search_fields = ("name",)

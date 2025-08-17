@@ -4,8 +4,9 @@
 <head>
     {% load static %}
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register — Virtual Lab Games</title>
+    <meta name="description" content="Create your Virtual Lab Games account to track orders and support tickets." />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,8 +18,17 @@
                         brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
                         gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
                     },
-                    animation: { 'gradient': 'gradient 8s ease infinite' },
-                    keyframes: { gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } } }
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
                 }
             }
         }
@@ -27,138 +37,47 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
+    <!-- Shared site styles for colors, header, aurora bg, Sinhala font helpers -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
     <style>
-        :root {
-            --noise-opacity: .04;
+        /* Language visibility helpers match home/login/shop */
+        .lang-si {
+            display: none;
         }
 
-        * {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        body.sinhala-mode .lang-en {
+            display: none;
         }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
+        body.sinhala-mode .lang-si {
+            display: inline;
         }
 
-        /* Background to match home/submit/login */
-        .bg-aurora {
-            background:
-                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
-                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
-                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
-                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
-            background-attachment: fixed;
+        .block-lang.lang-si {
+            display: none;
         }
 
-        .noise::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: var(--noise-opacity);
-            mix-blend-mode: soft-light;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
         }
 
-        .glass {
-            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
-            backdrop-filter: saturate(150%) blur(16px);
-            -webkit-backdrop-filter: saturate(150%) blur(16px);
-            border: 1px solid rgba(255, 255, 255, .15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
-        }
-
-        .glass-white {
-            background: linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .85));
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border: 1px solid rgba(255, 255, 255, .3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
-        }
-
-        /* ===============================
-       NAVBAR — Glassy #584a1f + subtle gold gradient (matches site)
-       =============================== */
-        .header-blend {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .82) 0%, rgba(88, 74, 31, .68) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .10) 0%, rgba(246, 205, 69, 0) 60%);
-            backdrop-filter: saturate(160%) blur(14px);
-            -webkit-backdrop-filter: saturate(160%) blur(14px);
-            border-bottom: none;
-            box-shadow: none;
-        }
-
-        .header-blend::after {
-            content: none !important;
-        }
-
-        .header-solid {
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .90) 0%, rgba(88, 74, 31, .78) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .12) 0%, rgba(246, 205, 69, 0) 60%);
-            border-bottom: none;
-            box-shadow: none;
-        }
-
-        /* Force white text inside the top bar only */
-        .header-blend>.container,
-        .header-blend>.container * {
-            color: #ffffff !important;
-        }
-
-        .header-blend>.container svg {
-            color: #ffffff;
-            stroke: #ffffff;
-        }
-
-        .header-blend nav a:hover {
-            opacity: .9;
-        }
-
-        /* Sticky CTA glow (optional) */
-        .button-glow {
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, .10) inset, 0 8px 18px rgba(0, 0, 0, .55), 0 0 30px rgba(6, 182, 212, .40), 0 0 20px rgba(94, 161, 255, .25);
-        }
-
-        .button-glow:hover {
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, .12) inset, 0 12px 24px rgba(0, 0, 0, .6), 0 0 40px rgba(6, 182, 212, .50), 0 0 28px rgba(94, 161, 255, .35);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, .2);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, .1);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, .2);
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
         }
     </style>
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen flex flex-col">
-    <!-- Header (matches login) -->
+    <!-- Header (consistent with home/login/shop) -->
     <header class="header-blend">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo (PNG only, no background) -->
+                <!-- Logo -->
                 <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
@@ -168,36 +87,43 @@
                     </div>
                 </a>
 
-                <!-- Desktop Navigation (keep minimal on auth pages) -->
-                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
-                    <a href="{% url 'home-page' %}#home" class="text-sm font-semibold transition-colors">Home</a>
-                    <a href="{% url 'home-page' %}#faq" class="text-sm font-semibold transition-colors">FAQ</a>
-                </nav>
-
-                <!-- CTA Buttons -->
+                <!-- Right controls -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    {% if user.is_authenticated %}
-                    <span class="hidden sm:inline text-sm font-semibold">Hello, {{ user.username }}</span>
-                    <a href="{% url 'tickets-page' %}"
-                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">My
-                        tickets</a>
-                    {% else %}
-                    <a href="{% url 'login-page' %}"
-                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
-                    {% endif %}
+                    <!-- Language Toggle (always visible) -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
+                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'tickets-page' %}"
-                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all button-glow">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <span class="hidden sm:inline">My</span> Tickets
+                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
                     </a>
+                    <a href="{% url 'shop-page' %}"
+                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="#" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
 
-                    <!-- Mobile Menu Button -->
+                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
+                        aria-label="Open menu">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -207,24 +133,35 @@
             </div>
         </div>
 
-        <!-- Mobile Menu (light, consistent with other pages) -->
+        <!-- Mobile Menu: Login, Store, My Tickets + Language -->
         <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2">
+            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
                 {% if user.is_authenticated %}
                 <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
                     <div
                         class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
                         {{ user_initial }}</div>
-                    <div class="text-sm text-gray-700">Hello, {{ user.username }}</div>
+                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
+                        user.username }}</div>
                 </div>
                 {% else %}
                 <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Login</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                <a href="{% url 'register-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
                 {% endif %}
-                <a href="{% url 'home-page' %}#home"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Home</a>
-                <a href="{% url 'home-page' %}#faq"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">FAQ</a>
+
+                <a href="{% url 'shop-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
+                <a href="{% url 'tickets-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
+                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
+
+                <button id="langToggleBtnMobile"
+                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -233,27 +170,39 @@
     <main class="flex-1 flex items-center justify-center p-6 pb-28">
         <div class="w-full max-w-md">
             <div class="glass rounded-3xl p-6 sm:p-8">
-                <!-- Header: PNG logo (no background) -->
+                <!-- Header: PNG logo (no bg) -->
                 <div class="mb-6 text-center">
                     <div class="mb-4 flex justify-center">
                         <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab Games logo"
                             class="h-10 w-auto opacity-95" />
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold">Create your account</h1>
-                    <p class="text-white/70 text-sm mt-1">Register to track orders & support tickets</p>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold">
+                        <span class="lang-en">Create your account</span>
+                        <span class="lang-si">ඔබගේ ගිණුම සෑදෙන්න</span>
+                    </h1>
+                    <p class="text-white/70 text-sm mt-1">
+                        <span class="lang-en">Register to track orders & support tickets</span>
+                        <span class="lang-si">ඇණවුම් සහ සහය ටිකට් ට්‍රැක් කිරීමට ලියාපදිංචි වන්න</span>
+                    </p>
                 </div>
 
                 <form id="registerForm" class="space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label for="username" class="block text-sm mb-1">Username</label>
+                        <label for="username" class="block text-sm mb-1">
+                            <span class="lang-en">Username</span>
+                            <span class="lang-si">පරිශීලක නාමය</span>
+                        </label>
                         <input id="username" name="username" required
                             class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-white focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/30"
                             placeholder="gamer123" />
                     </div>
 
                     <div>
-                        <label for="email" class="block text-sm mb-1">Email</label>
+                        <label for="email" class="block text-sm mb-1">
+                            <span class="lang-en">Email</span>
+                            <span class="lang-si">ඊමේල්</span>
+                        </label>
                         <input id="email" type="email" name="email" required
                             class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-white focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/30"
                             placeholder="you@example.com" />
@@ -261,7 +210,10 @@
 
                     <!-- Phone (Sri Lanka) -->
                     <div>
-                        <label for="phone" class="block text-sm mb-1">Phone (Sri Lanka)</label>
+                        <label for="phone" class="block text-sm mb-1">
+                            <span class="lang-en">Phone (Sri Lanka)</span>
+                            <span class="lang-si">දුරකථන (ශ්‍රී ලංකාව)</span>
+                        </label>
                         <div class="flex">
                             <span
                                 class="inline-flex items-center px-3 rounded-l-xl bg-white/5 border border-r-0 border-white/10 text-white/70 select-none">+94</span>
@@ -269,12 +221,19 @@
                                 class="w-full px-4 py-3 rounded-r-xl bg-white/5 border border-white/10 placeholder-white/40 text-white focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/30"
                                 placeholder="712345678" />
                         </div>
-                        <p class="text-xs text-white/60 mt-1">Enter 9 digits (without the leading 0). Example: <span
-                                class="font-mono">712345678</span></p>
+                        <p class="text-xs text-white/60 mt-1">
+                            <span class="lang-en">Enter 9 digits (without the leading 0). Example: <span
+                                    class="font-mono">712345678</span></span>
+                            <span class="lang-si">ඉදිරි 0 නොමැති අංක 9ක් අතුලත් කරන්න. උදාහරණය: <span
+                                    class="font-mono">712345678</span></span>
+                        </p>
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm mb-1">Password</label>
+                        <label for="password" class="block text-sm mb-1">
+                            <span class="lang-en">Password</span>
+                            <span class="lang-si">මුරපදය</span>
+                        </label>
                         <div class="relative">
                             <input id="password" type="password" name="password" required
                                 class="w-full pr-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-white focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/30"
@@ -302,10 +261,12 @@
                         </div>
                     </div>
 
-                    <!-- CREATE ACCOUNT: text-black to match login primary CTA -->
+                    <!-- CREATE ACCOUNT CTA: gradient brand→gold like Login -->
                     <button
-                        class="w-full px-5 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black font-bold button-glow focus:outline-none focus:ring-2 focus:ring-brand-400/50">Create
-                        account</button>
+                        class="w-full px-5 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shine focus:outline-none focus:ring-2 focus:ring-brand-400/50">
+                        <span class="lang-en">Create account</span>
+                        <span class="lang-si">ගිණුම සාදන්න</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -316,12 +277,15 @@
                 class="glass rounded-2xl shadow-2xl border border-white/20 px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3 sm:gap-4 max-w-2xl w-full md:w-auto">
                 <div class="hidden sm:block text-lg" aria-hidden="true">👋</div>
                 <p class="text-sm sm:text-base text-white/90 select-none">
-                    <span class="font-semibold">Already registered?</span>
-                    <span class="hidden xs:inline">Log in to your account.</span>
+                    <span class="lang-en"><span class="font-semibold">Already registered?</span> Log in to your
+                        account.</span>
+                    <span class="lang-si"><span class="font-semibold">දැනටමත් ලියාපදිංචිද?</span> ඔබගේ ගිණුමට
+                        පිවිසෙන්න.</span>
                 </p>
                 <a href="{% url 'login-page' %}"
-                    class="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-white font-semibold ring-1 ring-white/20 hover:ring-white/30 shadow-md hover:shadow-lg transition focus:outline-none focus:ring-2 focus:ring-brand-400/50">
-                    Log in
+                    class="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-semibold ring-1 ring-white/20 hover:ring-white/30 shadow-md hover:shadow-lg transition focus:outline-none focus:ring-2 focus:ring-brand-400/50">
+                    <span class="lang-en">Log in</span>
+                    <span class="lang-si">ඇතුළු වන්න</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         aria-hidden="true" class="opacity-90">
@@ -333,17 +297,25 @@
         </div>
     </main>
 
-    <!-- Scripts -->
+    <!-- Footer (simple, consistent) -->
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
     <script>
-        // Mobile menu toggle (same as other pages)
+        // Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle
         const navToggle = document.getElementById('navToggle');
         const mobileMenu = document.getElementById('mobileMenu');
         navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-        // CSRF helper (unchanged)
+        // CSRF helper
         function getCookie(name) { const v = `; ${document.cookie}`.split(`; ${name}=`); if (v.length === 2) return v.pop().split(';').shift(); }
 
-        // Register logic (unchanged except variable names)
+        // Register logic
         const form = document.getElementById('registerForm');
         form?.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -365,7 +337,6 @@
         const toggleBtn = document.getElementById('togglePassword');
         const eyeOpen = document.getElementById('eyeOpen');
         const eyeClosed = document.getElementById('eyeClosed');
-
         toggleBtn?.addEventListener('click', () => {
             const isHidden = passwordInput.type === 'password';
             passwordInput.type = isHidden ? 'text' : 'password';
@@ -373,6 +344,50 @@
             toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
             eyeOpen.classList.toggle('hidden', !isHidden);
             eyeClosed.classList.toggle('hidden', isHidden);
+        });
+
+        // Language toggle (mirrors home/login/shop)
+        document.addEventListener('DOMContentLoaded', function () {
+            const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
+            const body = document.body;
+
+            const enTitle = 'Register — Virtual Lab Games';
+            const siTitle = 'ලියාපදිංචි වීම — Virtual Lab Games';
+            const enDesc = 'Create your Virtual Lab Games account to track orders and support tickets.';
+            const siDesc = 'ඔබගේ Virtual Lab Games ගිණුම සාදා ඇනවුම් සහ සහාය ටිකට් කළමනාකරණය කරන්න.';
+            const metaDescription = document.querySelector('meta[name="description"]');
+
+            const setLanguage = (lang) => {
+                if (lang === 'si') {
+                    body.classList.add('sinhala-mode');
+                    body.classList.add('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'EN');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
+                    document.title = siTitle;
+                    metaDescription?.setAttribute('content', siDesc);
+                    localStorage.setItem('language', 'si');
+                } else {
+                    body.classList.remove('sinhala-mode');
+                    body.classList.remove('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
+                    document.title = enTitle;
+                    metaDescription?.setAttribute('content', enDesc);
+                    localStorage.setItem('language', 'en');
+                }
+            };
+
+            const toggleLanguage = () => {
+                const currentLang = localStorage.getItem('language') || 'en';
+                setLanguage(currentLang === 'en' ? 'si' : 'en');
+            };
+
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            const savedLang = localStorage.getItem('language');
+            setLanguage(savedLang || 'en');
         });
     </script>
 </body>

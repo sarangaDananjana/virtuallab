@@ -91,6 +91,7 @@ class Product(TimestampedModel):
         max_length=32, unique=True, default=generate_sku
     )
     title = models.CharField(max_length=255)
+    edition = models.CharField(max_length=255, default="Standard Edition")
     slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(blank=True)
 
@@ -114,19 +115,10 @@ class Product(TimestampedModel):
     price = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0"))]
     )
-    currency = models.CharField(max_length=3, default="USD")
+    currency = models.CharField(max_length=3, default="LKR")
 
     game_size_gb = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal("0"))]
-    )
-
-    # DLC relationships — a product can have many DLCs (also Products)
-    is_dlc = models.BooleanField(default=False)
-    dlcs = models.ManyToManyField(
-        "self",
-        symmetrical=False,
-        related_name="base_games",
-        blank=True,
     )
 
     is_active = models.BooleanField(default=True)
@@ -183,18 +175,45 @@ class SystemRequirements(TimestampedModel):
         return f"System Requirements for {self.product.title}"
 
 
+class DLC(TimestampedModel):
+    product = models.ForeignKey(
+        "Product", related_name="dlcs", on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    image = models.ImageField(
+        upload_to="products/dlcs/%Y/%m/%d/")  # 3:4 portrait
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.title} (DLC for {self.product.title})"
+
+
 # --- Cart / Orders -----------------------------------------------------------
 class Cart(TimestampedModel):
-    # Support logged-in carts and anonymous (session-based) carts
+    """
+    LEFT SIDE  = direct game purchases (CartItem through table)
+    RIGHT SIDE = one storage device + games selected to be copied onto it (CartStorageItem)
+    """
+    # Identify the cart (multi-user carts allowed per your original design; anonymous via session_key)
     users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="carts", blank=True
-    )
+        settings.AUTH_USER_MODEL, related_name="carts", blank=True)
     session_key = models.CharField(
-        max_length=64, blank=True, null=True, help_text="Anonymous session key"
-    )
+        max_length=64, blank=True, null=True, help_text="Anonymous session key")
 
+    # LEFT: many products via through-table CartItem
     items = models.ManyToManyField(
-        Product, through="CartItem", related_name="carts", blank=True
+        "Product", through="CartItem", related_name="carts", blank=True)
+
+    # RIGHT: at most one storage device for this cart
+    storage_device = models.ForeignKey(
+        "StorageDevice",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="carts",
+        help_text="The single storage device (right side) for this cart.",
     )
 
     def __str__(self):
@@ -202,9 +221,78 @@ class Cart(TimestampedModel):
                        for u in self.users.all()) or self.session_key or "anon"
         return f"Cart({uid})"
 
+    # --------------------------
+    # LEFT SIDE (direct buys)
+    # --------------------------
     @property
     def total(self) -> Decimal:
-        return sum((item.subtotal for item in self.cartitem_set.all()), Decimal("0.00"))
+        """Backward-compatible: direct purchases subtotal (left side)."""
+        return sum((ci.subtotal for ci in self.cartitem_set.all()), Decimal("0.00"))
+
+    @property
+    def direct_total(self) -> Decimal:
+        """Alias for clarity in templates/views."""
+        return self.total
+
+    # --------------------------
+    # RIGHT SIDE (device + its games)
+    # --------------------------
+    @property
+    def storage_device_price(self) -> Decimal:
+        return getattr(self.storage_device, "price", Decimal("0.00")) or Decimal("0.00")
+
+    @property
+    def storage_games_total(self) -> Decimal:
+        return sum((si.subtotal for si in self.cartstorageitem_set.all()), Decimal("0.00"))
+
+    @property
+    def storage_total(self) -> Decimal:
+        """Right-side subtotal = device price + games copied onto it."""
+        return self.storage_device_price + self.storage_games_total
+
+    # --------------------------
+    # GRAND TOTAL (everything)
+    # --------------------------
+    @property
+    def grand_total(self) -> Decimal:
+        return self.direct_total + self.storage_total
+
+    # --------------------------
+    # Capacity (right side only)
+    # --------------------------
+    @property
+    def device_capacity_gb(self) -> Decimal:
+        """True usable capacity of the selected device (0 if none)."""
+        return getattr(self.storage_device, "true_capacity_gb", None) or Decimal("0")
+
+    @property
+    def device_used_gb(self) -> Decimal:
+        """Sum of install sizes for games selected to be copied to the device."""
+        used = Decimal("0")
+        # Select related to avoid N+1 when reading product.game_size_gb
+        for si in self.cartstorageitem_set.select_related("product"):
+            game_size = si.product.game_size_gb or Decimal("0")
+            used += game_size * si.quantity
+        return used
+
+    @property
+    def device_remaining_gb(self) -> Decimal:
+        cap = self.device_capacity_gb
+        rem = cap - self.device_used_gb
+        return rem if rem > 0 else Decimal("0")
+
+    @property
+    def device_percent_used(self) -> Decimal:
+        cap = self.device_capacity_gb
+        if cap <= 0:
+            return Decimal("0")
+        pct = (self.device_used_gb / cap) * 100
+        # clamp to [0, 100]
+        if pct < 0:
+            return Decimal("0")
+        if pct > 100:
+            return Decimal("100")
+        return pct
 
 
 class CartItem(models.Model):
@@ -223,6 +311,27 @@ class CartItem(models.Model):
 
     @property
     def subtotal(self) -> Decimal:
+        return (self.unit_price or Decimal("0")) * self.quantity
+
+
+class CartStorageItem(models.Model):
+    cart = models.ForeignKey("Cart", on_delete=models.CASCADE)
+    product = models.ForeignKey("Product", on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(
+        default=1, validators=[MinValueValidator(1)])
+    # price for this game when bought on-device
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # per-cart uniqueness for on-device list
+        unique_together = ("cart", "product")
+
+    def __str__(self):
+        return f"{self.quantity} × {self.product.title} on device in {self.cart}"
+
+    @property
+    def subtotal(self):
         return (self.unit_price or Decimal("0")) * self.quantity
 
 
@@ -428,3 +537,45 @@ class GameRequest(models.Model):
         who = getattr(self.user, "username", "anonymous")
         suffix = f" • {self.edition_name}" if self.edition_name else ""
         return f"{self.game_name}{suffix} ({who})"
+
+
+class StorageCategory(models.TextChoices):
+    HARD_DISK = "hard_disk", "Hard disk"
+    PORTABLE_HARD_DISK = "portable_hard_disk", "Portable hard disk"
+    PEN = "pen", "Pen drive"
+
+
+class StorageDevice(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    currency = models.CharField(max_length=3, default="LKR")
+
+    # Use GB for both capacities so math stays simple (e.g., 931.51 vs 1000)
+    true_capacity_gb = models.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(0)],
+        help_text="Real usable capacity in GB (e.g., 931.51 for a 1TB drive)."
+    )
+    marketing_capacity_gb = models.DecimalField(
+        max_digits=7, decimal_places=2,
+        validators=[MinValueValidator(0)],
+        help_text="Label/box capacity in GB (e.g., 1000.00 for a 1TB drive)."
+    )
+
+    image = models.ImageField(
+        upload_to="storage_devices/%Y/%m/%d/",
+        help_text="16:9 landscape image recommended."
+    )
+
+    category = models.CharField(
+        max_length=32,
+        choices=StorageCategory.choices,
+        help_text="Hard disk, Portable hard disk, or Pen drive."
+    )
+
+    class Meta:
+        ordering = ["category", "true_capacity_gb", "name"]
+
+    def __str__(self):
+        return f"{self.name} • {self.get_category_display()}"

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Cart — Virtual Lab Games</title>
+    <meta name="description"
+        content="Review your selections, storage device, and checkout with fast islandwide delivery and install support." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared site styles for aurora bg, glass, header blend, noise, Sinhala helpers -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        /* Language helpers (match other pages) */
+        .lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline;
+        }
+
+        .block-lang.lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
+    <!-- Header (consistent with site; mobile shows only logo + language toggle + hamburger) -->
+    <header class="header-blend">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo -->
+                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+
+                <!-- Right controls -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Language Toggle (always visible) -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+
+                    <!-- Desktop actions (hidden on mobile) -->
+                    <a href="{% url 'tickets-page' %}"
+                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
+                    </a>
+                    <a href="{% url 'shop-page' %}"
+                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="#" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
+
+                    <!-- Mobile nav toggle (only icon on mobile) -->
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
+                        aria-label="Open menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu: Login/Account, Store, My Tickets + Language -->
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
+            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
+                        {{ user_initial }}</div>
+                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
+                        user.username }}</div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                <a href="{% url 'register-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
+                {% endif %}
+
+                <a href="{% url 'shop-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
+                <a href="{% url 'tickets-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
+                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
+
+                <button id="langToggleBtnMobile"
+                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <!-- Title + microcopy -->
+            <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span class="lang-en">Cart • Ready to play</span><span class="lang-si">කරත්තය • ක්‍රීඩා කිරීමට
+                            සූදානම්</span>
+                    </div>
+                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black">
+                        <span class="block block-lang lang-en">Review your picks</span>
+                        <span class="block block-lang lang-si">ඔබගේ තේරීම් සමාලෝචනය කරන්න</span>
+                    </h1>
+                    <p class="mt-1 text-white/70"><span class="lang-en">Skip long downloads. Get premium DVDs with
+                            step‑by‑step install support.</span><span class="lang-si">දිගු බාගත කරගැනීම් වලින් ඉවත්
+                            වන්න. පියවරෙන් පියවර ස්ථාපන සහාය සමඟ උසස් තත්ත්වයේ DVD ලබාගන්න.</span></p>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-4 sm:gap-5">
+                <!-- LEFT: Direct purchase items -->
+                <section class="lg:col-span-2 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl sm:text-2xl font-bold"><span class="lang-en">Buy games directly</span><span
+                                class="lang-si">ගේම්ස් සෘජුව මිලදී ගන්න</span></h2>
+                        <span class="text-xs px-2 py-1 rounded-lg bg-white/10"><span class="lang-en">Pay per
+                                game</span><span class="lang-si">ගේම් එකකට ගෙවීම්</span></span>
+                    </div>
+                    <div id="left-items" class="mt-3 divide-y divide-white/10"></div>
+                    <div class="mt-4 flex items-center justify-between font-semibold">
+                        <span class="text-white/80"><span class="lang-en">Direct subtotal</span><span
+                                class="lang-si">ඒකරාශි (සෘජු)</span></span>
+                        <span id="direct-total">—</span>
+                    </div>
+                </section>
+
+                <!-- RIGHT: Storage device bundle -->
+                <aside class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                    <h2 class="text-xl sm:text-2xl font-bold"><span class="lang-en">Device bundle (games included
+                            free)</span><span class="lang-si">උපාංග පැකේජය (ගේම් නොමිලේ)</span></h2>
+                    <p class="mt-1 text-sm text-white/70"><span class="lang-en">Pick a storage device and load it up —
+                            you pay only for the device.</span><span class="lang-si">ගබඩා උපාංගයක් තෝරා ගේම් එක්කරන්න —
+                            ඔබ ගෙවන්නේ උපාංගයට පමණි.</span></p>
+
+                    <div id="device-block" class="mt-4"></div>
+
+                    <div id="capacity-block" class="hidden mt-4">
+                        <div class="flex items-center justify-between text-xs text-white/70">
+                            <span class="lang-en">Used</span><span class="lang-si">භාවිතා කළ</span> <span>•</span>
+                            <span><span id="used-gb">0</span> GB • <span id="used-pct">0</span>%</span>
+                        </div>
+                        <div class="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                            <div id="bar" class="h-full rounded-full bg-gradient-to-r from-brand-500 to-gold-400"
+                                style="width:0%"></div>
+                        </div>
+                        <div class="mt-1 text-xs text-white/70"><span class="lang-en">Remaining</span><span
+                                class="lang-si">ඉතිරි</span>: <span id="rem-gb">0</span> GB</div>
+                    </div>
+
+                    <div id="right-items" class="mt-4 divide-y divide-white/10"></div>
+
+                    <div class="mt-4 flex items-center justify-between font-semibold">
+                        <span class="text-white/80"><span class="lang-en">Device</span><span
+                                class="lang-si">උපාංගය</span></span>
+                        <span id="device-price">—</span>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-1 gap-2">
+                        <a href="{% url 'pick_storage' %}"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold"><span
+                                class="lang-en">Select / change device</span><span class="lang-si">උපාංගය තෝරන්න / වෙනස්
+                                කරන්න</span></a>
+                        <button id="btnRemoveDevice"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-red-500/40 text-red-200 font-semibold"><span
+                                class="lang-en">Remove device</span><span class="lang-si">උපාංගය ඉවත්
+                                කරන්න</span></button>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- Totals / Checkout -->
+            <div class="mt-4 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <div class="text-sm text-white/70"><span class="lang-en">Grand total</span><span
+                                class="lang-si">මුළු එකතුව</span></div>
+                        <div id="grand-total" class="text-2xl sm:text-3xl font-black">—</div>
+                        <div class="mt-1 text-xs text-white/60"><span class="lang-en">Installation help included • Fast
+                                islandwide delivery</span><span class="lang-si">ස්ථාපන සහාය ඇතුළත් • දිවයින පුරා වේගවත්
+                                බෙදාහැරීම</span></div>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <a href="{% url 'shop-page' %}"
+                            class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold"><span
+                                class="lang-en">Continue shopping</span><span class="lang-si">දැන්වීම් දිගටම</span></a>
+                        <button id="btnCheckout"
+                            class="shine px-5 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shadow-lg hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"><span
+                                class="lang-en">Checkout</span><span class="lang-si">ගෙවීම් කිරීම</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        // ---------- Helpers ----------
+        const CHECKOUT_URL = '/checkout/'; // update if differs
+        const fmt = (x) => (x === null || x === undefined) ? '0.00' : String(x);
+        function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
+        const csrftoken = getCookie('csrftoken');
+
+        // i18n strings for dynamic UI
+        const L = {
+            en: {
+                qty: 'Qty', size: 'Size', remove: 'Remove',
+                noDirect: 'No direct purchases yet.', noDeviceGames: 'No games added to the device yet.',
+                removing: 'Removing…',
+                removeDeviceConfirm: 'Remove the selected device and all games on it?'
+            },
+            si: {
+                qty: 'ප්‍රමාණය', size: 'ප්‍රමාණය', remove: 'ඉවත් කරන්න',
+                noDirect: 'සෘජු මිලදී ගැනීම් කිසිවක් නොමැත.', noDeviceGames: 'උපාංගයට ගේම් එකතු කර නොමැත.',
+                removing: 'ඉවත් කරමින්…',
+                removeDeviceConfirm: 'තෝරාගත් උපාංගය සහ එහි ඇති සියලු ගේම් ඉවත් කරලෑද?'
+            }
+        };
+        const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
+        const t = (k) => L[getLang()][k] || k;
+
+        // ---------- Row renderers ----------
+        function productRowLeft(item) {
+            const p = item.product;
+            const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
+            const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
+            return `
+        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto auto;">
+          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+          <div>
+            <div class="font-semibold">${p.title}</div>
+            <div class="text-xs text-white/60">${t('qty')}: ${item.quantity}${size ? ` • ${size}` : ''}</div>
+          </div>
+          <div class="font-semibold">${fmt(item.subtotal)} ${p.currency || ''}</div>
+          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-left" data-id="${item.id}">${t('remove')}</button>
+        </article>`;
+        }
+
+        function productRowRight(item) {
+            const p = item.product;
+            const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
+            const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
+            return `
+        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto;">
+          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+          <div>
+            <div class="font-semibold">${p.title}</div>
+            ${size ? `<div class=\"mt-1 text-xs text-white/60\">${t('size')}: ${size}</div>` : ''}
+          </div>
+          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-on-device" data-id="${item.id}">${t('remove')}</button>
+        </article>`;
+        }
+
+        function deviceBlock(device) {
+            if (!device) return `<p class="text-sm text-white/70"><span class="lang-en">Choose a storage device and add games to it. Capacity updates automatically.</span><span class="lang-si">ගබඩා උපාංගයක් තෝරා එයට ගේම් එක්කරන්න. ධාරිතාව ස්වයංක්‍රීයව යාවත්කාලීන වේ.</span></p>`;
+            const img = device.image_url || "{% static 'images/drive-placeholder.jpg' %}";
+            return `
+        <div class="flex items-center gap-3">
+          <img src="${img}" alt="${device.name}" class="w-16 h-20 object-cover rounded-xl ring-1 ring-white/10 bg-white/5" />
+          <div>
+            <div class="font-semibold">${device.name}</div>
+            <div class="text-xs text-white/60">${device.category_display || ''}</div>
+            <div class="text-xs text-white/60">Capacity: ${fmt(device.true_capacity_gb)} GB</div>
+          </div>
+        </div>`;
+        }
+
+        // ---------- API calls ----------
+        async function removeOnDevice(storageItemId) {
+            const res = await fetch("{% url 'api_cart_remove_from_device' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ storage_item_id: storageItemId }) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+        async function removeLeftItem(itemId) {
+            const res = await fetch("{% url 'api_remove_product_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ item_id: itemId }) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+        async function removeDevice() {
+            const res = await fetch("{% url 'api_remove_storage_device_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({}) });
+            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove device' })); throw new Error(err.detail || 'Failed'); }
+            return res.json();
+        }
+
+        // ---------- Load + bind ----------
+        async function loadCart() {
+            const res = await fetch("{% url 'api_cart' %}", { credentials: 'same-origin' });
+            const data = await res.json();
+
+            // Left
+            const leftEl = document.getElementById('left-items');
+            leftEl.innerHTML = (data.left_items && data.left_items.length) ? data.left_items.map(productRowLeft).join('') : `<p class="text-sm text-white/70">${t('noDirect')}</p>`;
+            const directTotal = parseFloat(data.direct_total || '0');
+            document.getElementById('direct-total').textContent = fmt(directTotal.toFixed(2));
+
+            // Right
+            document.getElementById('device-block').innerHTML = deviceBlock(data.device);
+            const rightItemsEl = document.getElementById('right-items');
+            rightItemsEl.innerHTML = (data.right_items && data.right_items.length) ? data.right_items.map(productRowRight).join('') : `<p class="text-sm text-white/70">${t('noDeviceGames')}</p>`;
+
+            // Totals
+            const devicePrice = parseFloat(data.storage_device_price || '0');
+            document.getElementById('device-price').textContent = fmt(devicePrice.toFixed(2));
+            const grand = directTotal + devicePrice; // games on device are free
+            document.getElementById('grand-total').textContent = fmt(grand.toFixed(2));
+
+            // Capacity
+            const capBlock = document.getElementById('capacity-block');
+            if (data.device) {
+                capBlock.classList.remove('hidden');
+                const cap = parseFloat(data.device_capacity_gb || '0');
+                const used = parseFloat(data.device_used_gb || '0');
+                const pct = Math.max(0, Math.min(100, parseFloat(data.device_percent_used || '0')));
+                document.getElementById('used-gb').textContent = fmt(used.toFixed(2));
+                document.getElementById('rem-gb').textContent = fmt(Math.max(0, cap - used).toFixed(2));
+                document.getElementById('used-pct').textContent = String(Math.round(pct));
+                document.getElementById('bar').style.width = pct + '%';
+            } else {
+                capBlock.classList.add('hidden');
+            }
+
+            // Enable/disable checkout
+            const checkout = document.getElementById('btnCheckout');
+            checkout.disabled = !(grand > 0);
+        }
+
+        // Delegated remove actions
+        document.addEventListener('click', async (e) => {
+            const devBtn = e.target.closest('[data-action="remove-on-device"]');
+            if (devBtn) {
+                const id = devBtn.getAttribute('data-id');
+                devBtn.disabled = true; const old = devBtn.textContent; devBtn.textContent = t('removing');
+                try { await removeOnDevice(id); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove'); }
+                finally { devBtn.disabled = false; devBtn.textContent = old; }
+                return;
+            }
+            const leftBtn = e.target.closest('[data-action="remove-left"]');
+            if (leftBtn) {
+                const id = leftBtn.getAttribute('data-id');
+                leftBtn.disabled = true; const old = leftBtn.textContent; leftBtn.textContent = t('removing');
+                try { await removeLeftItem(id); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove'); }
+                finally { leftBtn.disabled = false; leftBtn.textContent = old; }
+                return;
+            }
+        });
+
+        // Remove device
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btnRemoveDevice')?.addEventListener('click', async () => {
+                if (!confirm(t('removeDeviceConfirm'))) return;
+                const btn = document.getElementById('btnRemoveDevice');
+                btn.disabled = true; const old = btn.textContent; btn.textContent = t('removing');
+                try { await removeDevice(); await loadCart(); }
+                catch (err) { alert(err.message || 'Could not remove device'); }
+                finally { btn.disabled = false; btn.textContent = old; }
+            });
+            document.getElementById('btnCheckout')?.addEventListener('click', () => { window.location.href = CHECKOUT_URL; });
+            document.getElementById('year').textContent = new Date().getFullYear();
+            loadCart().catch(console.error);
+        });
+
+        // ---- Header: mobile menu & language toggle (same behavior as other pages) ----
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
+            const body = document.body;
+
+            const enTitle = 'Your Cart — Virtual Lab Games';
+            const siTitle = 'ඔබගේ කරත්තය — Virtual Lab Games';
+            const enDesc = 'Review your selections, storage device, and checkout with fast islandwide delivery and install support.';
+            const siDesc = 'ඔබේ තේරීම් සහ ගබඩා උපාංගය සමාලෝචනය කර, වේගවත් බෙදාහැරීම හා ස්ථාපන සහාය සමඟ ගෙවුම් කිරීමට ඉදිරියට යන්න.';
+            const metaDescription = document.querySelector('meta[name="description"]');
+
+            const setLanguage = (lang) => {
+                if (lang === 'si') {
+                    body.classList.add('sinhala-mode');
+                    body.classList.add('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'EN');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
+                    document.title = siTitle;
+                    metaDescription?.setAttribute('content', siDesc);
+                    localStorage.setItem('language', 'si');
+                } else {
+                    body.classList.remove('sinhala-mode');
+                    body.classList.remove('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
+                    document.title = enTitle;
+                    metaDescription?.setAttribute('content', enDesc);
+                    localStorage.setItem('language', 'en');
+                }
+            };
+
+            const toggleLanguage = () => {
+                const currentLang = localStorage.getItem('language') || 'en';
+                setLanguage(currentLang === 'en' ? 'si' : 'en');
+                // re-render to refresh any text built from L[]
+                loadCart().catch(console.error);
+            };
+
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            const savedLang = localStorage.getItem('language');
+            setLanguage(savedLang || 'en');
+        });
+    </script>
+</body>
+
+</html>

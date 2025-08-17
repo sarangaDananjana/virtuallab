@@ -6,6 +6,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Support Tickets — Virtual Lab Games</title>
+    <meta name="description"
+        content="Track your Virtual Lab Games support requests, see updates, and open new tickets." />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,6 +18,17 @@
                     colors: {
                         brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
                         gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
                 }
             }
@@ -26,103 +39,39 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
+    <!-- Shared site styles for colors, header, aurora bg, glass, noise, Sinhala helpers -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
     <style>
-        :root {
-            --noise-opacity: .04;
+        /* Language visibility helpers (same as home/shop/login/register) */
+        .lang-si {
+            display: none;
         }
 
-        * {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        body.sinhala-mode .lang-en {
+            display: none;
         }
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
+        body.sinhala-mode .lang-si {
+            display: inline;
         }
 
-        .bg-aurora {
-            background:
-                radial-gradient(ellipse 1400px 800px at 10% -20%, rgba(79, 70, 229, .4), transparent 45%),
-                /* gold tint to match home/submit */
-                radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
-                radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
-                linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
-            background-attachment: fixed;
+        .block-lang.lang-si {
+            display: none;
         }
 
-        .noise::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: var(--noise-opacity);
-            mix-blend-mode: soft-light;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.15"/></svg>');
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
         }
 
-        .glass {
-            background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03));
-            backdrop-filter: saturate(150%) blur(16px);
-            -webkit-backdrop-filter: saturate(150%) blur(16px);
-            border: 1px solid rgba(255, 255, 255, .15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
         }
 
-        .glass-dark {
-            background: linear-gradient(135deg, rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
-            backdrop-filter: saturate(150%) blur(20px);
-            -webkit-backdrop-filter: saturate(150%) blur(20px);
-            border: 1px solid rgba(255, 255, 255, .08);
-        }
-
-        /* ===============================
-       NAVBAR — Glassy #584a1f + subtle gold gradient (matches submit_ticket & home)
-       =============================== */
-        .header-blend {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .82) 0%, rgba(88, 74, 31, .68) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .10) 0%, rgba(246, 205, 69, 0) 60%);
-            backdrop-filter: saturate(160%) blur(14px);
-            -webkit-backdrop-filter: saturate(160%) blur(14px);
-            border-bottom: none;
-            box-shadow: none;
-        }
-
-        .header-blend::after {
-            content: none !important;
-        }
-
-        .header-solid {
-            background:
-                linear-gradient(180deg, rgba(88, 74, 31, .90) 0%, rgba(88, 74, 31, .78) 100%),
-                linear-gradient(90deg, rgba(246, 205, 69, .12) 0%, rgba(246, 205, 69, 0) 60%);
-            border-bottom: none;
-            box-shadow: none;
-        }
-
-        /* force white text inside the top bar only */
-        .header-blend>.container,
-        .header-blend>.container * {
-            color: #ffffff !important;
-        }
-
-        .header-blend>.container svg {
-            color: #ffffff;
-            stroke: #ffffff;
-        }
-
-        .header-blend nav a:hover {
-            opacity: .9;
-        }
-
-        /* Badges */
+        /* Ticket status badges (component-scoped) */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -163,33 +112,15 @@
             color: #fca5a5;
             border-color: rgba(239, 68, 68, .25);
         }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, .2);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, .1);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, .2);
-        }
     </style>
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header (matches submit_ticket) -->
+    <!-- Header (blended, consistent with the site; mobile: only logo + lang toggle + hamburger) -->
     <header class="header-blend">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo (PNG only, no background) -->
+                <!-- Logo -->
                 <a href="/" class="flex items-center gap-2 sm:gap-3">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
@@ -199,30 +130,43 @@
                     </div>
                 </a>
 
-                <!-- CTA / Account -->
+                <!-- Right controls -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    {% if user.is_authenticated %}
-                    <span class="hidden sm:inline text-sm font-semibold">Hello, {{ user.username }}</span>
-                    <a href="#" aria-label="Account"
-                        class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
-                        {{user_initial }}</a>
-                    {% else %}
-                    <a href="{% url 'login-page' %}"
-                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Login</a>
-                    {% endif %}
+                    <!-- Language Toggle (always visible) -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
+                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'tickets-page' %}"
-                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <span class="hidden sm:inline">My</span> Tickets
+                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
                     </a>
+                    <a href="{% url 'shop-page' %}"
+                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="#" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
 
-                    <!-- Mobile Menu Button -->
+                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
+                        aria-label="Open menu">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -232,20 +176,32 @@
             </div>
         </div>
 
-        <!-- Mobile Menu (light, same as submit_ticket) -->
+        <!-- Mobile Menu: Login/Account, Store, My Tickets + Language -->
         <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2">
+            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
                 {% if user.is_authenticated %}
                 <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
                     <div
                         class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
                         {{ user_initial }}</div>
-                    <div class="text-sm text-gray-700">Hello, {{ user.username }}</div>
+                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
+                        user.username }}</div>
                 </div>
                 {% else %}
                 <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors">Login</a>
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                 {% endif %}
+
+                <a href="{% url 'shop-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
+                <a href="{% url 'tickets-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
+                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
+
+                <button id="langToggleBtnMobile"
+                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -256,27 +212,36 @@
                 <div>
                     <div
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
-                        <span class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                        </span>
-                        <span>Support • My Tickets</span>
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span class="lang-en">Support • My Tickets</span><span class="lang-si">සහාය • මගේ ටිකට්</span>
                     </div>
-                    <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">My Support Tickets</h1>
-                    <p class="mt-2 text-white/70">Track your requests and check their status.</p>
+                    <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">
+                        <span class="block block-lang lang-en">My Support Tickets</span>
+                        <span class="block block-lang lang-si">මගේ සහාය ටිකට්</span>
+                    </h1>
+                    <p class="mt-2 text-white/70"><span class="lang-en">Track your requests and check their
+                            status.</span><span class="lang-si">ඔබගේ අයදුම් සවිස්තර බලන්න සහ තත්ත්වය පරීක්ෂා
+                            කරන්න.</span></p>
                 </div>
                 <a href="{% url 'ticket-submit' %}"
-                    class="shine inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all whitespace-nowrap">Submit
-                    a ticket</a>
+                    class="shine inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6M12 9v6m-7 8h14a2 2 0 002-2V7a2 2 0 00-2-2h-3.586a1 1 0 01-.707-.293l-1.414-1.414A2 2 0 0010.172 3H6a2 2 0 00-2 2v16a2 2 0 002 2z" />
+                    </svg>
+                    <span class="lang-en">Submit a ticket</span><span class="lang-si">ටිකට් එකක් යවන්න</span>
+                </a>
             </div>
 
             <form method="get" class="mb-6">
                 <div class="glass rounded-2xl p-4 flex items-center gap-3">
-                    <label class="text-sm text-white/70" for="statusFilter">Status</label>
+                    <label class="text-sm text-white/70" for="statusFilter"><span class="lang-en">Status</span><span
+                            class="lang-si">තත්ත්වය</span></label>
                     <select id="statusFilter" name="status" onchange="this.form.submit()"
                         class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
-                        <option value="">All</option>
+                        <option value=""><span class="lang-en">All</span><span class="lang-si">සියල්ල</span></option>
                         {% for value, label in Ticket.Status.choices %}
                         <option value="{{ value }}">{{ label }}</option>
                         {% endfor %}
@@ -308,17 +273,20 @@
                             </div>
                             <h2 class="mt-1 text-lg sm:text-xl font-semibold truncate">{{ t.subject }}</h2>
                             <div class="mt-1 text-sm text-white/60 flex items-center gap-3 flex-wrap">
-                                <span>Created {{ t.created_at|date:"Y-m-d H:i" }}</span>
+                                <span><span class="lang-en">Created</span><span class="lang-si">සාදන ලද්දේ</span> {{
+                                    t.created_at|date:"Y-m-d H:i" }}</span>
                                 <span>•</span>
-                                <span>Source: {{ t.get_source_display }}</span>
+                                <span><span class="lang-en">Source</span><span class="lang-si">මූලය</span>: {{
+                                    t.get_source_display }}</span>
                                 {% if t.order_id %}
                                 <span>•</span>
-                                <span>Order #{{ t.order_id }}</span>
+                                <span><span class="lang-en">Order</span><span class="lang-si">ඇණවුම</span> #{{
+                                    t.order_id }}</span>
                                 {% endif %}
                                 {% if t.reservation %}
                                 <span>•</span>
-                                <span>Visit: {{ t.reservation.date|date:"Y-m-d" }} ({{ t.reservation.get_slot_display
-                                    }})</span>
+                                <span><span class="lang-en">Visit</span><span class="lang-si">භූමිකාව</span>: {{
+                                    t.reservation.date|date:"Y-m-d" }} ({{ t.reservation.get_slot_display }})</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -330,7 +298,7 @@
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
-                                Details
+                                <span class="lang-en">Details</span><span class="lang-si">විස්තර</span>
                             </button>
                         </div>
                     </div>
@@ -339,20 +307,23 @@
                         <div class="grid lg:grid-cols-5 gap-4">
                             <div class="lg:col-span-3 space-y-4">
                                 <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="text-xs text-white/60">Description</div>
+                                    <div class="text-xs text-white/60"><span class="lang-en">Description</span><span
+                                            class="lang-si">විස්තරය</span></div>
                                     <div class="mt-1 whitespace-pre-line">{{ t.description }}</div>
                                 </div>
 
                                 {% if t.video %}
                                 <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="text-xs text-white/60 mb-2">Video</div>
+                                    <div class="text-xs text-white/60 mb-2"><span class="lang-en">Video</span><span
+                                            class="lang-si">වීඩියෝ</span></div>
                                     <video src="{{ t.video.url }}" class="rounded-lg w-full" controls></video>
                                 </div>
                                 {% endif %}
 
                                 {% if t.photos.all %}
                                 <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="text-xs text-white/60 mb-2">Photos ({{ t.photos.count }})</div>
+                                    <div class="text-xs text-white/60 mb-2"><span class="lang-en">Photos</span><span
+                                            class="lang-si">ඡායාරූප</span> ({{ t.photos.count }})</div>
                                     <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                         {% for p in t.photos.all %}
                                         <a href="{{ p.image.url }}" target="_blank"
@@ -368,38 +339,46 @@
 
                             <div class="lg:col-span-2 space-y-4">
                                 <div class="p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="text-xs text-white/60">Ticket</div>
+                                    <div class="text-xs text-white/60"><span class="lang-en">Ticket</span><span
+                                            class="lang-si">ටිකට්</span></div>
                                     <dl class="mt-1 text-sm space-y-1">
                                         <div class="flex justify-between gap-3">
                                             <dt class="text-white/60">Reference</dt>
                                             <dd class="font-medium">#{{ t.reference }}</dd>
                                         </div>
                                         <div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Created</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Created</span><span
+                                                    class="lang-si">සාදන ලද්දේ</span></dt>
                                             <dd class="font-medium">{{ t.created_at|date:"Y-m-d H:i" }}</dd>
                                         </div>
                                         <div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Updated</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Updated</span><span
+                                                    class="lang-si">යාවත්කාලීන</span></dt>
                                             <dd class="font-medium">{{ t.updated_at|date:"Y-m-d H:i" }}</dd>
                                         </div>
                                         <div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Status</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Status</span><span
+                                                    class="lang-si">තත්ත්වය</span></dt>
                                             <dd class="font-medium">{{ t.get_status_display }}</dd>
                                         </div>
                                         <div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Priority</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Priority</span><span
+                                                    class="lang-si">ප්‍රමුඛතාව</span></dt>
                                             <dd class="font-medium">{{ t.get_priority_display }}</dd>
                                         </div>
                                         <div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Source</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Source</span><span
+                                                    class="lang-si">මූලය</span></dt>
                                             <dd class="font-medium">{{ t.get_source_display }}</dd>
                                         </div>
                                         {% if t.order_id %}<div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Order</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Order</span><span
+                                                    class="lang-si">ඇණවුම</span></dt>
                                             <dd class="font-medium">#{{ t.order_id }}</dd>
                                         </div>{% endif %}
                                         {% if t.reservation %}<div class="flex justify-between gap-3">
-                                            <dt class="text-white/60">Visit</dt>
+                                            <dt class="text-white/60"><span class="lang-en">Visit</span><span
+                                                    class="lang-si">වසම</span></dt>
                                             <dd class="font-medium">{{ t.reservation.date|date:"Y-m-d" }} ({{
                                                 t.reservation.get_slot_display }})</dd>
                                         </div>{% endif %}
@@ -407,13 +386,16 @@
                                 </div>
 
                                 <div
-                                    class="p-4 rounded-2xl bg-gradient-to-tr from-brand-500/15 to-cyan-400/15 border border-white/10">
-                                    <div class="font-semibold">Need more help?</div>
-                                    <p class="text-sm text-white/70 mt-1">Reply to our last email or open a new ticket.
-                                    </p>
+                                    class="p-4 rounded-2xl bg-gradient-to-tr from-brand-500/15 to-gold-400/15 border border-white/10">
+                                    <div class="font-semibold"><span class="lang-en">Need more help?</span><span
+                                            class="lang-si">තවදුරටත් උදව් අවශ්යද?</span></div>
+                                    <p class="text-sm text-white/70 mt-1"><span class="lang-en">Reply to our last email
+                                            or open a new ticket.</span><span class="lang-si">අපේ අන්තිම ඊමේල් එකට
+                                            පිළිතුරු දෙන්න හෝ නව ටිකට් එකක් අරඹන්න.</span></p>
                                     <a href="{% url 'ticket-submit' %}"
-                                        class="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">Submit
-                                        a ticket</a>
+                                        class="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                                            class="lang-en">Submit a ticket</span><span class="lang-si">ටිකට් එකක්
+                                            යවන්න</span></a>
                                 </div>
                             </div>
                         </div>
@@ -425,11 +407,14 @@
             {% else %}
             <div class="glass rounded-2xl p-10 text-center min-h-[220px] flex flex-col items-center justify-center">
                 <div class="text-3xl mb-2">🧾</div>
-                <h2 class="text-xl font-bold">No tickets yet</h2>
-                <p class="text-white/70 mt-1">If something’s off with your order or game, let us know.</p>
+                <h2 class="text-xl font-bold"><span class="lang-en">No tickets yet</span><span class="lang-si">තවමත්
+                        ටිකට් නැහැ</span></h2>
+                <p class="text-white/70 mt-1"><span class="lang-en">If something’s off with your order or game, let us
+                        know.</span><span class="lang-si">ඔබගේ ඇණවුම හෝ ගේම් එක පිළිබඳ ගැටළු තිබේ නම් අපට කියන්න.</span>
+                </p>
                 <a href="{% url 'ticket-submit' %}"
-                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-400 text-black text-sm font-bold shadow-lg hover:shadow-xl transition-all">Submit
-                    a ticket</a>
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all"><span
+                        class="lang-en">Submit a ticket</span><span class="lang-si">ටිකට් එකක් යවන්න</span></a>
             </div>
             {% endif %}
 
@@ -437,22 +422,27 @@
             <div class="mt-8 flex items-center justify-center gap-2">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm">Prev</a>
+                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm"><span
+                        class="lang-en">Prev</span><span class="lang-si">පෙර</span></a>
                 {% else %}
-                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm">Prev</span>
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm"><span
+                        class="lang-en">Prev</span><span class="lang-si">පෙර</span></span>
                 {% endif %}
-                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/70 text-sm">Page {{ page_obj.number }} of {{
-                    page_obj.paginator.num_pages }}</span>
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/70 text-sm"><span
+                        class="lang-en">Page</span><span class="lang-si">පිටුව</span> {{ page_obj.number }} <span
+                        class="lang-en">of</span><span class="lang-si">නම්</span> {{ page_obj.paginator.num_pages
+                    }}</span>
                 {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm">Next</a>
+                    class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm"><span
+                        class="lang-en">Next</span><span class="lang-si">පසු</span></a>
                 {% else %}
-                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm">Next</span>
+                <span class="px-3 py-2 rounded-lg bg-white/5 text-white/40 text-sm"><span
+                        class="lang-en">Next</span><span class="lang-si">පසු</span></span>
                 {% endif %}
             </div>
             {% endif %}
 
-        </div>
         </div>
     </main>
 
@@ -464,7 +454,7 @@
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Mobile menu toggle (same as submit_ticket)
+        // Mobile menu toggle
         const navToggle = document.getElementById('navToggle');
         const mobileMenu = document.getElementById('mobileMenu');
         navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
@@ -483,6 +473,50 @@
             var sel = document.getElementById('statusFilter');
             if (sel) { sel.value = "{{ status_filter|default_if_none:''|escapejs }}"; }
         })();
+
+        // Language toggle (mirrors other pages)
+        document.addEventListener('DOMContentLoaded', function () {
+            const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
+            const body = document.body;
+
+            const enTitle = 'My Support Tickets — Virtual Lab Games';
+            const siTitle = 'මගේ සහාය ටිකට් — Virtual Lab Games';
+            const enDesc = 'Track your Virtual Lab Games support requests, see updates, and open new tickets.';
+            const siDesc = 'ඔබගේ Virtual Lab Games සහාය අයදුම් සළකුණු, යාවත්කාලීන සහ නව ටිකට් සඳහා මෙතැනින්.';
+            const metaDescription = document.querySelector('meta[name="description"]');
+
+            const setLanguage = (lang) => {
+                if (lang === 'si') {
+                    body.classList.add('sinhala-mode');
+                    body.classList.add('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'EN');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
+                    document.title = siTitle;
+                    metaDescription?.setAttribute('content', siDesc);
+                    localStorage.setItem('language', 'si');
+                } else {
+                    body.classList.remove('sinhala-mode');
+                    body.classList.remove('font-sinhala');
+                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
+                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
+                    document.title = enTitle;
+                    metaDescription?.setAttribute('content', enDesc);
+                    localStorage.setItem('language', 'en');
+                }
+            };
+
+            const toggleLanguage = () => {
+                const currentLang = localStorage.getItem('language') || 'en';
+                setLanguage(currentLang === 'en' ? 'si' : 'en');
+            };
+
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            const savedLang = localStorage.getItem('language');
+            setLanguage(savedLang || 'en');
+        });
     </script>
 </body>
 

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders — Virtual Lab Games</title>
+    <meta name="description"
+        content="View your Virtual Lab Games orders. Track status, see items, totals, and download invoices." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared site styles (aurora bg, noise layer, glass, header blend, Sinhala helpers) -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        /* Language helpers (match other pages) */
+        .lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline;
+        }
+
+        .block-lang.lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4, 0, .2, 1), box-shadow .25s;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
+        }
+
+        /* Status pills */
+        .pill {
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .01em;
+        }
+
+        /* Skeletons */
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .06);
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
+    <!-- Header (consistent; mobile shows only logo + language toggle + hamburger) -->
+    <header class="header-blend">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo -->
+                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+
+                <!-- Right controls -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Language Toggle (always visible) -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+
+                    <!-- Desktop actions (hidden on mobile) -->
+                    <a href="{% url 'tickets-page' %}"
+                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
+                    </a>
+                    <a href="{% url 'shop-page' %}"
+                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="#" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{
+                        user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
+
+                    <!-- Mobile nav toggle (only icon on mobile) -->
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
+                        aria-label="Open menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu: Login/Register, Store, My Tickets + Language -->
+        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
+            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
+                        {{ user_initial }}</div>
+                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
+                        user.username }}</div>
+                </div>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                <a href="{% url 'register-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
+                {% endif %}
+
+                <a href="{% url 'shop-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
+                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
+                <a href="{% url 'tickets-page' %}"
+                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
+                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
+
+                <button id="langToggleBtnMobile"
+                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <!-- Title -->
+            <div class="mb-6 sm:mb-8">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                    <span class="relative flex h-2 w-2"><span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                            class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                    <span class="lang-en">Account • Orders</span><span class="lang-si">ගිණුම • ඇණවුම්</span>
+                </div>
+                <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">
+                    <span class="block block-lang lang-en">My Orders</span>
+                    <span class="block block-lang lang-si">මගේ ඇණවුම්</span>
+                </h1>
+                <p class="mt-2 text-white/70"><span class="lang-en">Track your orders, see items and totals, and
+                        download invoices.</span><span class="lang-si">ඔබගේ ඇණවුම් අධීක්ෂණය කර අයිතම, මුළු මුදල් සහ
+                        ඉන්වොයිස් බාගත කරන්න.</span></p>
+            </div>
+
+            <!-- Filters & Search -->
+            <section class="glass rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-6">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-wrap gap-2" id="statusTabs" role="tablist">
+                        <!-- tabs injected by JS (All, Processing, Shipped...) -->
+                    </div>
+                    <form id="searchForm" onsubmit="event.preventDefault(); loadOrders(1)"
+                        class="flex items-center gap-2">
+                        <input id="q" type="search"
+                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm"
+                            placeholder="Search by order # or item" />
+                        <input id="from" type="date"
+                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm" />
+                        <input id="to" type="date"
+                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm" />
+                        <button
+                            class="shine px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold"><span
+                                class="lang-en">Filter</span><span class="lang-si">පෙරහන්</span></button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Orders list -->
+            <div id="ordersList" class="space-y-4"></div>
+
+            <!-- Pagination -->
+            <nav id="pager" class="mt-8 flex items-center justify-center gap-2"></nav>
+
+            <!-- Empty state (hidden by default) -->
+            <div id="emptyState" class="hidden text-center py-14">
+                <div class="mx-auto w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v4H3zM3 7l2 12h14l2-12H3z" />
+                    </svg>
+                </div>
+                <p class="mt-4 text-white/70"><span class="lang-en">No orders yet.</span><span class="lang-si">තවම
+                        ඇණවුම් නොමැත.</span></p>
+                <a href="{% url 'shop-page' %}"
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15"><span
+                        class="lang-en">Go to Store</span><span class="lang-si">වෙළඳසැලට යන්න</span></a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        // ---------- Year ----------
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ---------- Mobile menu toggle ----------
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // ---------- i18n ----------
+        const L = {
+            en: {
+                tabs: ['All', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                filter: 'Filter',
+                items: 'items',
+                item: 'item',
+                order: 'Order',
+                placed: 'Placed',
+                processing: 'Processing',
+                shipped: 'Shipped',
+                delivered: 'Delivered',
+                cancelled: 'Cancelled',
+                total: 'Total',
+                view: 'View details',
+                hide: 'Hide details',
+                reorder: 'Reorder',
+                invoice: 'Download invoice',
+                delivery: 'Delivery',
+                payment: 'Payment',
+                method: 'Method',
+                to: 'to',
+                search_placeholder: 'Search by order # or item',
+            },
+            si: {
+                tabs: ['සියල්ල', 'කාර්යය', 'නාවිකය', 'භාරදී ඇත', 'අවලංගු'],
+                filter: 'පෙරහන්',
+                items: 'අයිතම',
+                item: 'අයිතම',
+                order: 'ඇණවුම',
+                placed: 'ඇණවුම යැවීය',
+                processing: 'කියවාගෙන යයි',
+                shipped: 'නාවිකය',
+                delivered: 'භාරදී ඇත',
+                cancelled: 'අවලංගු',
+                total: 'මුළු',
+                view: 'විස්තර බලන්න',
+                hide: 'විස්තර සඟවන්න',
+                reorder: 'නැවත ඇණවුම්',
+                invoice: 'ඉන්වොයිස් බාගත කරන්න',
+                delivery: 'බෙදාහැරීම',
+                payment: 'ගෙවීම',
+                method: 'ක්‍රමය',
+                to: 'දක්වා',
+                search_placeholder: 'ඇණවුම් අංකයෙන් හෝ අයිතමයෙන් සොයන්න',
+            }
+        };
+        const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
+        const t = (k) => (L[getLang()][k] ?? k);
+
+        // ---------- Placeholder API (replace later) ----------
+        // TODO: Replace ORDERS_API with your actual endpoint for the current user's orders.
+        const ORDERS_API = '/api/orders/me';
+        const perPage = 5;
+
+        // ---------- Helpers ----------
+        function fmtMoney(value, currency) {
+            const n = Number(value || 0);
+            return `${currency || 'LKR'} ${n.toFixed(2)}`;
+        }
+        function fmtDate(d) {
+            try { const x = new Date(d); return x.toISOString().slice(0, 10); } catch { return d || ''; }
+        }
+
+        const STATUS = {
+            processing: { key: 'processing', cls: 'bg-amber-400/20 text-amber-200 border border-amber-400/30' },
+            shipped: { key: 'shipped', cls: 'bg-sky-400/20 text-sky-200 border border-sky-400/30' },
+            delivered: { key: 'delivered', cls: 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' },
+            cancelled: { key: 'cancelled', cls: 'bg-rose-400/20 text-rose-200 border border-rose-400/30' },
+        };
+        function statusPill(status) {
+            const s = STATUS[status] || STATUS.processing;
+            return `<span class="pill ${s.cls}">${t(s.key)}</span>`;
+        }
+
+        function itemThumb(it) {
+            const img = it.cover_url || '{% static "images/cover-placeholder.jpg" %}';
+            const qty = it.quantity || 1;
+            const title = it.title || 'Game';
+            return `<div class="flex items-center gap-3">
+          <div class="w-12 h-16 rounded-lg overflow-hidden ring-1 ring-white/10 bg-white/5">
+            <img src="${img}" alt="${title}" class="w-full h-full object-cover"/>
+          </div>
+          <div class="text-sm"><div class="font-medium leading-tight">${title}</div><div class="text-white/60">x${qty}</div></div>
+        </div>`;
+        }
+
+        function timelineStep(label, active) {
+            return `<div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full ${active ? 'bg-emerald-400' : 'bg-white/30'}"></span>
+        <span class="text-xs ${active ? 'text-white' : 'text-white/60'}">${label}</span>
+      </div>`;
+        }
+
+        function orderCard(o) {
+            const count = (o.items || []).reduce((n, it) => n + (it.quantity || 1), 0);
+            const itemWord = count === 1 ? t('item') : t('items');
+            const itemsRow = (o.items || []).slice(0, 3).map(itemThumb).join('');
+            const more = (o.items || []).length > 3 ? `<div class="text-sm text-white/60">+${(o.items.length - 3)} more</div>` : '';
+            const dlUrl = o.invoice_url || (`/orders/${o.id}/invoice/`);
+
+            const placed = fmtDate(o.placed_at);
+            const delivered = o.delivered_at ? fmtDate(o.delivered_at) : null;
+
+            return `<div class="glass rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div class="min-w-0">
+            <div class="flex items-center flex-wrap gap-2">
+              <div class="font-black tracking-tight">#${o.reference || o.id}</div>
+              <div class="text-white/60 text-sm">• ${placed}</div>
+              ${statusPill(o.status)}
+            </div>
+            <div class="mt-1 text-sm text-white/70">${count} ${itemWord} • ${t('total')}: <span class="font-semibold text-white">${fmtMoney(o.total, o.currency)}</span></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <a href="${dlUrl}" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">${t('invoice')}</a>
+            <button class="px-3 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-sm font-bold">${t('reorder')}</button>
+          </div>
+        </div>
+
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-3">
+            ${itemsRow}
+            ${more}
+          </div>
+          <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+            <div class="text-xs text-white/60">${t('delivery')} & ${t('payment')} ${t('method')}</div>
+            <div class="mt-1 text-sm">${o.delivery_method || 'Standard'} • ${o.payment_method || 'COD'}</div>
+          </div>
+        </div>
+
+        <details class="mt-4 group">
+          <summary class="list-none flex items-center gap-2 cursor-pointer select-none">
+            <span class="w-5 h-5 rounded-full bg-white/10 grid place-items-center">▶</span>
+            <span class="text-sm group-open:hidden">${t('view')}</span>
+            <span class="text-sm hidden group-open:inline">${t('hide')}</span>
+          </summary>
+          <div class="mt-3 grid sm:grid-cols-2 gap-3">
+            <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+              <div class="text-xs text-white/60">Timeline</div>
+              <div class="mt-2 space-y-1.5">
+                ${timelineStep(t('placed'), true)}
+                ${timelineStep(t('processing'), o.status !== 'cancelled')}
+                ${timelineStep(t('shipped'), o.status === 'shipped' || o.status === 'delivered')}
+                ${timelineStep(t('delivered'), o.status === 'delivered')}
+                ${o.status === 'cancelled' ? timelineStep(t('cancelled'), true) : ''}
+              </div>
+            </div>
+            <div class="rounded-xl bg-white/5 border border-white/10 p-3">
+              <div class="text-xs text-white/60">${t('delivery')}</div>
+              <div class="mt-2 text-sm">
+                <div>${o.recipient_name || '—'}</div>
+                <div class="text-white/70">${o.address_line1 || ''} ${o.address_line2 || ''}</div>
+                <div class="text-white/70">${o.city || ''} ${o.postal_code || ''}</div>
+                <div class="text-white/60 text-xs mt-1">${placed}${delivered ? ` ${t('to')} ${delivered}` : ''}</div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>`;
+        }
+
+        function skeletonCard() {
+            return `<div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2">
+          <div class="skeleton h-5 w-28 rounded"></div>
+          <div class="skeleton h-5 w-16 rounded"></div>
+          <div class="skeleton h-6 w-20 rounded-full"></div>
+        </div>
+        <div class="mt-3 grid grid-cols-3 gap-3">
+          <div class="skeleton h-16 rounded-xl"></div>
+          <div class="skeleton h-16 rounded-xl"></div>
+          <div class="skeleton h-16 rounded-xl"></div>
+        </div>
+      </div>`;
+        }
+
+        function renderTabs(active) {
+            const tabsWrap = document.getElementById('statusTabs');
+            const statuses = ['all', 'processing', 'shipped', 'delivered', 'cancelled'];
+            tabsWrap.innerHTML = '';
+            statuses.forEach((s) => {
+                const btn = document.createElement('button');
+                const label = s === 'all' ? t('tabs')[0] : t(s);
+                btn.className = `px-3 py-1.5 rounded-xl text-sm ${active === s ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15'}`;
+                btn.textContent = label;
+                btn.addEventListener('click', () => { document.body.dataset.tab = s; loadOrders(1); });
+                tabsWrap.appendChild(btn);
+            });
+        }
+
+        function setListLoading() {
+            const list = document.getElementById('ordersList');
+            list.innerHTML = skeletonCard() + skeletonCard() + skeletonCard();
+            document.getElementById('emptyState').classList.add('hidden');
+        }
+
+        function renderPager(totalPages, current) {
+            const nav = document.getElementById('pager');
+            nav.innerHTML = '';
+            if (totalPages <= 1) return;
+            const makeBtn = (label, page, disabled = false, active = false) => {
+                const base = 'px-3 py-2 rounded-lg text-sm';
+                const cls = disabled ? 'bg-white/5 text-white/40' : (active ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15');
+                const btn = document.createElement('button');
+                btn.className = `${base} ${cls}`;
+                btn.textContent = label;
+                btn.disabled = disabled;
+                if (!disabled && !active) { btn.addEventListener('click', () => loadOrders(page)); }
+                return btn;
+            };
+            nav.appendChild(makeBtn('Prev', Math.max(1, current - 1), current === 1));
+            for (let i = 1; i <= totalPages; i++) nav.appendChild(makeBtn(String(i), i, false, i === current));
+            nav.appendChild(makeBtn('Next', Math.min(totalPages, current + 1), current === totalPages));
+        }
+
+        // Mock data (used if API not connected yet)
+        function mockOrders(page) {
+            const all = [
+                { id: 1201, reference: 'VL-2025-01201', status: 'processing', total: 8900, currency: 'LKR', placed_at: '2025-07-25', items: [{ title: 'Elden Ring', quantity: 1 }, { title: 'Forza Horizon 5', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
+                { id: 1187, reference: 'VL-2025-01187', status: 'shipped', total: 13900, currency: 'LKR', placed_at: '2025-07-18', items: [{ title: 'Cyberpunk 2077', quantity: 1 }, { title: 'GTA V', quantity: 1 }, { title: 'The Witcher 3', quantity: 1 }], delivery_method: 'Express', payment_method: 'Card', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
+                { id: 1160, reference: 'VL-2025-01160', status: 'delivered', delivered_at: '2025-07-01', total: 5200, currency: 'LKR', placed_at: '2025-06-27', items: [{ title: 'Hitman 3', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
+                { id: 1132, reference: 'VL-2025-01132', status: 'cancelled', total: 7600, currency: 'LKR', placed_at: '2025-06-12', items: [{ title: 'FIFA 24', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
+            ];
+            const per = perPage; const start = (page - 1) * per; const slice = all.slice(start, start + per);
+            return { results: slice, total_pages: Math.max(1, Math.ceil(all.length / per)), page };
+        }
+
+        async function loadOrders(page = 1) {
+            setListLoading();
+            const list = document.getElementById('ordersList');
+            const q = document.getElementById('q').value.trim();
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const status = document.body.dataset.tab || 'all';
+
+            let data;
+            try {
+                const url = new URL(ORDERS_API, window.location.origin);
+                url.searchParams.set('page', page); url.searchParams.set('per_page', perPage);
+                if (q) url.searchParams.set('q', q);
+                if (from) url.searchParams.set('from', from);
+                if (to) url.searchParams.set('to', to);
+                if (status !== 'all') url.searchParams.set('status', status);
+                const res = await fetch(url, { credentials: 'same-origin' });
+                if (!res.ok) throw new Error('API not ready');
+                data = await res.json();
+            } catch (e) {
+                // Fallback to mock data until API is wired up
+                data = mockOrders(page);
+            }
+
+            list.innerHTML = '';
+            const items = data.results || [];
+            if (!items.length) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                renderPager(1, 1);
+                return;
+            }
+            items.forEach(o => list.insertAdjacentHTML('beforeend', orderCard(o)));
+            renderPager(Number(data.total_pages || 1), Number(data.page || 1));
+        }
+
+        // ---------- Language toggle (same behavior as other pages) ----------
+        document.addEventListener('DOMContentLoaded', function () {
+            const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
+            const body = document.body;
+
+            const enTitle = 'My Orders — Virtual Lab Games';
+            const siTitle = 'මගේ ඇණවුම් — Virtual Lab Games';
+            const enDesc = 'View your Virtual Lab Games orders. Track status, see items, totals, and download invoices.';
+            const siDesc = 'ඔබගේ Virtual Lab Games ඇණවුම් බලන්න. තත්වය පරීක්ෂා කර අයිතම, මුළු මුදල් සහ ඉන්වොයිස් බාගත කරන්න.';
+            const metaDescription = document.querySelector('meta[name="description"]');
+
+            const setLanguage = (lang) => {
+                if (lang === 'si') {
+                    body.classList.add('sinhala-mode'); body.classList.add('font-sinhala');
+                    if (langToggleBtn) langToggleBtn.textContent = 'EN';
+                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'EN';
+                    document.title = siTitle; metaDescription?.setAttribute('content', siDesc);
+                    localStorage.setItem('language', 'si');
+                } else {
+                    body.classList.remove('sinhala-mode'); body.classList.remove('font-sinhala');
+                    if (langToggleBtn) langToggleBtn.textContent = 'සිංහල';
+                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'සිංහල';
+                    document.title = enTitle; metaDescription?.setAttribute('content', enDesc);
+                    localStorage.setItem('language', 'en');
+                }
+                // Refresh UI labels that are language-dependent
+                document.getElementById('q').placeholder = t('search_placeholder');
+                renderTabs(document.body.dataset.tab || 'all');
+            };
+
+            const toggleLanguage = () => { const currentLang = localStorage.getItem('language') || 'en'; setLanguage(currentLang === 'en' ? 'si' : 'en'); };
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            const savedLang = localStorage.getItem('language');
+            setLanguage(savedLang || 'en');
+
+            // Initial tab + data
+            renderTabs('all');
+            loadOrders(1);
+        });
+    </script>
+</body>
+
+</html>

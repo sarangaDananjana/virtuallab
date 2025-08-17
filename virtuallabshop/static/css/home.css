@@ -243,3 +243,188 @@ body {
 .store-pop:hover::before {
     opacity: 1;
 }
+
+
+/* Store Filter Buttons */
+.store-filter-btn {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.store-filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.store-filter-btn.active {
+    background: linear-gradient(135deg, rgba(45, 134, 255, 0.8), rgba(246, 205, 69, 0.8));
+    border-color: rgba(246, 205, 69, 0.5);
+    color: white;
+    box-shadow: 0 8px 25px rgba(45, 134, 255, 0.3);
+}
+
+/* Enhanced Store Cards */
+.store-card {
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.store-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    transition: left 0.7s ease;
+    z-index: 1;
+}
+
+.store-card:hover::before {
+    left: 100%;
+}
+
+.store-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(246, 205, 69, 0.3);
+    border-color: rgba(246, 205, 69, 0.4);
+}
+
+.store-card .aspect-\[4\/3\] {
+    position: relative;
+    overflow: hidden;
+}
+
+.store-card:hover .aspect-\[4\/3\] img {
+    filter: brightness(1.1) contrast(1.05);
+}
+
+/* Card Content Animations */
+.store-card h3 {
+    transition: color 0.3s ease;
+}
+
+.store-card:hover h3 {
+    background: linear-gradient(135deg, #f6cd45, #2d86ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Enhanced Glass Effect for Cards */
+.store-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.12),
+            rgba(255, 255, 255, 0.04));
+    backdrop-filter: saturate(150%) blur(20px);
+    -webkit-backdrop-filter: saturate(150%) blur(20px);
+}
+
+/* Store Status Badge Animation */
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.store-card .absolute.top-3.right-3 span {
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+/* Hover Overlay for Better Image Interaction */
+.store-card .absolute.inset-0.bg-gradient-to-t {
+    transition: opacity 0.4s ease;
+}
+
+/* Enhanced Button Hover Effects */
+.store-card button {
+    position: relative;
+    overflow: hidden;
+}
+
+.store-card button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.store-card button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Loading State for Images */
+.store-card img[src=""] {
+    background: linear-gradient(45deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.05));
+    animation: imageLoad 1.5s ease-in-out infinite;
+}
+
+@keyframes imageLoad {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Filter Animation */
+.store-card[data-category] {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.store-card.filtered-out {
+    opacity: 0.3;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .store-filter-btn {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+
+    .store-card:hover {
+        transform: translateY(-8px) scale(1.02);
+    }
+}

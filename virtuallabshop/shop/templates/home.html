@@ -138,7 +138,7 @@
                     </a>
 
                     <!-- Store Button - Most prominent -->
-                    <a href="#collections"
+                    <a href="{% url 'shop-page' %}"
                         class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -834,7 +834,7 @@
         </div>
     </section>
 
-    <!-- Collections Section - Enhanced Grid -->
+    <!-- Collections Section - Live Store -->
     <section id="collections" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
@@ -845,90 +845,329 @@
                     </h2>
                     <p class="text-lg sm:text-xl text-white/70">
                         <span class="lang-en">Available in both DVD sets and Hard Disk formats</span>
-                        <span class="lang-si">DVD සහ HDD දෙආකාරයෙන් ලබා ගත හැක</span>
+                        <span class="lang-si">DVD සහ HDD දෙආකාරයෙන්ම ලබා ගත හැක</span>
                     </p>
                 </div>
-                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
-                    <span class="relative flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gold-400"></span>
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                        </span>
+                        <span class="lang-en">🎮 Store Live</span>
+                        <span class="lang-si">🎮 Store Live</span>
                     </span>
-                    Online Store Coming Soon
-                </span>
-            </div>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Collection Cards -->
-                <div class="glass rounded-3xl p-5 group disabled">
-                    <div
-                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-500/20 to-purple-500/20 flex items-center justify-center text-6xl mb-4">
-                        🎮
-                    </div>
-                    <h3 class="font-bold text-lg mb-1">Action & Adventure</h3>
-                    <p class="text-sm text-white/60 mb-3">Epic single-player campaigns</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-white/50">50+ Games</span>
-                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
-                    </div>
-                </div>
-
-                <div class="glass rounded-3xl p-5 group disabled">
-                    <div
-                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 flex items-center justify-center text-6xl mb-4">
-                        🎯
-                    </div>
-                    <h3 class="font-bold text-lg mb-1">FPS & Shooters</h3>
-                    <p class="text-sm text-white/60 mb-3">Competitive & tactical games</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-white/50">30+ Games</span>
-                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
-                    </div>
-                </div>
-
-                <div class="glass rounded-3xl p-5 group disabled">
-                    <div
-                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-gold-400/20 to-orange-500/20 flex items-center justify-center text-6xl mb-4">
-                        🏎️
-                    </div>
-                    <h3 class="font-bold text-lg mb-1">Racing & Sports</h3>
-                    <p class="text-sm text-white/60 mb-3">High-octane racing titles</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-white/50">25+ Games</span>
-                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
-                    </div>
-                </div>
-
-                <div class="glass rounded-3xl p-5 group disabled">
-                    <div
-                        class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center text-6xl mb-4">
-                        ⚔️
-                    </div>
-                    <h3 class="font-bold text-lg mb-1">RPG & Strategy</h3>
-                    <p class="text-sm text-white/60 mb-3">Immersive worlds & tactics</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-white/50">40+ Games</span>
-                        <button class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold">View</button>
-                    </div>
+                    <button class="store-filter-btn active" data-filter="all">
+                        <span class="lang-en">All</span>
+                        <span class="lang-si">All</span>
+                    </button>
+                    <button class="store-filter-btn" data-filter="popular">
+                        <span class="lang-en">Popular</span>
+                        <span class="lang-si">Popular</span>
+                    </button>
+                    <button class="store-filter-btn" data-filter="new">
+                        <span class="lang-en">New</span>
+                        <span class="lang-si">New</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Waitlist Section -->
-            <div class="mt-12 glass rounded-3xl p-6 sm:p-8 lg:p-10">
-                <div class="grid lg:grid-cols-3 gap-6 items-center">
-                    <div class="lg:col-span-2 space-y-3">
-                        <h3 class="text-2xl sm:text-3xl font-bold">Be First When We Launch!</h3>
-                        <p class="text-white/70 text-base sm:text-lg">Join the waitlist for exclusive early access and
-                            special launch discounts on both DVD and Hard Disk formats.</p>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <!-- Action & Adventure -->
+                <div class="store-card glass rounded-3xl overflow-hidden group cursor-pointer transform transition-all duration-500 hover:scale-105"
+                    data-category="action">
+                    <div class="relative overflow-hidden">
+                        <div
+                            class="aspect-[4/3] bg-gradient-to-br from-brand-500/20 to-purple-500/20 flex items-center justify-center">
+                            <!-- Placeholder for image -->
+                            <img src="{% static 'images/collections/action-adventure.jpeg' %}"
+                                alt="Action & Adventure Games"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-brand-500/30 to-purple-500/30 flex items-center justify-center text-6xl animate-pulse\'>🎮</div>';">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="px-2 py-1 rounded-full bg-red-500/90 text-white text-xs font-bold backdrop-blur-sm">
+                                <span class="lang-en">Hot</span>
+                                <span class="lang-si">Hot</span>
+                            </span>
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex items-center justify-between text-white">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex text-yellow-400">
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <span class="text-sm">4.8</span>
+                                </div>
+                                <button
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-gold-400 text-black text-sm font-bold hover:shadow-lg transition-all">
+                                    <span class="lang-en">Browse</span>
+                                    <span class="lang-si">Browse</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <form id="waitlistForm" class="flex flex-col sm:flex-row gap-3">
-                        <input required type="email" name="email" placeholder="your@email.com"
-                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-gold-400 transition-colors">
+                            <span class="lang-en">Action & Adventure</span>
+                            <span class="lang-si">Action & Adventure</span>
+                        </h3>
+                        <p class="text-white/70 mb-4 text-sm">
+                            <span class="lang-en">Epic single-player campaigns & multiplayer action</span>
+                            <span class="lang-si">Epic single-player campaigns & multiplayer action</span>
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-emerald-400 font-semibold">
+                                    <span class="lang-en">50+ Games</span>
+                                    <span class="lang-si">50+ Games</span>
+                                </span>
+                                <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                                <span class="text-xs text-white/50">
+                                    <span class="lang-en">DVD & HDD</span>
+                                    <span class="lang-si">DVD & HDD</span>
+                                </span>
+                            </div>
+                            <div class="text-lg font-bold text-gold-400">
+                                <span class="lang-en">Rs. 500+</span>
+                                <span class="lang-si">රු. 500+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FPS & Shooters -->
+                <div class="store-card glass rounded-3xl overflow-hidden group cursor-pointer transform transition-all duration-500 hover:scale-105"
+                    data-category="fps">
+                    <div class="relative overflow-hidden">
+                        <div
+                            class="aspect-[4/3] bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 flex items-center justify-center">
+                            <img src="{% static 'images/collections/fps-shooters.jpeg' %}" alt="FPS & Shooters Games"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-cyan-500/30 to-emerald-500/30 flex items-center justify-center text-6xl animate-pulse\'>🎯</div>';">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="px-2 py-1 rounded-full bg-brand-500/90 text-white text-xs font-bold backdrop-blur-sm">
+                                <span class="lang-en">Popular</span>
+                                <span class="lang-si">Popular</span>
+                            </span>
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex items-center justify-between text-white">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex text-yellow-400">
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <span class="text-sm">4.7</span>
+                                </div>
+                                <button
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-gold-400 text-black text-sm font-bold hover:shadow-lg transition-all">
+                                    <span class="lang-en">Browse</span>
+                                    <span class="lang-si">Browse</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-gold-400 transition-colors">
+                            <span class="lang-en">FPS & Shooters</span>
+                            <span class="lang-si">FPS & Shooters</span>
+                        </h3>
+                        <p class="text-white/70 mb-4 text-sm">
+                            <span class="lang-en">Competitive multiplayer & tactical shooting games</span>
+                            <span class="lang-si">Competitive multiplayer & tactical shooting games</span>
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-emerald-400 font-semibold">
+                                    <span class="lang-en">35+ Games</span>
+                                    <span class="lang-si">35+ Games</span>
+                                </span>
+                                <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                                <span class="text-xs text-white/50">
+                                    <span class="lang-en">DVD & HDD</span>
+                                    <span class="lang-si">DVD & HDD</span>
+                                </span>
+                            </div>
+                            <div class="text-lg font-bold text-gold-400">
+                                <span class="lang-en">Rs. 500+</span>
+                                <span class="lang-si">රු. 500+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Racing & Sports -->
+                <div class="store-card glass rounded-3xl overflow-hidden group cursor-pointer transform transition-all duration-500 hover:scale-105"
+                    data-category="racing">
+                    <div class="relative overflow-hidden">
+                        <div
+                            class="aspect-[4/3] bg-gradient-to-br from-gold-400/20 to-orange-500/20 flex items-center justify-center">
+                            <img src="{% static 'images/collections/racing-sports.jpeg' %}" alt="Racing & Sports Games"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-gold-400/30 to-orange-500/30 flex items-center justify-center text-6xl animate-pulse\'>🏎️</div>';">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="px-2 py-1 rounded-full bg-yellow-500/90 text-black text-xs font-bold backdrop-blur-sm">
+                                <span class="lang-en">New</span>
+                                <span class="lang-si">New</span>
+                            </span>
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex items-center justify-between text-white">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex text-yellow-400">
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <span class="text-sm">4.6</span>
+                                </div>
+                                <button
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-gold-400 text-black text-sm font-bold hover:shadow-lg transition-all">
+                                    <span class="lang-en">Browse</span>
+                                    <span class="lang-si">Browse</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-gold-400 transition-colors">
+                            <span class="lang-en">Racing & Sports</span>
+                            <span class="lang-si">Racing & Sports</span>
+                        </h3>
+                        <p class="text-white/70 mb-4 text-sm">
+                            <span class="lang-en">High-octane racing & realistic sports simulations</span>
+                            <span class="lang-si">High-octane racing & realistic sports simulations</span>
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-emerald-400 font-semibold">
+                                    <span class="lang-en">28+ Games</span>
+                                    <span class="lang-si">28+ Games</span>
+                                </span>
+                                <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                                <span class="text-xs text-white/50">
+                                    <span class="lang-en">DVD & HDD</span>
+                                    <span class="lang-si">DVD & HDD</span>
+                                </span>
+                            </div>
+                            <div class="text-lg font-bold text-gold-400">
+                                <span class="lang-en">Rs. 500+</span>
+                                <span class="lang-si">රු. 500+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RPG & Strategy -->
+                <div class="store-card glass rounded-3xl overflow-hidden group cursor-pointer transform transition-all duration-500 hover:scale-105"
+                    data-category="rpg">
+                    <div class="relative overflow-hidden">
+                        <div
+                            class="aspect-[4/3] bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                            <img src="{% static 'images/collections/rpg-strategy.jpeg' %}" alt="RPG & Strategy Games"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center text-6xl animate-pulse\'>⚔️</div>';">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span
+                                class="px-2 py-1 rounded-full bg-purple-500/90 text-white text-xs font-bold backdrop-blur-sm">
+                                <span class="lang-en">Epic</span>
+                                <span class="lang-si">Epic</span>
+                            </span>
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex items-center justify-between text-white">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex text-yellow-400">
+                                        ⭐⭐⭐⭐⭐
+                                    </div>
+                                    <span class="text-sm">4.9</span>
+                                </div>
+                                <button
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-gold-400 text-black text-sm font-bold hover:shadow-lg transition-all">
+                                    <span class="lang-en">Browse</span>
+                                    <span class="lang-si">Browse</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-gold-400 transition-colors">
+                            <span class="lang-en">RPG & Strategy</span>
+                            <span class="lang-si">RPG & Strategy</span>
+                        </h3>
+                        <p class="text-white/70 mb-4 text-sm">
+                            <span class="lang-en">Immersive worlds & deep tactical gameplay</span>
+                            <span class="lang-si">Immersive worlds & deep tactical gameplay</span>
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-emerald-400 font-semibold">
+                                    <span class="lang-en">45+ Games</span>
+                                    <span class="lang-si">45+ Games</span>
+                                </span>
+                                <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                                <span class="text-xs text-white/50">
+                                    <span class="lang-en">DVD & HDD</span>
+                                    <span class="lang-si">DVD & HDD</span>
+                                </span>
+                            </div>
+                            <div class="text-lg font-bold text-gold-400">
+                                <span class="lang-en">Rs. 500+</span>
+                                <span class="lang-si">රු. 500+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="text-center">
+                <div class="glass rounded-3xl p-8 lg:p-12 max-w-4xl mx-auto">
+                    <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black mb-4">
+                        <span class="lang-en">Ready to Build Your Gaming Library?</span>
+                        <span class="lang-si">ඔබේ ගේමිං ලයිබ්‍රරිය ගොඩනඟන්න සූදානම්ද?</span>
+                    </h3>
+                    <p class="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
+                        <span class="lang-en">Browse our full catalog, choose your format, and start gaming today.
+                            Professional installation support included with every purchase.</span>
+                        <span class="lang-si">අපගේ සම්පූර්ණ නාමාවලිය බලන්න, ඔබේ ආකෘතිය තෝරන්න, සහ අදම ගේමිං ආරම්භ කරන්න.
+                            සෑම මිලදී ගැනීමක් සමඟම වෘත්තීය ස්ථාපන සහාය ඇතුළත්.</span>
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{% url 'shop-page' %}"
+                            class="shine inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
+                            role="button">
+                            <span class="lang-en">🎮 Browse All Games</span>
+                            <span class="lang-si">🎮 සියලුම ගේම්ස් බලන්න</span>
+                        </a>
+
                         <button
-                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold whitespace-nowrap hover:shadow-xl transition-all">
-                            Join Waitlist
+                            class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl glass hover:bg-white/20 font-semibold text-lg transition-all">
+                            <span class="lang-en">💬 Need Help Choosing?</span>
+                            <span class="lang-si">💬 තෝරාගැනීමට උදව් අවශ්‍යද?</span>
                         </button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1428,6 +1667,192 @@
                     : `${optionType === 'dvd' ? 'DVD Sets' : 'Hard Disks'} selected! 💿`;
                 showToast(message);
             });
+        });
+
+        // Store Filter Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterButtons = document.querySelectorAll('.store-filter-btn');
+            const storeCards = document.querySelectorAll('.store-card');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    const filter = button.dataset.filter;
+
+                    storeCards.forEach(card => {
+                        const category = card.dataset.category;
+
+                        if (filter === 'all') {
+                            card.classList.remove('filtered-out');
+                        } else if (filter === 'popular') {
+                            // Show cards with popular badges
+                            const hasPopularBadge = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('popular') ||
+                                card.querySelector('.absolute.top-3.right-3 span')?.textContent.includes('ජනප්‍රිය');
+                            if (hasPopularBadge) {
+                                card.classList.remove('filtered-out');
+                            } else {
+                                card.classList.add('filtered-out');
+                            }
+                        } else if (filter === 'new') {
+                            // Show cards with new badges
+                            const hasNewBadge = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('new') ||
+                                card.querySelector('.absolute.top-3.right-3 span')?.textContent.includes('අලුත්');
+                            if (hasNewBadge) {
+                                card.classList.remove('filtered-out');
+                            } else {
+                                card.classList.add('filtered-out');
+                            }
+                        } else {
+                            // Filter by category
+                            if (category === filter) {
+                                card.classList.remove('filtered-out');
+                            } else {
+                                card.classList.add('filtered-out');
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Enhanced card interactions
+            storeCards.forEach(card => {
+                // Add click handler for card navigation
+                card.addEventListener('click', function (e) {
+                    // Don't trigger if clicking on a button
+                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                        return;
+                    }
+
+                    const category = this.dataset.category;
+                    console.log(`Navigate to ${category} category page`);
+                    // Here you can add navigation logic to the specific category page
+                    // window.location.href = `/categories/${category}/`;
+                });
+
+                // Add enhanced hover effects
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-12px) scale(1.03)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Browse buttons functionality
+            const browseButtons = document.querySelectorAll('.store-card button');
+            browseButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Prevent card click
+                    const card = this.closest('.store-card');
+                    const category = card.dataset.category;
+
+                    // Add loading state
+                    this.innerHTML = '<span class="lang-en">Loading...</span><span class="lang-si">පූරණය වෙමින්...</span>';
+                    this.disabled = true;
+
+                    // Simulate navigation after brief delay
+                    setTimeout(() => {
+                        console.log(`Browse ${category} games`);
+                        // Navigate to category page
+                        // window.location.href = `/games/${category}/`;
+
+                        // Reset button state (in case navigation doesn't happen)
+                        this.innerHTML = '<span class="lang-en">Browse</span><span class="lang-si">බලන්න</span>';
+                        this.disabled = false;
+                    }, 800);
+                });
+            });
+
+            // Main CTA buttons
+            const mainBrowseBtn = document.querySelector('.shine');
+            const helpBtn = document.querySelector('button:not(.shine):not(.store-filter-btn):not(.store-card button)');
+
+            if (mainBrowseBtn) {
+                mainBrowseBtn.addEventListener('click', function () {
+                    console.log('Navigate to full games catalog');
+                    // window.location.href = '/games/';
+                });
+            }
+
+            if (helpBtn) {
+                helpBtn.addEventListener('click', function () {
+                    console.log('Open help/contact modal or page');
+                    // You can open a modal here or navigate to contact page
+                    // showContactModal();
+                });
+            }
+
+            // Add smooth scroll reveal animation for cards
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const cardObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+
+            // Initially hide cards for reveal animation
+            storeCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                cardObserver.observe(card);
+            });
+
+            // Rating stars interaction
+            const ratingStars = document.querySelectorAll('.store-card .flex.text-yellow-400');
+            ratingStars.forEach(rating => {
+                rating.addEventListener('mouseenter', function () {
+                    this.style.transform = 'scale(1.1)';
+                });
+
+                rating.addEventListener('mouseleave', function () {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add keyboard navigation support
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    // Enhanced focus styles for accessibility
+                    const focusedElement = document.activeElement;
+                    if (focusedElement.classList.contains('store-card')) {
+                        focusedElement.style.outline = '2px solid #f6cd45';
+                        focusedElement.style.outlineOffset = '4px';
+                    }
+                }
+
+                if (e.key === 'Enter' && document.activeElement.classList.contains('store-card')) {
+                    document.activeElement.click();
+                }
+            });
+
+            // Remove focus outline when not using keyboard
+            document.addEventListener('mousedown', function () {
+                storeCards.forEach(card => {
+                    card.style.outline = 'none';
+                });
+            });
+
+            // Initialize filter state
+            const defaultFilter = document.querySelector('.store-filter-btn.active');
+            if (defaultFilter) {
+                defaultFilter.click();
+            }
         });
 
     </script>
