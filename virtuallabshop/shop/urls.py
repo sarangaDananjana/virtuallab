@@ -6,12 +6,15 @@ urlpatterns = [
     path('', views.home_page, name='home-page'),
     path('login/', views.login_page, name='login-page'),
     path('register/', views.register_page, name='register-page'),
+    path("profile/", views.profile_page, name="profile-page"),
     path("support/my-tickets/", views.tickets_page, name="tickets-page"),
     path("support/submit/", views.ticket_submit_page, name="ticket-submit"),
     path("shop/", views.shop_page, name="shop-page"),
     path("products/<slug:slug>/", views.product_page, name="product-page"),
     path("cart/", views.cart_page, name="cart_page"),
     path("storage/select/", views.storage_pick_page, name="pick_storage"),
+    path("orders/", views.orders_page, name="orders-page"),
+    path('d-p-calculator/', views.calculator_view, name="calculater"),
 
 
 
@@ -21,6 +24,8 @@ urlpatterns = [
     # JSON APIs
     path('api/login/', views.api_login, name='api-login'),
     path('api/register/', views.api_register, name='api-register'),
+    path("api/me", views.api_me, name="api-me"),
+    path("api/me/update", views.api_me_update, name="api-me-update"),
     path("api/slots/", views.api_reserved_slots, name="api-reserved-slots"),
     path("api/tickets/", views.api_create_ticket, name="api-ticket-create"),
     path("api/my-tickets/", views.api_my_tickets, name="api-my-tickets"),
@@ -43,6 +48,10 @@ urlpatterns = [
          name="api_remove_product_from_cart"),
     path("api/cart/remove-storage-device/", views.api_remove_storage_device_from_cart,
          name="api_remove_storage_device_from_cart"),
+    path("api/payments/genie/start", views.api_genie_start, name="api-genie-start"),
+    path("api/orders/me", views.api_orders_me, name="api-orders-me"),
+    path("api/orders/finalize/", views.api_finalize_order_from_customer,
+         name="api-orders-finalize"),
 
 
 ]

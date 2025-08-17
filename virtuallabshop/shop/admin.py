@@ -14,7 +14,8 @@ from .models import (
     ReservedSlot,
     GameRequest,
     DLC,
-    StorageDevice
+    StorageDevice,
+    OrderStorageItem
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -33,7 +34,8 @@ class UserAdmin(DjangoUserAdmin):
     add_fieldsets = DjangoUserAdmin.add_fieldsets + (
         (None, {"fields": ("phone_number",)}),
     )
-    list_display = ("id", "username", "email", "phone_number", "is_staff")
+    list_display = ("id", "username", "email",
+                    "phone_number", "is_staff", "customer_id")
     search_fields = ("username", "email", "phone_number")
 
 
@@ -190,15 +192,36 @@ class CartAdmin(admin.ModelAdmin):
     total_display.short_description = "Total"
 
 
+class OrderStorageItemInline(admin.TabularInline):
+    model = OrderStorageItem
+    extra = 0
+    autocomplete_fields = ["product"]
+    readonly_fields = ("subtotal",)
+
+    def subtotal(self, obj):
+        if not obj.pk:
+            return "—"
+        total = (obj.unit_price or Decimal("0")) * (obj.quantity or 0)
+        return f"{total}"
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    inlines = [OrderItemInline]
+    # show BOTH kinds of order lines inline
+    inlines = [OrderItemInline, OrderStorageItemInline]
+
     list_display = (
         "id",
         "status",
         "payment_method",
         "currency",
+        # stored checkout total (may include device)
         "order_value",
+        # computed: direct + storage items (excl. device)
+        "items_only_total_display",
+        "direct_count",
+        "storage_count",
+        "storage_device_price", "storage_device_name",
         "ordered_at",
         "users_display",
     )
@@ -209,44 +232,56 @@ class OrderAdmin(admin.ModelAdmin):
         "users__email",
         "orderitem__product__title",
         "orderitem__product__sku",
+        # ⬇️ now searchable by storage items too
+        "storage_items__product__title",
+        "storage_items__product__sku",
         "payment_reference",
     )
     autocomplete_fields = ["users"]
-    readonly_fields = ("ordered_at",)
+    readonly_fields = ("ordered_at", "created_at", "updated_at", "items_only_total_display",
+                       "direct_count", "storage_count")
+
+    fieldsets = (
+        (None, {"fields": (
+            "users", "guest_email", "status",
+            "payment_method", "payment_reference",
+            "currency", "order_value",
+            "storage_device_name", "storage_device_price",
+            "notes",
+        )}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
     date_hierarchy = "ordered_at"
-    actions = ["recalculate_order_values"]
+
+    # ---- helpful computed displays ----
+    @admin.display(description="Direct items")
+    def direct_count(self, obj):
+        return obj.orderitem_set.count()
+
+    @admin.display(description="Storage items")
+    def storage_count(self, obj):
+        # OrderStorageItem uses related_name="storage_items" in your models
+        return obj.storage_items.count()
+
+    @admin.display(description="Items-only total")
+    def items_only_total_display(self, obj):
+        # Sum of direct + storage items (EXCLUDES any device price)
+        total_direct = sum(
+            (it.unit_price or Decimal("0")) * (it.quantity or 0)
+            for it in obj.orderitem_set.all()
+        )
+        total_storage = sum(
+            (si.unit_price or Decimal("0")) * (si.quantity or 0)
+            for si in obj.storage_items.all()
+        )
+        return total_direct + total_storage
 
     def users_display(self, obj):
         users = obj.users.all()[:3]
         label = ", ".join(u.username for u in users)
         extra = obj.users.count() - len(users)
         return f"{label}{' +' + str(extra) if extra > 0 else ''}" or "—"
-
     users_display.short_description = "Users"
-
-    @admin.action(description="Recalculate totals for selected orders")
-    def recalculate_order_values(self, request, queryset):
-        for order in queryset:
-            total = sum(
-                (item.unit_price or Decimal("0")) * (item.quantity or 0)
-                for item in order.orderitem_set.all()
-            )
-            order.order_value = total
-            order.save(update_fields=["order_value"])
-        self.message_user(
-            request, f"Recalculated {queryset.count()} order(s).")
-
-    def save_related(self, request, form, formsets, change):
-        """Ensure order_value reflects inline items after save."""
-        super().save_related(request, form, formsets, change)
-        order = form.instance
-        total = sum(
-            (item.unit_price or Decimal("0")) * (item.quantity or 0)
-            for item in order.orderitem_set.all()
-        )
-        if order.order_value != total:
-            order.order_value = total
-            order.save(update_fields=["order_value"])
 
 
 class TicketPhotoInlineFormSet(BaseInlineFormSet):

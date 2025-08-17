@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVD Price Calculator</title>
+    <style>
+        /* --- Google Font Import --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        /* --- General Styling --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #333;
+        }
+
+        /* --- Calculator Container --- */
+        .calculator-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        /* --- Input & Button Styling --- */
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            font-size: 1rem;
+            box-sizing: border-box;
+            /* Fixes padding issues */
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.25);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #764ba2;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #623d85;
+            transform: translateY(-2px);
+        }
+
+        /* --- Result Display Styling --- */
+        .result-display {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .result-display h2 {
+            margin: 0;
+            color: #343a40;
+            font-size: 1.2rem;
+        }
+
+        .result-display span {
+            color: #764ba2;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="calculator-container">
+        <h1>📀 DVD Price Calculator</h1>
+        <p class="description">Enter the number of DVDs to calculate the total price.</p>
+
+        <div class="input-group">
+            <label for="dvdCount">Number of DVDs:</label>
+            <input type="number" id="dvdCount" placeholder="e.g., 5" min="1">
+        </div>
+
+        <button id="calculateBtn">Calculate Price</button>
+
+        <div id="result" class="result-display">
+            <h2>Total Price: <span id="totalPrice">LKR 0.00</span></h2>
+        </div>
+    </div>
+
+    <script>
+        // Wait for the page content to be fully loaded before running the script
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Get references to the HTML elements we need to interact with
+            const dvdCountInput = document.getElementById('dvdCount');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const totalPriceSpan = document.getElementById('totalPrice');
+
+            // Function to perform the calculation
+            const calculatePrice = () => {
+                const x = parseInt(dvdCountInput.value);
+
+                // 1. Input Validation: Check if the input is not a number or less than 1
+                if (isNaN(x) || x <= 0) {
+                    totalPriceSpan.textContent = 'LKR 0.00';
+                    if (dvdCountInput.value !== '') { // Show alert only if there's invalid text
+                        alert('Please enter a valid number of DVDs (1 or more).');
+                    }
+                    return; // Stop the function here
+                }
+
+                // 2. Calculation Logic
+                let finalPrice = 0;
+                const basePrice = (x * 130) + 200;
+
+                // Check if the number of DVDs (X) is EVEN
+                if (x % 2 === 0) {
+                    // Formula for EVEN: Price = (X*130)+200+(X*10)
+                    finalPrice = basePrice + (x * 10);
+                }
+                // Otherwise, the number must be ODD
+                else {
+                    // Formula for ODD: Price = (X*130)+200+((X+1)*10)
+                    finalPrice = basePrice + ((x + 1) * 10);
+                }
+
+                // 3. Display the formatted result
+                // 'toLocaleString' adds commas for thousands and sets decimal places
+                totalPriceSpan.textContent = `LKR ${finalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            };
+
+            // --- Event Listeners ---
+
+            // Run the calculation when the button is clicked
+            calculateBtn.addEventListener('click', calculatePrice);
+
+            // Optional: Also run the calculation if the user presses 'Enter' in the input field
+            dvdCountInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    calculatePrice();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

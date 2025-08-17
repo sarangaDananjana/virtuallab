@@ -42,6 +42,19 @@ class User(AbstractUser):
         help_text=_("Include country code, e.g., +94771234567"),
     )
 
+    address_no = models.CharField(
+        _("address number"), max_length=20, blank=True, default="")
+    address_line1 = models.CharField(
+        _("address line 1"), max_length=255, blank=True, default="")
+    address_line2 = models.CharField(
+        _("address line 2"), max_length=255, blank=True, default="")
+    city = models.CharField(_("city"), max_length=100, blank=True, default="")
+    postal_code = models.CharField(
+        _("postal code"), max_length=20, blank=True, default="")
+
+    customer_id = models.CharField(
+        _("Genie customer id"), max_length=64, blank=True, default="", db_index=True)
+
     # username + password remain from AbstractUser
     # username is the USERNAME_FIELD by default
     REQUIRED_FIELDS = ["email", "phone_number"]
@@ -378,6 +391,11 @@ class Order(TimestampedModel):
         Product, through="OrderItem", related_name="orders"
     )
 
+    storage_device_name = models.CharField(
+        max_length=255, blank=True, default="")
+    storage_device_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("0.00"))
+
     # Store the final value at checkout; compute on the fly if not set.
     order_value = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
@@ -409,6 +427,28 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} × {self.product.title} in order {self.order_id}"
+
+    @property
+    def subtotal(self) -> Decimal:
+        return (self.unit_price or Decimal("0")) * self.quantity
+
+
+class OrderStorageItem(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="storage_items"
+    )
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(
+        default=1, validators=[MinValueValidator(1)]
+    )
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("order", "product")
+
+    def __str__(self):
+        return f"{self.quantity} × {self.product.title} on device in order {self.order_id}"
 
     @property
     def subtotal(self) -> Decimal:

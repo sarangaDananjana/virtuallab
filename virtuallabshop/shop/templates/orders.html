@@ -40,11 +40,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
-    <!-- Shared site styles (aurora bg, noise layer, glass, header blend, Sinhala helpers) -->
+    <!-- Shared site styles -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language helpers (match other pages) */
+        /* Language helpers */
         .lang-si {
             display: none;
         }
@@ -69,25 +69,15 @@
             display: block;
         }
 
-        .card-hover {
-            transition: transform .25s cubic-bezier(.4, 0, .2, 1), box-shadow .25s;
-        }
-
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
-        }
-
         /* Status pills */
         .pill {
             padding: 4px 10px;
             border-radius: 9999px;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: .01em;
         }
 
-        /* Skeletons */
+        /* Skeletons for loading state */
         .skeleton {
             position: relative;
             overflow: hidden;
@@ -112,7 +102,7 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header (consistent; mobile shows only logo + language toggle + hamburger) -->
+    <!-- Header -->
     <header class="header-blend">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
@@ -128,18 +118,15 @@
 
                 <!-- Right controls -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle (always visible) -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
-
-                    <!-- Desktop actions (hidden on mobile) -->
-                    <a href="{% url 'tickets-page' %}"
+                    <a href="{% url 'cart_page' %}"
                         class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
+                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
                     </a>
                     <a href="{% url 'shop-page' %}"
                         class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
@@ -150,16 +137,13 @@
                         <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
                     </a>
                     {% if user.is_authenticated %}
-                    <a href="#" aria-label="Account"
-                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{
-                        user_initial }}</a>
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{user_initial}}</a>
                     {% else %}
                     <a href="{% url 'login-page' %}"
                         class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
-
-                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
                         aria-label="Open menu">
@@ -172,7 +156,7 @@
             </div>
         </div>
 
-        <!-- Mobile Menu: Login/Register, Store, My Tickets + Language -->
+        <!-- Mobile Menu -->
         <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
             <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
                 {% if user.is_authenticated %}
@@ -191,14 +175,12 @@
                     class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
                         class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
                 {% endif %}
-
                 <a href="{% url 'shop-page' %}"
                     class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
                         class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
                 <a href="{% url 'tickets-page' %}"
                     class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
                         Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-
                 <button id="langToggleBtnMobile"
                     class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
@@ -227,24 +209,18 @@
 
             <!-- Filters & Search -->
             <section class="glass rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-6">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex flex-wrap gap-2" id="statusTabs" role="tablist">
-                        <!-- tabs injected by JS (All, Processing, Shipped...) -->
-                    </div>
-                    <form id="searchForm" onsubmit="event.preventDefault(); loadOrders(1)"
-                        class="flex items-center gap-2">
+                <form id="searchForm" onsubmit="event.preventDefault(); loadOrders(1)"
+                    class="flex flex-col sm:flex-row items-center gap-3">
+                    <div class="flex flex-wrap gap-2 flex-grow" id="statusTabs" role="tablist"></div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
                         <input id="q" type="search"
-                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm"
-                            placeholder="Search by order # or item" />
-                        <input id="from" type="date"
-                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm" />
-                        <input id="to" type="date"
-                            class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm" />
+                            class="w-full sm:w-auto px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm"
+                            placeholder="Search..." />
                         <button
                             class="shine px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold"><span
                                 class="lang-en">Filter</span><span class="lang-si">පෙරහන්</span></button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </section>
 
             <!-- Orders list -->
@@ -253,15 +229,15 @@
             <!-- Pagination -->
             <nav id="pager" class="mt-8 flex items-center justify-center gap-2"></nav>
 
-            <!-- Empty state (hidden by default) -->
+            <!-- Empty state -->
             <div id="emptyState" class="hidden text-center py-14">
                 <div class="mx-auto w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
                     <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 3h18v4H3zM3 7l2 12h14l2-12H3z" />
                     </svg>
                 </div>
-                <p class="mt-4 text-white/70"><span class="lang-en">No orders yet.</span><span class="lang-si">තවම
-                        ඇණවුම් නොමැත.</span></p>
+                <p class="mt-4 text-white/70"><span class="lang-en">No orders found.</span><span class="lang-si">ඇණවුම්
+                        කිසිවක් හමු නොවීය.</span></p>
                 <a href="{% url 'shop-page' %}"
                     class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15"><span
                         class="lang-en">Go to Store</span><span class="lang-si">වෙළඳසැලට යන්න</span></a>
@@ -275,317 +251,321 @@
     </footer>
 
     <script>
-        // ---------- Year ----------
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // ---------- Mobile menu toggle ----------
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        // ---------- Config ----------
+        const ORDERS_API = '/api/orders/me';
+        const perPage = 5;
 
         // ---------- i18n ----------
         const L = {
             en: {
                 tabs: ['All', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-                filter: 'Filter',
-                items: 'items',
-                item: 'item',
-                order: 'Order',
-                placed: 'Placed',
-                processing: 'Processing',
-                shipped: 'Shipped',
-                delivered: 'Delivered',
-                cancelled: 'Cancelled',
-                total: 'Total',
-                view: 'View details',
-                hide: 'Hide details',
-                reorder: 'Reorder',
-                invoice: 'Download invoice',
-                delivery: 'Delivery',
-                payment: 'Payment',
-                method: 'Method',
-                to: 'to',
+                items: 'items', item: 'item', order: 'Order', placed: 'Placed',
+                processing: 'Processing', shipped: 'Shipped', delivered: 'Delivered', cancelled: 'Cancelled',
+                total: 'Total', view: 'View details', hide: 'Hide details', reorder: 'Reorder', invoice: 'Download invoice',
+                delivery: 'Delivery', payment: 'Payment', method: 'Method', to: 'to',
                 search_placeholder: 'Search by order # or item',
+                device_bundle: 'Device Bundle',
+                direct_purchases: 'Direct Purchases',
             },
             si: {
-                tabs: ['සියල්ල', 'කාර්යය', 'නාවිකය', 'භාරදී ඇත', 'අවලංගු'],
-                filter: 'පෙරහන්',
-                items: 'අයිතම',
-                item: 'අයිතම',
-                order: 'ඇණවුම',
-                placed: 'ඇණවුම යැවීය',
-                processing: 'කියවාගෙන යයි',
-                shipped: 'නාවිකය',
-                delivered: 'භාරදී ඇත',
-                cancelled: 'අවලංගු',
-                total: 'මුළු',
-                view: 'විස්තර බලන්න',
-                hide: 'විස්තර සඟවන්න',
-                reorder: 'නැවත ඇණවුම්',
-                invoice: 'ඉන්වොයිස් බාගත කරන්න',
-                delivery: 'බෙදාහැරීම',
-                payment: 'ගෙවීම',
-                method: 'ක්‍රමය',
-                to: 'දක්වා',
-                search_placeholder: 'ඇණවුම් අංකයෙන් හෝ අයිතමයෙන් සොයන්න',
+                tabs: ['සියල්ල', 'සැකසෙමින්', 'නැව්ගත කර ඇත', 'භාරදී ඇත', 'අවලංගුයි'],
+                items: 'අයිතම', item: 'අයිතමය', order: 'ඇණවුම', placed: 'ඇණවුම් කරන ලදී',
+                processing: 'සැකසෙමින්', shipped: 'නැව්ගත කර ඇත', delivered: 'භාරදී ඇත', cancelled: 'අවලංගුයි',
+                total: 'එකතුව', view: 'විස්තර බලන්න', hide: 'විස්තර සඟවන්න', reorder: 'නැවත ඇණවුම් කරන්න', invoice: 'ඉන්වොයිසිය බාගන්න',
+                delivery: 'බෙදාහැරීම', payment: 'ගෙවීම', method: 'ක්‍රමය', to: 'දක්වා',
+                search_placeholder: 'ඇණවුම් අංකය හෝ අයිතමය අනුව සොයන්න',
+                device_bundle: 'උපාංග පැකේජය',
+                direct_purchases: 'සෘජු මිලදී ගැනීම්',
             }
         };
         const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
         const t = (k) => (L[getLang()][k] ?? k);
 
-        // ---------- Placeholder API (replace later) ----------
-        // TODO: Replace ORDERS_API with your actual endpoint for the current user's orders.
-        const ORDERS_API = '/api/orders/me';
-        const perPage = 5;
-
         // ---------- Helpers ----------
-        function fmtMoney(value, currency) {
-            const n = Number(value || 0);
-            return `${currency || 'LKR'} ${n.toFixed(2)}`;
-        }
-        function fmtDate(d) {
-            try { const x = new Date(d); return x.toISOString().slice(0, 10); } catch { return d || ''; }
-        }
+        const fmtMoney = (v, c) => `${c || 'LKR'} ${Number(v || 0).toFixed(2)}`;
+        const fmtDate = (d) => { try { return new Date(d).toISOString().slice(0, 10); } catch { return d || ''; } };
 
-        const STATUS = {
+        const STATUS_CONFIG = {
             processing: { key: 'processing', cls: 'bg-amber-400/20 text-amber-200 border border-amber-400/30' },
             shipped: { key: 'shipped', cls: 'bg-sky-400/20 text-sky-200 border border-sky-400/30' },
             delivered: { key: 'delivered', cls: 'bg-emerald-400/20 text-emerald-200 border border-emerald-400/30' },
             cancelled: { key: 'cancelled', cls: 'bg-rose-400/20 text-rose-200 border border-rose-400/30' },
         };
-        function statusPill(status) {
-            const s = STATUS[status] || STATUS.processing;
+        const statusPill = (status) => {
+            const s = STATUS_CONFIG[status] || STATUS_CONFIG.processing;
             return `<span class="pill ${s.cls}">${t(s.key)}</span>`;
-        }
+        };
 
+        // ---------- Render Functions ----------
         function itemThumb(it) {
             const img = it.cover_url || '{% static "images/cover-placeholder.jpg" %}';
-            const qty = it.quantity || 1;
-            const title = it.title || 'Game';
-            return `<div class="flex items-center gap-3">
-          <div class="w-12 h-16 rounded-lg overflow-hidden ring-1 ring-white/10 bg-white/5">
-            <img src="${img}" alt="${title}" class="w-full h-full object-cover"/>
-          </div>
-          <div class="text-sm"><div class="font-medium leading-tight">${title}</div><div class="text-white/60">x${qty}</div></div>
-        </div>`;
+            return `
+            <div class="flex items-center gap-3">
+                <img src="${img}" alt="${it.title}" class="w-10 h-14 rounded-md object-cover ring-1 ring-white/10 bg-white/5"/>
+                <div class="text-sm">
+                    <div class="font-medium leading-tight">${it.title}</div>
+                    <div class="text-white/60">Qty: ${it.quantity || 1}</div>
+                </div>
+            </div>`;
         }
 
         function timelineStep(label, active) {
             return `<div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full ${active ? 'bg-emerald-400' : 'bg-white/30'}"></span>
-        <span class="text-xs ${active ? 'text-white' : 'text-white/60'}">${label}</span>
-      </div>`;
+                <span class="w-2.5 h-2.5 rounded-full ${active ? 'bg-emerald-400' : 'bg-white/30'}"></span>
+                <span class="text-xs ${active ? 'text-white' : 'text-white/60'}">${label}</span>
+            </div>`;
         }
 
         function orderCard(o) {
-            const count = (o.items || []).reduce((n, it) => n + (it.quantity || 1), 0);
-            const itemWord = count === 1 ? t('item') : t('items');
-            const itemsRow = (o.items || []).slice(0, 3).map(itemThumb).join('');
-            const more = (o.items || []).length > 3 ? `<div class="text-sm text-white/60">+${(o.items.length - 3)} more</div>` : '';
-            const dlUrl = o.invoice_url || (`/orders/${o.id}/invoice/`);
+            const directItems = o.direct_items || [];
+            const storageBundle = o.storage_bundle;
+            const storageItems = storageBundle ? (storageBundle.items || []) : [];
+
+            const directItemsCount = directItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const storageItemsCount = storageItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const totalItems = directItemsCount + storageItemsCount;
+            const itemWord = totalItems === 1 ? t('item') : t('items');
+
+            const directItemsHtml = directItems.length > 0 ? `
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-semibold text-white/80">${t('direct_purchases')}</h4>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-white/10">${directItemsCount} ${t('items')}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${directItems.map(itemThumb).join('')}
+                    </div>
+                </div>` : '';
+
+            // UPDATED: New visual treatment for the storage bundle
+            const storageBundleHtml = storageBundle ? `
+                <div class="p-3 rounded-xl bg-white/5 border border-brand-400/30">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h4 class="font-semibold text-brand-300">${t('device_bundle')}</h4>
+                            <p class="text-sm font-semibold">${storageBundle.device_name}</p>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-white/10">${storageItemsCount} ${t('items')}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${storageItems.map(itemThumb).join('')}
+                    </div>
+                </div>` : '';
 
             const placed = fmtDate(o.placed_at);
             const delivered = o.delivered_at ? fmtDate(o.delivered_at) : null;
 
-            return `<div class="glass rounded-2xl p-4 sm:p-5">
-        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-          <div class="min-w-0">
-            <div class="flex items-center flex-wrap gap-2">
-              <div class="font-black tracking-tight">#${o.reference || o.id}</div>
-              <div class="text-white/60 text-sm">• ${placed}</div>
-              ${statusPill(o.status)}
-            </div>
-            <div class="mt-1 text-sm text-white/70">${count} ${itemWord} • ${t('total')}: <span class="font-semibold text-white">${fmtMoney(o.total, o.currency)}</span></div>
-          </div>
-          <div class="flex items-center gap-2">
-            <a href="${dlUrl}" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">${t('invoice')}</a>
-            <button class="px-3 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-sm font-bold">${t('reorder')}</button>
-          </div>
-        </div>
+            return `
+            <div class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-5">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div>
+                        <div class="flex items-center flex-wrap gap-2">
+                            <div class="font-black tracking-tight text-lg">#${o.reference || o.id}</div>
+                            ${statusPill(o.status)}
+                        </div>
+                        <div class="mt-1 text-sm text-white/70">
+                            <span>${placed}</span>
+                            <span class="mx-1">•</span>
+                            <span>${totalItems} ${itemWord}</span>
+                            <span class="mx-1">•</span>
+                            <span class="font-semibold text-white">${fmtMoney(o.total, o.currency)}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="/orders/${o.id}/invoice/" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm">${t('invoice')}</a>
+                        <button class="px-3 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-sm font-bold">${t('reorder')}</button>
+                    </div>
+                </div>
 
-        <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          <div class="flex flex-col gap-3">
-            ${itemsRow}
-            ${more}
-          </div>
-          <div class="rounded-xl bg-white/5 border border-white/10 p-3">
-            <div class="text-xs text-white/60">${t('delivery')} & ${t('payment')} ${t('method')}</div>
-            <div class="mt-1 text-sm">${o.delivery_method || 'Standard'} • ${o.payment_method || 'COD'}</div>
-          </div>
-        </div>
+                <div class="mt-4 border-t border-white/10 pt-4 space-y-4">
+                    ${directItemsHtml}
+                    ${storageBundleHtml}
+                </div>
 
-        <details class="mt-4 group">
-          <summary class="list-none flex items-center gap-2 cursor-pointer select-none">
-            <span class="w-5 h-5 rounded-full bg-white/10 grid place-items-center">▶</span>
-            <span class="text-sm group-open:hidden">${t('view')}</span>
-            <span class="text-sm hidden group-open:inline">${t('hide')}</span>
-          </summary>
-          <div class="mt-3 grid sm:grid-cols-2 gap-3">
-            <div class="rounded-xl bg-white/5 border border-white/10 p-3">
-              <div class="text-xs text-white/60">Timeline</div>
-              <div class="mt-2 space-y-1.5">
-                ${timelineStep(t('placed'), true)}
-                ${timelineStep(t('processing'), o.status !== 'cancelled')}
-                ${timelineStep(t('shipped'), o.status === 'shipped' || o.status === 'delivered')}
-                ${timelineStep(t('delivered'), o.status === 'delivered')}
-                ${o.status === 'cancelled' ? timelineStep(t('cancelled'), true) : ''}
-              </div>
-            </div>
-            <div class="rounded-xl bg-white/5 border border-white/10 p-3">
-              <div class="text-xs text-white/60">${t('delivery')}</div>
-              <div class="mt-2 text-sm">
-                <div>${o.recipient_name || '—'}</div>
-                <div class="text-white/70">${o.address_line1 || ''} ${o.address_line2 || ''}</div>
-                <div class="text-white/70">${o.city || ''} ${o.postal_code || ''}</div>
-                <div class="text-white/60 text-xs mt-1">${placed}${delivered ? ` ${t('to')} ${delivered}` : ''}</div>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>`;
+                <details class="mt-4 pt-3 border-t border-white/10 group">
+                    <summary class="list-none flex items-center gap-2 cursor-pointer select-none">
+                        <svg class="w-4 h-4 text-white/70 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        <span class="text-sm font-semibold group-open:hidden">${t('view')}</span>
+                        <span class="text-sm font-semibold hidden group-open:inline">${t('hide')}</span>
+                    </summary>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                        <div class="rounded-xl bg-white/5 p-3">
+                            <div class="text-xs text-white/60 font-bold mb-2">Timeline</div>
+                            <div class="space-y-1.5">
+                                ${timelineStep(t('placed'), true)}
+                                ${timelineStep(t('processing'), o.status !== 'cancelled')}
+                                ${timelineStep(t('shipped'), o.status === 'shipped' || o.status === 'delivered')}
+                                ${timelineStep(t('delivered'), o.status === 'delivered')}
+                                ${o.status === 'cancelled' ? timelineStep(t('cancelled'), true) : ''}
+                            </div>
+                        </div>
+                        <div class="rounded-xl bg-white/5 p-3">
+                            <div class="text-xs text-white/60 font-bold mb-2">${t('delivery')}</div>
+                            <div class="mt-2 text-sm">
+                                <div class="font-semibold">${o.recipient_name || '—'}</div>
+                                <div class="text-white/70">${o.address_line1 || ''} ${o.address_line2 || ''}</div>
+                                <div class="text-white/70">${o.city || ''}, ${o.postal_code || ''}</div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>`;
         }
 
         function skeletonCard() {
-            return `<div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2">
-          <div class="skeleton h-5 w-28 rounded"></div>
-          <div class="skeleton h-5 w-16 rounded"></div>
-          <div class="skeleton h-6 w-20 rounded-full"></div>
-        </div>
-        <div class="mt-3 grid grid-cols-3 gap-3">
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
-          <div class="skeleton h-16 rounded-xl"></div>
-        </div>
-      </div>`;
+            return `
+            <div class="glass rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                    <div class="skeleton h-6 w-32 rounded"></div>
+                    <div class="skeleton h-8 w-24 rounded-full"></div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="skeleton h-16 rounded-xl"></div>
+                    <div class="skeleton h-16 rounded-xl"></div>
+                </div>
+            </div>`;
         }
 
         function renderTabs(active) {
             const tabsWrap = document.getElementById('statusTabs');
             const statuses = ['all', 'processing', 'shipped', 'delivered', 'cancelled'];
-            tabsWrap.innerHTML = '';
-            statuses.forEach((s) => {
-                const btn = document.createElement('button');
+            tabsWrap.innerHTML = statuses.map(s => {
                 const label = s === 'all' ? t('tabs')[0] : t(s);
-                btn.className = `px-3 py-1.5 rounded-xl text-sm ${active === s ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15'}`;
-                btn.textContent = label;
-                btn.addEventListener('click', () => { document.body.dataset.tab = s; loadOrders(1); });
-                tabsWrap.appendChild(btn);
-            });
-        }
-
-        function setListLoading() {
-            const list = document.getElementById('ordersList');
-            list.innerHTML = skeletonCard() + skeletonCard() + skeletonCard();
-            document.getElementById('emptyState').classList.add('hidden');
+                const isActive = active === s;
+                return `<button role="tab" aria-selected="${isActive}" data-status="${s}" class="px-3 py-1.5 rounded-xl text-sm ${isActive ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15'}">${label}</button>`;
+            }).join('');
         }
 
         function renderPager(totalPages, current) {
             const nav = document.getElementById('pager');
             nav.innerHTML = '';
             if (totalPages <= 1) return;
-            const makeBtn = (label, page, disabled = false, active = false) => {
-                const base = 'px-3 py-2 rounded-lg text-sm';
-                const cls = disabled ? 'bg-white/5 text-white/40' : (active ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15');
+
+            const makeBtn = (label, page, disabled, active) => {
                 const btn = document.createElement('button');
-                btn.className = `${base} ${cls}`;
+                btn.className = `px-3 py-2 rounded-lg text-sm ${disabled ? 'bg-white/5 text-white/40' : (active ? 'bg-white/20 font-semibold' : 'bg-white/10 hover:bg-white/15')}`;
                 btn.textContent = label;
                 btn.disabled = disabled;
-                if (!disabled && !active) { btn.addEventListener('click', () => loadOrders(page)); }
+                if (!disabled && !active) btn.addEventListener('click', () => loadOrders(page));
                 return btn;
             };
-            nav.appendChild(makeBtn('Prev', Math.max(1, current - 1), current === 1));
-            for (let i = 1; i <= totalPages; i++) nav.appendChild(makeBtn(String(i), i, false, i === current));
-            nav.appendChild(makeBtn('Next', Math.min(totalPages, current + 1), current === totalPages));
+
+            nav.appendChild(makeBtn('‹', current - 1, current === 1, false));
+            for (let i = 1; i <= totalPages; i++) {
+                nav.appendChild(makeBtn(String(i), i, false, i === current));
+            }
+            nav.appendChild(makeBtn('›', current + 1, current === totalPages, false));
         }
 
-        // Mock data (used if API not connected yet)
-        function mockOrders(page) {
+        // Mock data with the new structure for testing
+        function getMockOrders(page) {
             const all = [
-                { id: 1201, reference: 'VL-2025-01201', status: 'processing', total: 8900, currency: 'LKR', placed_at: '2025-07-25', items: [{ title: 'Elden Ring', quantity: 1 }, { title: 'Forza Horizon 5', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
-                { id: 1187, reference: 'VL-2025-01187', status: 'shipped', total: 13900, currency: 'LKR', placed_at: '2025-07-18', items: [{ title: 'Cyberpunk 2077', quantity: 1 }, { title: 'GTA V', quantity: 1 }, { title: 'The Witcher 3', quantity: 1 }], delivery_method: 'Express', payment_method: 'Card', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
-                { id: 1160, reference: 'VL-2025-01160', status: 'delivered', delivered_at: '2025-07-01', total: 5200, currency: 'LKR', placed_at: '2025-06-27', items: [{ title: 'Hitman 3', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
-                { id: 1132, reference: 'VL-2025-01132', status: 'cancelled', total: 7600, currency: 'LKR', placed_at: '2025-06-12', items: [{ title: 'FIFA 24', quantity: 1 }], delivery_method: 'Standard', payment_method: 'COD', recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100' },
+                { id: 1201, reference: 'VL-2025-01201', status: 'processing', total: 18900, currency: 'LKR', placed_at: '2025-07-25', delivered_at: null, direct_items: [{ title: 'Elden Ring', quantity: 1 }], storage_bundle: { device_name: 'Seagate 1TB External HDD', items: [{ title: 'Cyberpunk 2077', quantity: 1 }, { title: 'The Witcher 3', quantity: 1 }] }, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'Card' },
+                { id: 1187, reference: 'VL-2025-01187', status: 'shipped', total: 13900, currency: 'LKR', placed_at: '2025-07-18', delivered_at: null, direct_items: [{ title: 'GTA V', quantity: 1 }, { title: 'Forza Horizon 5', quantity: 1 }], storage_bundle: null, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'COD' },
+                { id: 1160, reference: 'VL-2025-01160', status: 'delivered', total: 5200, currency: 'LKR', placed_at: '2025-06-27', delivered_at: '2025-07-01', direct_items: [], storage_bundle: { device_name: 'Kingston 512GB SSD', items: [{ title: 'Hitman 3', quantity: 1 }, { title: 'Valorant', quantity: 1 }] }, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'Card' },
             ];
-            const per = perPage; const start = (page - 1) * per; const slice = all.slice(start, start + per);
-            return { results: slice, total_pages: Math.max(1, Math.ceil(all.length / per)), page };
+            const start = (page - 1) * perPage;
+            return { results: all.slice(start, start + perPage), total_pages: Math.ceil(all.length / perPage), page };
         }
 
+        // ---------- Data Loading ----------
         async function loadOrders(page = 1) {
-            setListLoading();
-            const list = document.getElementById('ordersList');
+            document.getElementById('ordersList').innerHTML = [skeletonCard(), skeletonCard(), skeletonCard()].join('');
+            document.getElementById('emptyState').classList.add('hidden');
+
             const q = document.getElementById('q').value.trim();
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
             const status = document.body.dataset.tab || 'all';
 
-            let data;
-            try {
-                const url = new URL(ORDERS_API, window.location.origin);
-                url.searchParams.set('page', page); url.searchParams.set('per_page', perPage);
-                if (q) url.searchParams.set('q', q);
-                if (from) url.searchParams.set('from', from);
-                if (to) url.searchParams.set('to', to);
-                if (status !== 'all') url.searchParams.set('status', status);
-                const res = await fetch(url, { credentials: 'same-origin' });
-                if (!res.ok) throw new Error('API not ready');
-                data = await res.json();
-            } catch (e) {
-                // Fallback to mock data until API is wired up
-                data = mockOrders(page);
-            }
+            const url = new URL(ORDERS_API, window.location.origin);
+            url.searchParams.set('page', page);
+            url.searchParams.set('per_page', perPage);
+            if (q) url.searchParams.set('q', q);
+            if (status !== 'all') url.searchParams.set('status', status);
 
-            list.innerHTML = '';
-            const items = data.results || [];
-            if (!items.length) {
-                document.getElementById('emptyState').classList.remove('hidden');
-                renderPager(1, 1);
-                return;
+            try {
+                const res = await fetch(url, { credentials: 'same-origin' });
+                if (!res.ok) throw new Error('API request failed, using mock data.');
+                const data = await res.json();
+
+                const listEl = document.getElementById('ordersList');
+                listEl.innerHTML = '';
+
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(o => listEl.insertAdjacentHTML('beforeend', orderCard(o)));
+                } else {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                }
+                renderPager(data.total_pages || 1, data.page || 1);
+
+            } catch (e) {
+                console.warn(e.message);
+                const data = getMockOrders(page); // Fallback to mock data
+                const listEl = document.getElementById('ordersList');
+                listEl.innerHTML = '';
+                if (data.results.length > 0) {
+                    data.results.forEach(o => listEl.insertAdjacentHTML('beforeend', orderCard(o)));
+                } else {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                }
+                renderPager(data.total_pages, data.page);
             }
-            items.forEach(o => list.insertAdjacentHTML('beforeend', orderCard(o)));
-            renderPager(Number(data.total_pages || 1), Number(data.page || 1));
         }
 
-        // ---------- Language toggle (same behavior as other pages) ----------
+        // ---------- Event Listeners & Init ----------
         document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            const navToggle = document.getElementById('navToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
-
-            const enTitle = 'My Orders — Virtual Lab Games';
-            const siTitle = 'මගේ ඇණවුම් — Virtual Lab Games';
-            const enDesc = 'View your Virtual Lab Games orders. Track status, see items, totals, and download invoices.';
-            const siDesc = 'ඔබගේ Virtual Lab Games ඇණවුම් බලන්න. තත්වය පරීක්ෂා කර අයිතම, මුළු මුදල් සහ ඉන්වොයිස් බාගත කරන්න.';
             const metaDescription = document.querySelector('meta[name="description"]');
 
             const setLanguage = (lang) => {
+                const enTitle = 'My Orders — Virtual Lab Games';
+                const siTitle = 'මගේ ඇණවුම් — Virtual Lab Games';
+                const enDesc = 'View your Virtual Lab Games orders. Track status, see items, totals, and download invoices.';
+                const siDesc = 'ඔබගේ Virtual Lab Games ඇණවුම් බලන්න. තත්වය පරීක්ෂා කර අයිතම, මුළු මුදල් සහ ඉන්වොයිස් බාගත කරන්න.';
+
                 if (lang === 'si') {
-                    body.classList.add('sinhala-mode'); body.classList.add('font-sinhala');
+                    body.classList.add('sinhala-mode', 'font-sinhala');
                     if (langToggleBtn) langToggleBtn.textContent = 'EN';
                     if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'EN';
                     document.title = siTitle; metaDescription?.setAttribute('content', siDesc);
                     localStorage.setItem('language', 'si');
                 } else {
-                    body.classList.remove('sinhala-mode'); body.classList.remove('font-sinhala');
+                    body.classList.remove('sinhala-mode', 'font-sinhala');
                     if (langToggleBtn) langToggleBtn.textContent = 'සිංහල';
                     if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'සිංහල';
                     document.title = enTitle; metaDescription?.setAttribute('content', enDesc);
                     localStorage.setItem('language', 'en');
                 }
-                // Refresh UI labels that are language-dependent
                 document.getElementById('q').placeholder = t('search_placeholder');
                 renderTabs(document.body.dataset.tab || 'all');
             };
 
-            const toggleLanguage = () => { const currentLang = localStorage.getItem('language') || 'en'; setLanguage(currentLang === 'en' ? 'si' : 'en'); };
+            const toggleLanguage = () => {
+                const newLang = localStorage.getItem('language') === 'si' ? 'en' : 'si';
+                setLanguage(newLang);
+                loadOrders(1);
+            };
             langToggleBtn?.addEventListener('click', toggleLanguage);
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
 
-            const savedLang = localStorage.getItem('language');
-            setLanguage(savedLang || 'en');
+            document.getElementById('statusTabs').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-status]');
+                if (btn) {
+                    document.body.dataset.tab = btn.dataset.status;
+                    renderTabs(btn.dataset.status);
+                    loadOrders(1);
+                }
+            });
 
-            // Initial tab + data
-            renderTabs('all');
+            document.body.dataset.tab = 'all';
+            setLanguage(localStorage.getItem('language') || 'en');
             loadOrders(1);
         });
     </script>

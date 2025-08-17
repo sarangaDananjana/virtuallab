@@ -93,13 +93,13 @@
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
                     <!-- Desktop actions (hidden on mobile) -->
-                    <a href="{% url 'tickets-page' %}"
+                    <a href="{% url 'cart_page' %}"
                         class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ටිකට්</span>
+                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
                     </a>
                     <a href="{% url 'shop-page' %}"
                         class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
@@ -110,7 +110,7 @@
                         <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
                     </a>
                     {% if user.is_authenticated %}
-                    <a href="#" aria-label="Account"
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
                         class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
                         {{user_initial }}</a>
                     {% else %}
@@ -256,6 +256,13 @@
                         <div class="text-sm text-white/70"><span class="lang-en">Grand total</span><span
                                 class="lang-si">මුළු එකතුව</span></div>
                         <div id="grand-total" class="text-2xl sm:text-3xl font-black">—</div>
+
+                        <!-- Shipping fee row (new) -->
+                        <div class="mt-2 flex items-center justify-between text-sm text-white/80">
+                            <span class="lang-en">Shipping fee</span><span class="lang-si">බෙදාහැරීම් ගාස්තුව</span>
+                            <span id="shipping-fee" class="font-semibold">—</span>
+                        </div>
+
                         <div class="mt-1 text-xs text-white/60"><span class="lang-en">Installation help included • Fast
                                 islandwide delivery</span><span class="lang-si">ස්ථාපන සහාය ඇතුළත් • දිවයින පුරා වේගවත්
                                 බෙදාහැරීම</span></div>
@@ -279,12 +286,96 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 z-[60] hidden">
+        <!-- Modal Backdrop -->
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="checkoutModalBackdrop"></div>
+
+        <!-- Modal Content -->
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-auto animate-slide-up">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-black"><span class="lang-en">Shipping Details</span><span
+                                class="lang-si">නැව්ගත කිරීමේ විස්තර</span></h3>
+                        <p class="text-sm text-white/60"><span class="lang-en">Confirm your delivery
+                                information.</span><span class="lang-si">ඔබගේ බෙදාහැරීමේ තොරතුරු තහවුරු කරන්න.</span>
+                        </p>
+                    </div>
+                    <button id="closeCheckoutModal"
+                        class="text-white/60 hover:text-white transition-colors text-2xl">×</button>
+                </div>
+
+                <form id="checkoutForm" class="space-y-4">
+                    <!-- Form Fields -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-2"><span class="lang-en">Full
+                                Name</span><span class="lang-si">සම්පූර්ණ නම</span></label>
+                        <input required type="text" id="name" name="name"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium mb-2"><span
+                                    class="lang-en">Email</span><span class="lang-si">විද්යුත් තැපෑල</span></label>
+                            <input required type="email" id="email" name="email"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium mb-2"><span class="lang-en">Phone
+                                    Number</span><span class="lang-si">දුරකථන අංකය</span></label>
+                            <input required type="tel" id="phone" name="phone"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="address_line1" class="block text-sm font-medium mb-2"><span class="lang-en">Address
+                                Line 1</span><span class="lang-si">ලිපිනය 1</span></label>
+                        <input required type="text" id="address_line1" name="address_line1"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    </div>
+                    <div>
+                        <label for="address_line2" class="block text-sm font-medium mb-2"><span class="lang-en">Address
+                                Line 2 (Optional)</span><span class="lang-si">ලිපිනය 2 (අත්‍යවශ්‍ය නොවේ)</span></label>
+                        <input type="text" id="address_line2" name="address_line2"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="city" class="block text-sm font-medium mb-2"><span
+                                    class="lang-en">City</span><span class="lang-si">නගරය</span></label>
+                            <input required type="text" id="city" name="city"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                        <div>
+                            <label for="postal_code" class="block text-sm font-medium mb-2"><span class="lang-en">Postal
+                                    Code</span><span class="lang-si">තැපැල් කේතය</span></label>
+                            <input required type="text" id="postal_code" name="postal_code"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Submission Button -->
+                    <div class="pt-4">
+                        <button id="btnConfirmPayment" type="submit"
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
+                            <span class="lang-en">Confirm & Proceed to Payment</span><span class="lang-si">තහවුරු කර
+                                ගෙවීමට යන්න</span>
+                        </button>
+                        <p id="checkoutError" class="text-xs text-red-400 text-center mt-3 hidden"></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         // ---------- Helpers ----------
-        const CHECKOUT_URL = '/checkout/'; // update if differs
         const fmt = (x) => (x === null || x === undefined) ? '0.00' : String(x);
         function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
         const csrftoken = getCookie('csrftoken');
+        let currentGrandTotal = 0; // To store the grand total for the payment API
 
         // i18n strings for dynamic UI
         const L = {
@@ -292,13 +383,23 @@
                 qty: 'Qty', size: 'Size', remove: 'Remove',
                 noDirect: 'No direct purchases yet.', noDeviceGames: 'No games added to the device yet.',
                 removing: 'Removing…',
-                removeDeviceConfirm: 'Remove the selected device and all games on it?'
+                removeDeviceConfirm: 'Remove the selected device and all games on it?',
+                confirming: 'Confirming...',
+                redirecting: 'Redirecting to payment...',
+                fillAllFields: 'Please fill all required fields.',
+                updateFailed: 'Failed to update details. Please try again.',
+                paymentFailed: 'Could not initiate payment. Please try again.'
             },
             si: {
                 qty: 'ප්‍රමාණය', size: 'ප්‍රමාණය', remove: 'ඉවත් කරන්න',
                 noDirect: 'සෘජු මිලදී ගැනීම් කිසිවක් නොමැත.', noDeviceGames: 'උපාංගයට ගේම් එකතු කර නොමැත.',
                 removing: 'ඉවත් කරමින්…',
-                removeDeviceConfirm: 'තෝරාගත් උපාංගය සහ එහි ඇති සියලු ගේම් ඉවත් කරලෑද?'
+                removeDeviceConfirm: 'තෝරාගත් උපාංගය සහ එහි ඇති සියලු ගේම් ඉවත් කරලෑද?',
+                confirming: 'තහවුරු කරමින්...',
+                redirecting: 'ගෙවීම් වෙත යොමු වෙමින්...',
+                fillAllFields: 'කරුණාකර අවශ්‍ය සියලුම ක්ෂේත්‍ර පුරවන්න.',
+                updateFailed: 'විස්තර යාවත්කාලීන කිරීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න.',
+                paymentFailed: 'ගෙවීම ආරම්භ කිරීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.'
             }
         };
         const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
@@ -310,15 +411,15 @@
             const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
             const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
             return `
-        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto auto;">
-          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
-          <div>
-            <div class="font-semibold">${p.title}</div>
-            <div class="text-xs text-white/60">${t('qty')}: ${item.quantity}${size ? ` • ${size}` : ''}</div>
-          </div>
-          <div class="font-semibold">${fmt(item.subtotal)} ${p.currency || ''}</div>
-          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-left" data-id="${item.id}">${t('remove')}</button>
-        </article>`;
+<article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto auto;">
+  <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+  <div>
+    <div class="font-semibold">${p.title}</div>
+    <div class="text-xs text-white/60">${t('qty')}: ${item.quantity}${size ? ` • ${size}` : ''}</div>
+  </div>
+  <div class="font-semibold">${fmt(item.subtotal)} ${p.currency || ''}</div>
+  <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-left" data-id="${item.id}">${t('remove')}</button>
+</article>`;
         }
 
         function productRowRight(item) {
@@ -326,70 +427,110 @@
             const img = p.primary_image || "{% static 'images/cover-placeholder.jpg' %}";
             const size = p.game_size_gb ? `${fmt(p.game_size_gb)} GB` : '';
             return `
-        <article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto;">
-          <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
-          <div>
-            <div class="font-semibold">${p.title}</div>
-            ${size ? `<div class=\"mt-1 text-xs text-white/60\">${t('size')}: ${size}</div>` : ''}
-          </div>
-          <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-on-device" data-id="${item.id}">${t('remove')}</button>
-        </article>`;
+<article class="py-3 grid items-center gap-3" style="grid-template-columns:64px 1fr auto;">
+  <img class="w-16 h-16 rounded-xl object-cover ring-1 ring-white/10 bg-white/5" src="${img}" alt="${p.title}">
+  <div>
+    <div class="font-semibold">${p.title}</div>
+    ${size ? `<div class=\"mt-1 text-xs text-white/60\">${t('size')}: ${size}</div>` : ''}
+  </div>
+  <button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="remove-on-device" data-id="${item.id}">${t('remove')}</button>
+</article>`;
         }
 
         function deviceBlock(device) {
             if (!device) return `<p class="text-sm text-white/70"><span class="lang-en">Choose a storage device and add games to it. Capacity updates automatically.</span><span class="lang-si">ගබඩා උපාංගයක් තෝරා එයට ගේම් එක්කරන්න. ධාරිතාව ස්වයංක්‍රීයව යාවත්කාලීන වේ.</span></p>`;
             const img = device.image_url || "{% static 'images/drive-placeholder.jpg' %}";
             return `
-        <div class="flex items-center gap-3">
-          <img src="${img}" alt="${device.name}" class="w-16 h-20 object-cover rounded-xl ring-1 ring-white/10 bg-white/5" />
-          <div>
-            <div class="font-semibold">${device.name}</div>
-            <div class="text-xs text-white/60">${device.category_display || ''}</div>
-            <div class="text-xs text-white/60">Capacity: ${fmt(device.true_capacity_gb)} GB</div>
-          </div>
-        </div>`;
+<div class="flex items-center gap-3">
+  <img src="${img}" alt="${device.name}" class="w-16 h-20 object-cover rounded-xl ring-1 ring-white/10 bg-white/5" />
+  <div>
+    <div class="font-semibold">${device.name}</div>
+    <div class="text-xs text-white/60">${device.category_display || ''}</div>
+    <div class="text-xs text-white/60">Capacity: ${fmt(device.true_capacity_gb)} GB</div>
+  </div>
+</div>`;
         }
 
         // ---------- API calls ----------
-        async function removeOnDevice(storageItemId) {
-            const res = await fetch("{% url 'api_cart_remove_from_device' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ storage_item_id: storageItemId }) });
-            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
-            return res.json();
+        async function apiCall(url, options = {}) {
+            const defaultOptions = {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+            };
+            const res = await fetch(url, { ...defaultOptions, ...options });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({ detail: `Request failed with status ${res.status}` }));
+                throw new Error(err.detail || 'An unknown error occurred');
+            }
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return res.json();
+            }
+            return {};
         }
-        async function removeLeftItem(itemId) {
-            const res = await fetch("{% url 'api_remove_product_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ item_id: itemId }) });
-            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove' })); throw new Error(err.detail || 'Failed'); }
-            return res.json();
-        }
-        async function removeDevice() {
-            const res = await fetch("{% url 'api_remove_storage_device_from_cart' %}", { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({}) });
-            if (!res.ok) { const err = await res.json().catch(() => ({ detail: 'Failed to remove device' })); throw new Error(err.detail || 'Failed'); }
-            return res.json();
+
+        const removeOnDevice = (id) => apiCall("{% url 'api_cart_remove_from_device' %}", { method: 'POST', body: JSON.stringify({ storage_item_id: id }) });
+        const removeLeftItem = (id) => apiCall("{% url 'api_remove_product_from_cart' %}", { method: 'POST', body: JSON.stringify({ item_id: id }) });
+        const removeDevice = () => apiCall("{% url 'api_remove_storage_device_from_cart' %}", { method: 'POST' });
+        const getMe = () => apiCall('/api/me');
+        const updateMe = (data) => apiCall('/api/me/update', { method: 'PATCH', body: JSON.stringify(data) });
+        // UPDATED: startPayment is now a POST request that sends the amount
+        const startPayment = (amountInCents) => apiCall('/api/payments/genie/start', {
+            method: 'POST',
+            body: JSON.stringify({ amount: amountInCents })
+        });
+
+        // ---------- Shipping Fee Calculation ----------
+        function calculateShippingFee(directGamesCount, hasDevice) {
+            let shippingFee = 0;
+            const BASE_FEE = 350;
+            const PER_GAME_FEE = 50;
+            const GAME_THRESHOLD = 3;
+            if (hasDevice || directGamesCount > 0) {
+                shippingFee = BASE_FEE;
+                if (directGamesCount > GAME_THRESHOLD) {
+                    shippingFee += (directGamesCount - GAME_THRESHOLD) * PER_GAME_FEE;
+                }
+            }
+            return shippingFee;
         }
 
         // ---------- Load + bind ----------
         async function loadCart() {
-            const res = await fetch("{% url 'api_cart' %}", { credentials: 'same-origin' });
-            const data = await res.json();
+            const data = await apiCall("{% url 'api_cart' %}");
 
-            // Left
+            // Left (Direct Purchases)
             const leftEl = document.getElementById('left-items');
-            leftEl.innerHTML = (data.left_items && data.left_items.length) ? data.left_items.map(productRowLeft).join('') : `<p class="text-sm text-white/70">${t('noDirect')}</p>`;
+            leftEl.innerHTML = (data.left_items?.length) ? data.left_items.map(productRowLeft).join('') : `<p class="text-sm text-white/70">${t('noDirect')}</p>`;
             const directTotal = parseFloat(data.direct_total || '0');
             document.getElementById('direct-total').textContent = fmt(directTotal.toFixed(2));
 
-            // Right
+            // Right (Device Bundle)
             document.getElementById('device-block').innerHTML = deviceBlock(data.device);
             const rightItemsEl = document.getElementById('right-items');
-            rightItemsEl.innerHTML = (data.right_items && data.right_items.length) ? data.right_items.map(productRowRight).join('') : `<p class="text-sm text-white/70">${t('noDeviceGames')}</p>`;
+            rightItemsEl.innerHTML = (data.right_items?.length) ? data.right_items.map(productRowRight).join('') : `<p class="text-sm text-white/70">${t('noDeviceGames')}</p>`;
 
-            // Totals
+            // Totals Calculation
             const devicePrice = parseFloat(data.storage_device_price || '0');
             document.getElementById('device-price').textContent = fmt(devicePrice.toFixed(2));
-            const grand = directTotal + devicePrice; // games on device are free
-            document.getElementById('grand-total').textContent = fmt(grand.toFixed(2));
 
-            // Capacity
+            const directGamesCount = data.left_items?.length || 0;
+            const hasDevice = !!data.device;
+            const shippingFee = calculateShippingFee(directGamesCount, hasDevice);
+            document.getElementById('shipping-fee').textContent = (shippingFee > 0) ? `Rs ${fmt(shippingFee.toFixed(2))}` : '—';
+
+            const subtotal = directTotal + devicePrice;
+            const grandTotal = subtotal + shippingFee;
+            document.getElementById('grand-total').textContent = `Rs ${fmt(grandTotal.toFixed(2))}`;
+
+            // UPDATED: Store grand total for payment API
+            currentGrandTotal = grandTotal;
+
+            // Capacity bar
             const capBlock = document.getElementById('capacity-block');
             if (data.device) {
                 capBlock.classList.remove('hidden');
@@ -404,34 +545,105 @@
                 capBlock.classList.add('hidden');
             }
 
-            // Enable/disable checkout
-            const checkout = document.getElementById('btnCheckout');
-            checkout.disabled = !(grand > 0);
+            document.getElementById('btnCheckout').disabled = !(subtotal > 0);
         }
 
-        // Delegated remove actions
-        document.addEventListener('click', async (e) => {
-            const devBtn = e.target.closest('[data-action="remove-on-device"]');
-            if (devBtn) {
-                const id = devBtn.getAttribute('data-id');
-                devBtn.disabled = true; const old = devBtn.textContent; devBtn.textContent = t('removing');
-                try { await removeOnDevice(id); await loadCart(); }
-                catch (err) { alert(err.message || 'Could not remove'); }
-                finally { devBtn.disabled = false; devBtn.textContent = old; }
+        // ---------- Checkout Modal Logic ----------
+        const checkoutModal = document.getElementById('checkoutModal');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const confirmBtn = document.getElementById('btnConfirmPayment');
+        const errorEl = document.getElementById('checkoutError');
+
+        function openCheckoutModal() {
+            if (!checkoutModal) return;
+            checkoutModal.classList.remove('hidden');
+            confirmBtn.disabled = true;
+            errorEl.classList.add('hidden');
+
+            getMe().then(data => {
+                document.getElementById('name').value = data.name || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('address_line1').value = data.address_line1 || '';
+                document.getElementById('address_line2').value = data.address_line2 || '';
+                document.getElementById('city').value = data.city || '';
+                document.getElementById('postal_code').value = data.postal_code || '';
+            }).catch(err => {
+                console.error("Could not fetch user data:", err);
+            }).finally(() => {
+                confirmBtn.disabled = false;
+            });
+        }
+
+        function closeCheckoutModal() {
+            if (!checkoutModal) return;
+            checkoutModal.classList.add('hidden');
+        }
+
+        async function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            const btnOriginalText = confirmBtn.innerHTML;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = `<span class="lang-en">${t('confirming')}</span><span class="lang-si">${t('confirming')}</span>`;
+            errorEl.classList.add('hidden');
+
+            const formData = new FormData(checkoutForm);
+            const data = Object.fromEntries(formData.entries());
+            const requiredFields = ['name', 'email', 'phone', 'address_line1', 'city', 'postal_code'];
+            if (requiredFields.some(field => !data[field].trim())) {
+                errorEl.textContent = t('fillAllFields');
+                errorEl.classList.remove('hidden');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = btnOriginalText;
                 return;
             }
-            const leftBtn = e.target.closest('[data-action="remove-left"]');
-            if (leftBtn) {
-                const id = leftBtn.getAttribute('data-id');
-                leftBtn.disabled = true; const old = leftBtn.textContent; leftBtn.textContent = t('removing');
-                try { await removeLeftItem(id); await loadCart(); }
-                catch (err) { alert(err.message || 'Could not remove'); }
-                finally { leftBtn.disabled = false; leftBtn.textContent = old; }
-                return;
+
+            try {
+                await updateMe(data);
+
+                confirmBtn.innerHTML = `<span class="lang-en">${t('redirecting')}</span><span class="lang-si">${t('redirecting')}</span>`;
+
+                // UPDATED: Send grand total in cents to the payment API
+                const amountInCents = Math.round(currentGrandTotal * 100);
+                const paymentData = await startPayment(amountInCents);
+
+                if (paymentData && paymentData.url) {
+                    window.location.href = paymentData.url;
+                } else {
+                    throw new Error('Payment URL not found in response.');
+                }
+
+            } catch (err) {
+                errorEl.textContent = err.message || t('paymentFailed');
+                errorEl.classList.remove('hidden');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = btnOriginalText;
+            }
+        }
+
+        // ---------- Event Listeners ----------
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            btn.disabled = true;
+            const oldText = btn.textContent;
+            btn.textContent = t('removing');
+
+            try {
+                if (action === 'remove-on-device') await removeOnDevice(id);
+                if (action === 'remove-left') await removeLeftItem(id);
+                await loadCart();
+            } catch (err) {
+                alert(err.message || 'Could not remove');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = oldText;
             }
         });
 
-        // Remove device
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('btnRemoveDevice')?.addEventListener('click', async () => {
                 if (!confirm(t('removeDeviceConfirm'))) return;
@@ -441,7 +653,13 @@
                 catch (err) { alert(err.message || 'Could not remove device'); }
                 finally { btn.disabled = false; btn.textContent = old; }
             });
-            document.getElementById('btnCheckout')?.addEventListener('click', () => { window.location.href = CHECKOUT_URL; });
+
+            document.getElementById('btnCheckout')?.addEventListener('click', openCheckoutModal);
+
+            document.getElementById('closeCheckoutModal')?.addEventListener('click', closeCheckoutModal);
+            document.getElementById('checkoutModalBackdrop')?.addEventListener('click', closeCheckoutModal);
+            checkoutForm?.addEventListener('submit', handleCheckoutSubmit);
+
             document.getElementById('year').textContent = new Date().getFullYear();
             loadCart().catch(console.error);
         });
@@ -464,16 +682,14 @@
 
             const setLanguage = (lang) => {
                 if (lang === 'si') {
-                    body.classList.add('sinhala-mode');
-                    body.classList.add('font-sinhala');
+                    body.classList.add('sinhala-mode', 'font-sinhala');
                     langToggleBtn && (langToggleBtn.textContent = 'EN');
                     langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
                     document.title = siTitle;
                     metaDescription?.setAttribute('content', siDesc);
                     localStorage.setItem('language', 'si');
                 } else {
-                    body.classList.remove('sinhala-mode');
-                    body.classList.remove('font-sinhala');
+                    body.classList.remove('sinhala-mode', 'font-sinhala');
                     langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
                     langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
                     document.title = enTitle;
@@ -485,16 +701,16 @@
             const toggleLanguage = () => {
                 const currentLang = localStorage.getItem('language') || 'en';
                 setLanguage(currentLang === 'en' ? 'si' : 'en');
-                // re-render to refresh any text built from L[]
                 loadCart().catch(console.error);
             };
 
             langToggleBtn?.addEventListener('click', toggleLanguage);
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
 
-            const savedLang = localStorage.getItem('language');
-            setLanguage(savedLang || 'en');
+            setLanguage(localStorage.getItem('language') || 'en');
         });
+
+
     </script>
 </body>
 

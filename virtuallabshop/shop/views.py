@@ -1,23 +1,31 @@
+import hmac
+import hashlib
+import json
 from datetime import datetime
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from decimal import Decimal, InvalidOperation
+import requests
+from virtuallabshop.settings import GENIE_API_KEY, GENIE_API_URL, GENIE_WEBHOOK_URL
 from django.utils.dateparse import parse_date
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from decimal import Decimal
-from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem
+from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST, require_GET
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view, renderer_classes, parser_classes
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
@@ -30,6 +38,122 @@ User = get_user_model()
 def _redirect_to_login(request):
     login_url = reverse("login-page")
     return redirect(f"{login_url}?next={quote(request.get_full_path())}")
+
+
+# ---------- Profile HTML page ----------
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def profile_page(request):
+    """Render the Profile HTML page (requires login)."""
+    if not request.user.is_authenticated:
+        return _redirect_to_login(request)
+
+    name = request.user.get_username() or getattr(request.user, "email", "") or ""
+    user_initial = name[0].upper() if name else None
+    return Response({"user": request.user, "user_initial": user_initial}, template_name="profile.html")
+
+
+# ---------- Profile JSON APIs ----------
+def _serialize_me(u: User) -> dict:
+    return {
+        # matches your profile.html JS keys
+        "name": (f"{u.first_name} {u.last_name}".strip() or u.username),
+        "email": u.email or "",
+        "phone": getattr(u, "phone_number", "") or "",
+        "address_no": getattr(u, "address_no", "") or "",
+        "address_line1": getattr(u, "address_line1", "") or "",
+        "address_line2": getattr(u, "address_line2", "") or "",
+        "city": getattr(u, "city", "") or "",
+        "postal_code": getattr(u, "postal_code", "") or "",
+        "member_since": u.date_joined,  # ISO string in DRF response
+    }
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_me(request):
+    """Return the current user's profile info."""
+    return Response(_serialize_me(request.user))
+
+
+@api_view(["PATCH", "POST"])
+@parser_classes([JSONParser, FormParser, MultiPartParser])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_me_update(request):
+    """
+    Update current user's profile.
+    Allowed fields: name, email, phone, address_no, address_line1, address_line2, city, postal_code.
+    Explicitly ignores username/password changes.
+    """
+    u = request.user
+    data = request.data or {}
+
+    # Extract inputs (strip whitespace)
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip()
+    phone = (data.get("phone") or "").strip()
+    address_no = (data.get("address_no") or "").strip()
+    address_line1 = (data.get("address_line1") or "").strip()
+    address_line2 = (data.get("address_line2") or "").strip()
+    city = (data.get("city") or "").strip()
+    postal_code = (data.get("postal_code") or "").strip()
+
+    # Validate uniqueness when changing email/phone
+    if email and email.lower() != (u.email or "").lower():
+        if User.objects.filter(email__iexact=email).exclude(pk=u.pk).exists():
+            return Response({"detail": "Email already in use."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if phone and phone != (u.phone_number or ""):
+        if User.objects.filter(phone_number__iexact=phone).exclude(pk=u.pk).exists():
+            return Response({"detail": "Phone number already in use."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Apply changes (username/password are intentionally ignored here)
+    with transaction.atomic():
+        changed = []
+
+        # name → split into first/last (simple heuristic)
+        if name:
+            parts = name.split()
+            first = " ".join(parts[:-1]) if len(parts) > 1 else name
+            last = parts[-1] if len(parts) > 1 else ""
+            if first != u.first_name:
+                u.first_name = first
+                changed.append("first_name")
+            if last != u.last_name:
+                u.last_name = last
+                changed.append("last_name")
+
+        if email and email != u.email:
+            u.email = email
+            changed.append("email")
+        if phone and phone != (u.phone_number or ""):
+            u.phone_number = phone
+            changed.append("phone_number")
+
+        # addresses
+        if address_no != (u.address_no or ""):
+            u.address_no = address_no
+            changed.append("address_no")
+        if address_line1 != (u.address_line1 or ""):
+            u.address_line1 = address_line1
+            changed.append("address_line1")
+        if address_line2 != (u.address_line2 or ""):
+            u.address_line2 = address_line2
+            changed.append("address_line2")
+        if city != (u.city or ""):
+            u.city = city
+            changed.append("city")
+        if postal_code != (u.postal_code or ""):
+            u.postal_code = postal_code
+            changed.append("postal_code")
+
+        if changed:
+            u.save(update_fields=list(set(changed)))  # dedupe for safety
+
+    return Response(_serialize_me(u), status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])  # Home
@@ -202,7 +326,7 @@ def ticket_submit_page(request):
 @ensure_csrf_cookie
 def api_reserved_slots(request):
     """
-    this api grab the reserved slot informations for the ticet submition process 
+    this api grab the reserved slot informations for the ticet submition process
     so the user can't book a already booked slot
     """
     date_str = request.query_params.get("date")
@@ -968,3 +1092,515 @@ def api_remove_storage_device_from_cart(request):
     cart.save(update_fields=["storage_device"])
 
     return Response({"ok": True})
+
+
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def orders_page(request):
+    """
+    Render the Orders HTML page (requires login).
+    """
+    if not request.user.is_authenticated:
+        return _redirect_to_login(request)
+
+    name = request.user.get_username() or getattr(request.user, "email", "") or ""
+    user_initial = name[0].upper() if name else None
+    return Response({"user": request.user, "user_initial": user_initial}, template_name="orders.html")
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_orders_me(request):
+    """
+    Return current user's orders in the shape required by orders.html:
+    - direct_items: from OrderItem
+    - storage_bundle: { device_name, items } from OrderStorageItem (+ device name if available)
+    Supports: ?page=1&per_page=5&status=processing|shipped|delivered|cancelled
+              &q=<order id or product title>&from=YYYY-MM-DD&to=YYYY-MM-DD
+    """
+
+    # --- base queryset: only this user's orders ---
+    qs = (
+        Order.objects
+        .filter(users=request.user)
+        .prefetch_related(
+            Prefetch(
+                "orderitem_set",
+                queryset=OrderItem.objects.select_related("product")
+                .prefetch_related("product__images"),
+            ),
+            Prefetch(
+                # OrderStorageItem FK -> Order(related_name="storage_items")
+                "storage_items",
+                queryset=OrderStorageItem.objects.select_related("product")
+                .prefetch_related("product__images"),
+            ),
+        )
+        .order_by("-ordered_at")
+    )
+
+    # --- filters ---
+    q = (request.query_params.get("q") or "").strip()
+    if q:
+        cond = (
+            Q(payment_reference__icontains=q)
+            | Q(orderitem__product__title__icontains=q)
+            | Q(storage_items__product__title__icontains=q)
+        )
+        if q.isdigit():
+            cond |= Q(id=int(q))
+        qs = qs.filter(cond).distinct()
+
+    from_str = (request.query_params.get("from") or "").strip()
+    to_str = (request.query_params.get("to") or "").strip()
+    if from_str:
+        qs = qs.filter(ordered_at__date__gte=parse_date(from_str))
+    if to_str:
+        qs = qs.filter(ordered_at__date__lte=parse_date(to_str))
+
+    # UI → model status mapping
+    ui_to_model = {
+        "processing": [Order.OrderStatus.PAYMENT_INITIATED, Order.OrderStatus.PAYMENT_SUCCESS],
+        "shipped":    [Order.OrderStatus.ORDER_SENT],
+        "delivered":  [Order.OrderStatus.ORDER_DELIVERED],
+        "cancelled":  [Order.OrderStatus.CANCELLED],
+    }
+    ui_status = (request.query_params.get("status") or "").strip().lower()
+    if ui_status in ui_to_model:
+        qs = qs.filter(status__in=ui_to_model[ui_status])
+
+    # --- pagination ---
+    try:
+        per_page = max(1, int(request.query_params.get("per_page") or 5))
+    except ValueError:
+        per_page = 5
+    try:
+        page_number = max(1, int(request.query_params.get("page") or 1))
+    except ValueError:
+        page_number = 1
+
+    paginator = Paginator(qs, per_page)
+    page_obj = paginator.get_page(page_number)
+
+    # helpers
+    def map_status(o: Order) -> str:
+        if o.status == Order.OrderStatus.ORDER_DELIVERED:
+            return "delivered"
+        if o.status == Order.OrderStatus.ORDER_SENT:
+            return "shipped"
+        if o.status == Order.OrderStatus.CANCELLED:
+            return "cancelled"
+        return "processing"
+
+    def payment_label(o: Order) -> str:
+        return {"CARD": "Card", "BANK_TRANSFER": "Bank transfer"}.get(o.payment_method, o.payment_method)
+
+    # Try to provide a device name for the storage bundle when possible.
+    # If you later add Order.storage_device (FK) or Order.storage_device_name (CharField),
+    # this will automatically pick it up.
+    def infer_device_name(o: Order) -> str:
+        # Preferred future fields if you add them:
+        name = getattr(o, "storage_device_name", None)
+        if name:
+            return name
+        sd = getattr(o, "storage_device", None)
+        if getattr(sd, "name", None):
+            return sd.name
+        # Fallback label if unknown but we do have storage items:
+        if getattr(o, "storage_items", None) and o.storage_items.exists():
+            return "Selected storage device"
+        return ""
+
+    u = request.user
+
+    def serialize(o: Order) -> dict:
+        # --- direct items (left side)
+        direct_items = []
+        for it in o.orderitem_set.all():
+            p = it.product
+            direct_items.append({
+                "title": p.title,
+                "quantity": it.quantity,
+                "cover_url": _product_primary_image_url(p, request),
+            })
+
+        # --- storage bundle (right side)
+        storage_items_payload = []
+        for si in o.storage_items.all():
+            p = si.product
+            storage_items_payload.append({
+                "title": p.title,
+                "quantity": si.quantity,
+                "cover_url": _product_primary_image_url(p, request),
+            })
+        storage_bundle = None
+        if storage_items_payload:
+            storage_bundle = {
+                "device_name": infer_device_name(o) or "",
+                "items": storage_items_payload,
+            }
+
+        # Friendly reference: prefer payment_reference; else synthesize "VL-00001"
+        reference = o.payment_reference or (f"VL-{o.id:05d}" if o.id else None)
+
+        delivered_at = (
+            o.updated_at.isoformat()
+            if (o.status == Order.OrderStatus.ORDER_DELIVERED and o.updated_at)
+            else None
+        )
+
+        return {
+            "id": o.id,
+            "reference": reference,
+            "status": map_status(o),
+            # string keeps cents exact; frontend casts as Number
+            "total": str(o.total),
+            "currency": o.currency,
+            "placed_at": o.ordered_at.isoformat(),
+            "delivered_at": delivered_at,
+
+            "direct_items": direct_items,
+            "storage_bundle": storage_bundle,  # null if no storage items
+
+            "recipient_name": (f"{u.first_name} {u.last_name}".strip() or u.username or u.email),
+            "address_line1": getattr(u, "address_line1", "") or "",
+            "address_line2": getattr(u, "address_line2", "") or "",
+            "city": getattr(u, "city", "") or "",
+            "postal_code": getattr(u, "postal_code", "") or "",
+
+            "payment_method": payment_label(o),
+            "delivery_method": "Standard",
+        }
+
+    results = [serialize(o) for o in page_obj.object_list]
+    return Response({
+        "results": results,
+        "total_pages": paginator.num_pages,
+        "page": page_obj.number,
+        "per_page": per_page,
+    })
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_genie_start(request):
+    """
+    Create a Genie transaction for the current user and return the checkout URL.
+
+    Request JSON:
+      {
+        "amount": 1000,              # required; numeric (LKR, no cents)
+        "currency": "LKR",           # optional, defaults to LKR
+        "webhook": "https://..."     # optional; falls back to settings.GENIE_WEBHOOK_URL
+      }
+
+    Response JSON:
+      { "url": "https://..." }
+    """
+    u = request.user
+    data = request.data or {}
+
+    # --- validate amount ---
+    amount = data.get("amount", None)
+    try:
+        if amount is None:
+            raise ValueError("Amount is required.")
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            raise ValueError("Amount must be > 0.")
+        # Genie (LKR) typically expects whole value; send as int
+        amount_to_send = int(amount)
+    except (InvalidOperation, ValueError) as e:
+        return Response({"detail": f"Invalid amount: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    currency = (data.get("currency") or "LKR").upper()
+    webhook = GENIE_WEBHOOK_URL
+
+    # --- build payload from logged-in user's profile ---
+    full_name = (f"{u.first_name} {u.last_name}".strip()
+                 or u.get_username() or getattr(u, "email", ""))
+    payload = {
+        "amount": amount_to_send,
+        "currency": currency,
+        "customer": {
+            "name": full_name,
+            "email": getattr(u, "email", "") or "",
+            "billingEmail": getattr(u, "email", "") or "",
+            "billingAddress1": getattr(u, "address_line1", "") or "",
+            "billingAddress2": getattr(u, "address_line2", "") or "",
+            "billingCity": getattr(u, "city", "") or "",
+            "billingCountry": "LK",
+            "billingPostCode": getattr(u, "postal_code", "") or "",
+        },
+    }
+    if webhook:
+        payload["webhook"] = webhook
+
+    # --- call Genie ---
+    api_key = GENIE_API_KEY
+    if not api_key:
+        return Response({"detail": "Missing GENIE_API_KEY in settings."},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    url = GENIE_API_URL
+
+    headers = {
+        # if your account uses Bearer, change to: f"Bearer {api_key}"
+        "Authorization": f"{api_key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+    try:
+        r = requests.post(url, json=payload, headers=headers, timeout=15)
+    except requests.RequestException as e:
+        return Response({"detail": f"Upstream request failed: {e}"},
+                        status=status.HTTP_502_BAD_GATEWAY)
+
+    # bubble up provider errors clearly
+    if r.status_code >= 400:
+        try:
+            provider = r.json()
+        except Exception:
+            provider = r.text
+        return Response({
+            "detail": "Genie error",
+            "provider_status": r.status_code,
+            "provider_response": provider
+        }, status=status.HTTP_502_BAD_GATEWAY)
+
+    try:
+        body = r.json()
+    except ValueError:
+        return Response({"detail": "Genie returned non-JSON response."},
+                        status=status.HTTP_502_BAD_GATEWAY)
+
+    checkout_url = body.get("url")
+    if not checkout_url:
+        return Response({"detail": "No 'url' in Genie response.", "provider_response": body},
+                        status=status.HTTP_502_BAD_GATEWAY)
+
+    customer_id = body.get("customerId") or body.get("customer_id")
+
+    # Save on the logged-in user
+    if customer_id:
+        customer_id = str(customer_id)
+        if getattr(request.user, "customer_id", "") != customer_id:
+            request.user.customer_id = customer_id
+            request.user.save(update_fields=["customer_id"])
+
+        else:
+            return Response({"detail": "No 'CustomerID' in Genie response.", "provider_response": body},
+                            status=status.HTTP_502_BAD_GATEWAY)
+
+    return Response({"url": checkout_url})
+
+
+@csrf_exempt
+def genie_webhook(request):
+    # 1) Only accept POST
+    if request.method != "POST":
+        return HttpResponse(status=405)  # Method Not Allowed
+
+    # 2) Read raw body
+    raw_body = request.body
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Invalid JSON")
+
+    # 3) Signature headers
+    nonce = request.META.get("HTTP_X_SIGNATURE_NONCE", "")
+    timestamp = request.META.get("HTTP_X_SIGNATURE_TIMESTAMP", "")
+    signature = request.META.get("HTTP_X_SIGNATURE", "")
+
+    # 4) Recompute signature and compare
+    sign_string = f"{nonce}{timestamp}{GENIE_API_KEY}".encode()
+    computed_sig = hashlib.sha256(sign_string).hexdigest()
+    if not hmac.compare_digest(computed_sig, signature):
+        return HttpResponseForbidden("Invalid signature")
+
+    # 5) PRINT the incoming webhook payload
+    print("🔔 Received Genie webhook payload:")
+
+    # ====== Begin additional logic ======
+
+    event_type = payload.get("eventType")
+
+    # Handle NOTIFY_TRANSACTION_CHANGE with state CONFIRMED
+    if event_type == "NOTIFY_TRANSACTION_CHANGE":
+        state = payload.get("state")
+        if state == "CONFIRMED":
+            transaction_id = payload.get("transactionId")
+            customer_id = payload.get("customerId")
+            amount = payload.get("amountFractional")
+
+            if transaction_id and customer_id:
+                post_url = "https://www.virtuallabgames.com/api/orders/finalize/"
+                post_data = {
+                    "transaction_id": str(transaction_id),
+                    "customer_id": str(customer_id),
+                    "amount": int(amount)
+                }
+                try:
+                    response = requests.post(
+                        post_url, json=post_data, timeout=10)
+                    print(f"✅ Booking POST status: {response.status_code}")
+                    print(f"Response: {response.text}")
+                    print(payload)
+                    print(str(transaction_id), customer_id)
+                except requests.RequestException as e:
+                    print(f"❌ Failed to post booking: {e}")
+                    print(str(transaction_id), customer_id)
+                    print(payload)
+
+    # ====== End additional logic ======
+
+    # 6) Respond with the exact webhook body
+    return JsonResponse(payload, status=200)
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+# if this is a payment webhook caller, keep AllowAny; otherwise tighten it
+@permission_classes([AllowAny])
+def api_finalize_order_from_customer(request):
+    """
+    Body: { "customer_id": "<string>", "transaction_id": "<string>" }
+    1) Find the user by `customer_id`
+    2) Take the user's most recent non-empty cart
+    3) Create an Order:
+       - status = PAYMENT_SUCCESS
+       - payment_method = CARD
+       - payment_reference = transaction_id
+       - order_value = cart.grand_total  (covers both sides)
+    4) Copy LEFT items to OrderItem and RIGHT (on-device) items to OrderStorageItem
+    5) Clear the user's cart (remove items + clear storage_device)
+    6) Return the created (or existing) order basics
+    """
+    data = request.data or {}
+    customer_id = str(data.get("customer_id") or "").strip()
+    transaction_id = str(data.get("transaction_id")
+                         or data.get("payment_reference") or "").strip()
+    amount = int(data.get("amount"))
+
+    if not customer_id or not transaction_id:
+        return Response(
+            {"detail": "Both 'customer_id' and 'transaction_id' are required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # 1) Find user by customer_id (User model exposes `customer_id`)
+    user = get_object_or_404(User, customer_id=customer_id)
+
+    # Idempotency: if we already created an order for this payment_reference & user, return it.
+    existing = (
+        Order.objects.filter(payment_reference=transaction_id, users=user)
+        .order_by("-ordered_at")
+        .first()
+    )
+    if existing:
+        return Response(
+            {"ok": True, "order_id": existing.id,
+                "reference": existing.payment_reference, "total": str(existing.total)},
+            status=status.HTTP_200_OK,
+        )
+
+    # 2) Locate the user's most-recent non-empty cart
+    carts = (
+        Cart.objects.filter(users=user)
+        .select_related("storage_device")
+        .prefetch_related(
+            Prefetch("cartitem_set",
+                     queryset=CartItem.objects.select_related("product")),
+            Prefetch("cartstorageitem_set",
+                     queryset=CartStorageItem.objects.select_related("product")),
+        )
+        .order_by("-updated_at", "-created_at")
+    )
+
+    cart = None
+    for c in carts:
+        if c.cartitem_set.exists() or c.cartstorageitem_set.exists() or c.storage_device_id:
+            cart = c
+            break
+
+    if not cart:
+        return Response(
+            {"detail": "No non-empty cart found for this customer."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    # 3–5) Create order from cart & clear cart atomically
+    with transaction.atomic():
+        # Lock the cart row to prevent concurrent mutations while we copy & clear
+        cart_locked = Cart.objects.select_for_update().get(pk=cart.pk)
+
+        device = cart_locked.storage_device
+        device_name = getattr(device, "name", "") or ""
+        device_price = getattr(
+            device, "price", Decimal("0.00")) or Decimal("0.00")
+
+        order = Order.objects.create(
+            status=Order.OrderStatus.PAYMENT_SUCCESS,
+            payment_method=Order.PaymentMethod.CARD,
+            payment_reference=transaction_id,
+            order_value=amount,
+            currency="LKR",
+            storage_device_name=device_name,
+            storage_device_price=device_price,
+        )
+        order.users.add(user)
+
+        # LEFT: direct purchases -> OrderItem
+        for ci in cart_locked.cartitem_set.select_related("product"):
+            OrderItem.objects.create(
+                order=order,
+                product=ci.product,
+                quantity=ci.quantity,
+                unit_price=ci.unit_price,
+            )
+
+        # RIGHT: on-device games -> OrderStorageItem
+        for si in cart_locked.cartstorageitem_set.select_related("product"):
+            OrderStorageItem.objects.create(
+                order=order,
+                product=si.product,
+                quantity=si.quantity,
+                unit_price=si.unit_price,
+            )
+
+        # Clear cart (items + right side + device)
+        CartItem.objects.filter(cart=cart_locked).delete()
+        CartStorageItem.objects.filter(cart=cart_locked).delete()
+        if cart_locked.storage_device_id:
+            cart_locked.storage_device = None
+            cart_locked.save(update_fields=["storage_device"])
+
+    return Response(
+        {
+            "ok": True,
+            "order_id": order.id,
+            "reference": order.payment_reference,
+            "status": order.status,
+            "payment_method": order.payment_method,
+            "total": str(order.total),
+            "currency": order.currency,
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+
+def calculator_view(request):
+    """
+    This view renders the calculator HTML page.
+
+    The render function takes the request object and the path to the template
+    and returns an HttpResponse with the rendered template.
+    """
+    # Django automatically looks inside the 'templates' folder.
+    # The path 'calculator_app/calculator.html' corresponds to the folder structure we created.
+    return render(request, 'calculator.html')

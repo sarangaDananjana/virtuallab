@@ -32,6 +32,14 @@ ALLOWED_HOSTS = os.environ.get(
     "virtuallabgames.com,www.virtuallabgames.com,localhost,127.0.0.1"
 ).split(",")
 
+GENIE_API_URL = os.environ.get(
+    "GENIE_API_URL", "https://api.uat.geniebiz.lk/public/v2/transactions")
+# set in your env/secrets manager
+GENIE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6ImM0NGEzOGIxLTFiNGUtNGMwOC05Nzc3LTNjMjc5YzI0ZmQ0MCIsImNvbXBhbnlJZCI6IjY4NTM4ZTY5ODZlMzQ5NDJiNWMyMWVjYiIsImlhdCI6MTc1MDMwNjQwOSwiZXhwIjo0OTA1OTgwMDA5fQ.6qiwsUXrorAWtzm7S_9eJdbcX2kB_TEfUFKig1DOhEA"
+
+GENIE_WEBHOOK_URL = os.environ.get(
+    "GENIE_WEBHOOK_URL", "https://www.passenger.lk/members/webhooks/payments/")
+
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
