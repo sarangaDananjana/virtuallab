@@ -1,13 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
-# (optional if you want model-level validation)
-from django.core.exceptions import ValidationError
+from uuid import uuid4
+from django.utils.text import slugify
 from django.core.validators import RegexValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from decimal import Decimal
 import uuid
+import os
 
 # SKU generator (callable is required because Django can't serialize lambdas in migrations)
 
@@ -131,11 +132,21 @@ class Product(TimestampedModel):
         return f"{self.title} ({self.sku})"
 
 
+def product_image_upload_to(instance, filename):
+    """
+    Store under: media/products/<product-slug-or-title>/<uuid>.<ext>
+    """
+    base, ext = os.path.splitext(filename)
+    product = instance.product
+    folder = (product.slug or slugify(product.title)).strip() or "product"
+    return f"products/{folder}/{uuid4().hex}{ext.lower()}"
+
+
 class ProductImage(TimestampedModel):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to="products/%Y/%m/%d/")
+    image = models.ImageField(upload_to=product_image_upload_to)
     alt_text = models.CharField(max_length=150, blank=True)
     is_primary = models.BooleanField(default=False)
 
