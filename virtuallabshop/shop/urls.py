@@ -14,7 +14,7 @@ urlpatterns = [
     path("cart/", views.cart_page, name="cart_page"),
     path("storage/select/", views.storage_pick_page, name="pick_storage"),
     path("orders/", views.orders_page, name="orders-page"),
-    path("genie-webhook", views.genie_webhook, name="genie_webhook"),
+    path("genie-webhook/", views.genie_webhook, name="genie_webhook"),
     path('d-p-calculator/', views.calculator_view, name="calculater"),
 
 
