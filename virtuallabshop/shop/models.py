@@ -191,8 +191,7 @@ class DLC(TimestampedModel):
         "Product", related_name="dlcs", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    image = models.ImageField(
-        upload_to="products/dlcs/%Y/%m/%d/")  # 3:4 portrait
+    image = models.ImageField(upload_to=product_image_upload_to)
 
     class Meta:
         ordering = ["id"]
