@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language visibility helpers match home.html */
+        /* Language visibility helpers match other pages */
         .lang-si {
             display: none;
         }
@@ -73,8 +73,10 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen flex flex-col">
-    <!-- Header (consistent with home & shop) -->
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU FROM CART.HTML
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
@@ -87,29 +89,34 @@
                     </div>
                 </a>
 
-                <!-- Right controls -->
+                <!-- Desktop Navigation (hidden on mobile) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle (always visible) -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'cart_page' %}"
-                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">Cart</span><span class="lang-si">cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
-                    <a href="{% url 'shop-page' %}"
-                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
-                    </a>
+
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
                         class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
@@ -120,11 +127,9 @@
                             class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
                     {% endif %}
 
-                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -132,45 +137,13 @@
                 </div>
             </div>
         </div>
-
-        <!-- Mobile Menu: Login, Store, My Tickets + Language -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}</div>
-                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
-                        user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                <a href="{% url 'register-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
-                {% endif %}
-
-                <a href="{% url 'shop-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
-                <a href="{% url 'tickets-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
-                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
-            </div>
-        </div>
     </header>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center p-6 pb-28">
         <div class="w-full max-w-md">
             <div class="glass rounded-3xl p-6 sm:p-8">
-                <!-- Header: PNG logo (no bg) -->
+                <!-- Form Header -->
                 <div class="mb-6 text-center">
                     <div class="mb-4 flex justify-center">
                         <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab Games logo"
@@ -186,6 +159,7 @@
                     </p>
                 </div>
 
+                <!-- Login Form -->
                 <form id="loginForm" class="space-y-4">
                     {% csrf_token %}
                     <div>
@@ -266,93 +240,224 @@
         </div>
     </main>
 
-    <!-- Footer (simple, consistent) -->
+    <!-- Footer -->
     <footer class="border-t border-white/10">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'register-page' %}"
+                    class="mobile-menu-link flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></span>
+                </a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
-        // Year
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // Mobile menu toggle
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-
-        // CSRF helper
-        function getCookie(name) { const v = `; ${document.cookie}`.split(`; ${name}=`); if (v.length === 2) return v.pop().split(';').shift(); }
-
-        // Login logic (JSON API)
-        const form = document.getElementById('loginForm');
-        form?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(form);
-            const identifier = fd.get('identifier');
-            const payload = (identifier || '').includes('@') ? { email: identifier, password: fd.get('password') } : { username: identifier, password: fd.get('password') };
-            const res = await fetch('{% url "api-login" %}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify(payload) });
-            const data = await res.json();
-            if (res.ok) { window.location.href = '{% url "home-page" %}'; }
-            else { alert(data.detail || 'Login failed'); }
-        });
-
-        // Password visibility toggle
-        const passwordInput = document.getElementById('password');
-        const toggleBtn = document.getElementById('togglePassword');
-        const eyeOpen = document.getElementById('eyeOpen');
-        const eyeClosed = document.getElementById('eyeClosed');
-        toggleBtn?.addEventListener('click', () => {
-            const isHidden = passwordInput.type === 'password';
-            passwordInput.type = isHidden ? 'text' : 'password';
-            toggleBtn.setAttribute('aria-pressed', String(isHidden));
-            toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-            eyeOpen.classList.toggle('hidden', !isHidden);
-            eyeClosed.classList.toggle('hidden', isHidden);
-        });
-
-        // Language toggle (mirrors home & shop)
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Set current year in footer ---
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // --- Mobile Menu Logic (from cart.html) ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
+
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
+                }
+            });
+
+            // --- CSRF helper function ---
+            function getCookie(name) {
+                const v = `; ${document.cookie}`.split(`; ${name}=`);
+                if (v.length === 2) return v.pop().split(';').shift();
+            }
+
+            // --- Login form submission logic ---
+            const form = document.getElementById('loginForm');
+            form?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fd = new FormData(form);
+                const identifier = fd.get('identifier');
+                const payload = (identifier || '').includes('@')
+                    ? { email: identifier, password: fd.get('password') }
+                    : { username: identifier, password: fd.get('password') };
+
+                try {
+                    const res = await fetch('{% url "api-login" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        window.location.href = '{% url "home-page" %}';
+                    } else {
+                        alert(data.detail || 'Login failed. Please check your credentials.');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            // --- Password visibility toggle ---
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('togglePassword');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
+            toggleBtn?.addEventListener('click', () => {
+                const isHidden = passwordInput.type === 'password';
+                passwordInput.type = isHidden ? 'text' : 'password';
+                toggleBtn.setAttribute('aria-pressed', String(isHidden));
+                toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                eyeOpen.classList.toggle('hidden', !isHidden);
+                eyeClosed.classList.toggle('hidden', isHidden);
+            });
+
+            // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
-
-            const enTitle = 'Login — Virtual Lab Games';
-            const siTitle = 'ඇතුළු වීම — Virtual Lab Games';
-            const enDesc = 'Sign in to your Virtual Lab Games account to manage orders and tickets.';
-            const siDesc = 'ඔබගේ Virtual Lab Games ගිණුමට පිවිස ඇනවුම් සහ ටිකට් කළමනාකරණය කරන්න.';
             const metaDescription = document.querySelector('meta[name="description"]');
 
             const setLanguage = (lang) => {
-                if (lang === 'si') {
-                    body.classList.add('sinhala-mode');
-                    body.classList.add('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'EN');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
-                    document.title = siTitle;
-                    metaDescription?.setAttribute('content', siDesc);
-                    localStorage.setItem('language', 'si');
-                } else {
-                    body.classList.remove('sinhala-mode');
-                    body.classList.remove('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
-                    document.title = enTitle;
-                    metaDescription?.setAttribute('content', enDesc);
-                    localStorage.setItem('language', 'en');
-                }
+                const isSi = lang === 'si';
+                body.classList.toggle('sinhala-mode', isSi);
+                body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+
+                document.title = isSi ? 'ඇතුළු වීම — Virtual Lab Games' : 'Login — Virtual Lab Games';
+                const newDesc = isSi
+                    ? 'ඔබගේ Virtual Lab Games ගිණුමට පිවිස ඇනවුම් සහ ටිකට් කළමනාකරණය කරන්න.'
+                    : 'Sign in to your Virtual Lab Games account to manage orders and tickets.';
+                metaDescription?.setAttribute('content', newDesc);
+                localStorage.setItem('language', lang);
             };
 
             const toggleLanguage = () => {
-                const currentLang = localStorage.getItem('language') || 'en';
-                setLanguage(currentLang === 'en' ? 'si' : 'en');
+                const newLang = (localStorage.getItem('language') || 'en') === 'en' ? 'si' : 'en';
+                setLanguage(newLang);
             };
 
             langToggleBtn?.addEventListener('click', toggleLanguage);
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
 
-            const savedLang = localStorage.getItem('language');
-            setLanguage(savedLang || 'en');
+            setLanguage(localStorage.getItem('language') || 'en');
         });
     </script>
 </body>

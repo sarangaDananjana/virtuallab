@@ -102,8 +102,10 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header -->
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
@@ -116,73 +118,52 @@
                     </div>
                 </a>
 
-                <!-- Right controls -->
+                <!-- Desktop Navigation (hidden on mobile) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+
                     <a href="{% url 'cart_page' %}"
-                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
-                    <a href="{% url 'shop-page' %}"
-                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
-                    </a>
+
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
-                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{user_initial}}</a>
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
                     {% else %}
                     <a href="{% url 'login-page' %}"
                         class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
+
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}</div>
-                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
-                        user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                <a href="{% url 'register-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
-                {% endif %}
-                <a href="{% url 'shop-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
-                <a href="{% url 'tickets-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
-                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -250,6 +231,100 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
         // ---------- Config ----------
         const ORDERS_API = '/api/orders/me';
@@ -337,7 +412,6 @@
                     </div>
                 </div>` : '';
 
-            // UPDATED: New visual treatment for the storage bundle
             const storageBundleHtml = storageBundle ? `
                 <div class="p-3 rounded-xl bg-white/5 border border-brand-400/30">
                     <div class="flex items-center justify-between mb-3">
@@ -457,17 +531,6 @@
             nav.appendChild(makeBtn('›', current + 1, current === totalPages, false));
         }
 
-        // Mock data with the new structure for testing
-        function getMockOrders(page) {
-            const all = [
-                { id: 1201, reference: 'VL-2025-01201', status: 'processing', total: 18900, currency: 'LKR', placed_at: '2025-07-25', delivered_at: null, direct_items: [{ title: 'Elden Ring', quantity: 1 }], storage_bundle: { device_name: 'Seagate 1TB External HDD', items: [{ title: 'Cyberpunk 2077', quantity: 1 }, { title: 'The Witcher 3', quantity: 1 }] }, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'Card' },
-                { id: 1187, reference: 'VL-2025-01187', status: 'shipped', total: 13900, currency: 'LKR', placed_at: '2025-07-18', delivered_at: null, direct_items: [{ title: 'GTA V', quantity: 1 }, { title: 'Forza Horizon 5', quantity: 1 }], storage_bundle: null, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'COD' },
-                { id: 1160, reference: 'VL-2025-01160', status: 'delivered', total: 5200, currency: 'LKR', placed_at: '2025-06-27', delivered_at: '2025-07-01', direct_items: [], storage_bundle: { device_name: 'Kingston 512GB SSD', items: [{ title: 'Hitman 3', quantity: 1 }, { title: 'Valorant', quantity: 1 }] }, recipient_name: 'Player One', address_line1: '123 High St', city: 'Colombo', postal_code: '00100', payment_method: 'Card' },
-            ];
-            const start = (page - 1) * perPage;
-            return { results: all.slice(start, start + perPage), total_pages: Math.ceil(all.length / perPage), page };
-        }
-
         // ---------- Data Loading ----------
         async function loadOrders(page = 1) {
             document.getElementById('ordersList').innerHTML = [skeletonCard(), skeletonCard(), skeletonCard()].join('');
@@ -484,7 +547,7 @@
 
             try {
                 const res = await fetch(url, { credentials: 'same-origin' });
-                if (!res.ok) throw new Error('API request failed, using mock data.');
+                if (!res.ok) throw new Error('API request failed.');
                 const data = await res.json();
 
                 const listEl = document.getElementById('ordersList');
@@ -498,16 +561,11 @@
                 renderPager(data.total_pages || 1, data.page || 1);
 
             } catch (e) {
-                console.warn(e.message);
-                const data = getMockOrders(page); // Fallback to mock data
-                const listEl = document.getElementById('ordersList');
-                listEl.innerHTML = '';
-                if (data.results.length > 0) {
-                    data.results.forEach(o => listEl.insertAdjacentHTML('beforeend', orderCard(o)));
-                } else {
-                    document.getElementById('emptyState').classList.remove('hidden');
-                }
-                renderPager(data.total_pages, data.page);
+                console.warn(e.message, "Using mock data as a fallback.");
+                // Fallback to mock data can be added here if needed
+                document.getElementById('ordersList').innerHTML = '';
+                document.getElementById('emptyState').classList.remove('hidden');
+                renderPager(1, 1);
             }
         }
 
@@ -515,10 +573,40 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('year').textContent = new Date().getFullYear();
 
+            // --- Mobile Menu Logic ---
             const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
             const mobileMenu = document.getElementById('mobileMenu');
-            navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
 
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
+
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
+                }
+            });
+
+            // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
@@ -530,19 +618,15 @@
                 const enDesc = 'View your Virtual Lab Games orders. Track status, see items, totals, and download invoices.';
                 const siDesc = 'ඔබගේ Virtual Lab Games ඇණවුම් බලන්න. තත්වය පරීක්ෂා කර අයිතම, මුළු මුදල් සහ ඉන්වොයිස් බාගත කරන්න.';
 
-                if (lang === 'si') {
-                    body.classList.add('sinhala-mode', 'font-sinhala');
-                    if (langToggleBtn) langToggleBtn.textContent = 'EN';
-                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'EN';
-                    document.title = siTitle; metaDescription?.setAttribute('content', siDesc);
-                    localStorage.setItem('language', 'si');
-                } else {
-                    body.classList.remove('sinhala-mode', 'font-sinhala');
-                    if (langToggleBtn) langToggleBtn.textContent = 'සිංහල';
-                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'සිංහල';
-                    document.title = enTitle; metaDescription?.setAttribute('content', enDesc);
-                    localStorage.setItem('language', 'en');
-                }
+                const isSi = lang === 'si';
+                body.classList.toggle('sinhala-mode', isSi);
+                body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+
+                document.title = isSi ? siTitle : enTitle;
+                metaDescription?.setAttribute('content', isSi ? siDesc : enDesc);
+                localStorage.setItem('language', lang);
+
                 document.getElementById('q').placeholder = t('search_placeholder');
                 renderTabs(document.body.dataset.tab || 'all');
             };

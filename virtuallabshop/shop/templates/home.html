@@ -89,11 +89,15 @@
     </style>
 </head>
 
-<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise isolate">
 
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER SECTION - UPDATED FOR BETTER MOBILE EXPERIENCE
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo -->
                 <a href="#home" class="flex items-center gap-2 sm:gap-3">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
@@ -103,66 +107,76 @@
                     </div>
                 </a>
 
+                <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
-                    <a href="#home" class="text-sm font-semibold transition-colors"><span
+                    <a href="#home" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Home</span><span class="lang-si">Home</span></a>
-                    <a href="#delivery" class="text-sm font-semibold transition-colors"><span class="lang-en">Delivery
+                    <a href="#delivery" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Delivery
                             Options</span><span class="lang-si">මොකක්ද හොඳ?</span></a>
-                    <a href="#how" class="text-sm font-semibold transition-colors"><span class="lang-en">How it
+                    <a href="#how" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">How it
                             Works</span><span class="lang-si">ගන්නෙ කොහොමද?</span></a>
-                    <a href="#benefits" class="text-sm font-semibold transition-colors"><span class="lang-en">Why Choose
+                    <a href="#benefits" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Why Choose
                             Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></a>
-                    <a href="#collections" class="text-sm font-semibold transition-colors"><span
+                    <a href="#collections" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></a>
-                    <a href="#faq" class="text-sm font-semibold transition-colors"><span class="lang-en">FAQ</span><span
-                            class="lang-si">ප්‍රශ්න සහ පිලිතුරු</span></a>
+                    <a href="#faq" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">FAQ</span><span class="lang-si">ප්‍රශ්න සහ පිලිතුරු</span></a>
                 </nav>
 
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle Button - Far left of this group -->
+                    <!-- Language Toggle Button -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">
                         EN
                     </button>
 
-                    <!-- My Tickets Button -->
+                    <!-- Cart Button -->
                     <a href="{% url 'cart_page' %}"
-                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="hidden sm:inline"><span class="lang-en"></span><span class="lang-si"></span></span>
-                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
 
-                    <!-- Store Button - Most prominent -->
+                    <!-- Store Button -->
                     <a href="{% url 'shop-page' %}"
-                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                        aria-label="Shop">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
+                        <span class="hidden sm:inline">
+                            <span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span>
+                        </span>
                     </a>
 
-                    <!-- Login/Avatar - Far right -->
+                    <!-- Login/Avatar - Hidden on mobile, visible on desktop -->
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
                         {{ user_initial }}
                     </a>
                     {% else %}
                     <a href="{% url 'login-page' %}"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
                         <span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span>
                     </a>
                     {% endif %}
 
-                    <!-- Mobile Nav Toggle -->
-                    <button id="navToggle"
+                    <!-- Mobile Nav Toggle (Hamburger Button) -->
+                    <button id="navToggle" type="button"
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -171,50 +185,11 @@
             </div>
         </div>
 
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}
-                    </div>
-                    <div class="text-sm text-gray-700"><span class="lang-en">Hello</span><span
-                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">Login</span></a>
-                {% endif %}
+        <!-- =================================================================
+        NEW MOBILE MENU (Off-canvas) - Z-INDEX FIXED
+        ================================================================== -->
 
-                <a href="#home"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">Home</span><span class="lang-si">Home</span></a>
-                <a href="#delivery"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">Delivery Options</span><span class="lang-si">මොකක්ද හොඳ?</span></a>
-                <a href="#how"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">How it Works</span><span class="lang-si">ගන්නෙ කොහොමද?</span></a>
-                <a href="#benefits"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">Why Choose Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></a>
-                <a href="#collections"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></a>
-                <a href="#faq"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors"><span
-                        class="lang-en">FAQ</span><span class="lang-si">ප්‍රශ්න සහ පිලිතුරු</span></a>
-
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 text-gray-800 transition-colors font-bold">
-                    EN
-                </button>
-            </div>
-        </div>
     </header>
-
 
 
     <section id="home"
@@ -226,7 +201,7 @@
                 style="animation-delay: 2s;"></div>
         </div>
 
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                 <div class="space-y-6 sm:space-y-8 text-center lg:text-left">
                     <div
@@ -357,7 +332,9 @@
         </div>
     </section>
 
-    <!-- New Delivery Options Section -->
+    <!-- =================================================================
+    (REST OF YOUR ORIGINAL BODY CONTENT)
+    ================================================================== -->
     <section id="delivery" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
@@ -633,7 +610,6 @@
         </div>
     </section>
 
-    <!-- How It Works - Enhanced Cards -->
     <!-- How It Works - Enhanced Cards -->
     <section id="how" class="py-16 sm:py-20 lg:py-24 scroll-mt-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -1291,7 +1267,7 @@
                         </span>
                         <span class="lang-si">
                             ඔව්! අපගේ නාමාවලියෙහි ක්‍රීඩාවක් නොමැති නම්, ඔබට එය අපගේ සහාය පද්ධතිය හරහා ඉල්ලා සිටිය හැක.
-                            අපි එහි ඇති බව පරීක්ෂා කර, ඔබ කැමති ආකෘතියෙන් (DVD හෝ දෘඪ තැටි) එය ඔබ වෙනුවෙන් සූදානම්
+                            අපි එහි ඇති බව පරීක්ෂା කර, ඔබ කැමති ආකෘතියෙන් (DVD හෝ දෘඪ තැටි) එය ඔබ වෙනුවෙන් සූදානම්
                             කරන්නෙමු, සාමාන්‍යයෙන් ව්‍යාපාරික දින 2-3ක් ඇතුළත.
                         </span>
                     </p>
@@ -1381,6 +1357,111 @@
             </div>
         </div>
     </footer>
+
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+
+        <!-- Overlay -->
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+
+        <!-- Menu Panel -->
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <!-- Menu Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menu Links -->
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                <!-- User Profile/Login for Mobile (moved from header) -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+
+                <hr class="border-white/10 my-4">
+
+                <a href="#home"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+
+                <a href="#benefits"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span><span class="lang-en">Why Choose Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></span>
+                </a>
+
+                <a href="#collections"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></span>
+                </a>
+            </nav>
+
+
+            <!-- Menu Footer -->
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Notification Modal -->
     <div id="notifyModal" class="fixed inset-0 z-[60] hidden">
@@ -1481,382 +1562,172 @@
     </div>
 
 
+    <!-- =================================================================
+    UPDATED AND CLEANED SCRIPT SECTION
+    ================================================================== -->
     <script>
-        // Set current year
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // Mobile menu toggle
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-
-        navToggle?.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu when clicking links
-        document.querySelectorAll('#mobileMenu a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // Smooth reveal animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Modal handling
-        const notifyModal = document.getElementById('notifyModal');
-        const openNotifyBtn = document.getElementById('openNotify');
-        const closeNotifyBtn = document.getElementById('closeNotify');
-        const requestGameModal = document.getElementById('requestGameModal');
-        const openRequestGameBtn = document.getElementById('openRequestGame');
-        const closeRequestGameBtn = document.getElementById('closeRequestGame');
-
-        function closeModal() {
-            notifyModal.classList.add('hidden');
-        }
-
-        function closeRequestModal() {
-            requestGameModal?.classList.add('hidden');
-        }
-
-        openNotifyBtn?.addEventListener('click', () => {
-            notifyModal.classList.remove('hidden');
-        });
-
-        closeNotifyBtn?.addEventListener('click', closeModal);
-
-        openRequestGameBtn?.addEventListener('click', () => {
-            requestGameModal?.classList.remove('hidden');
-        });
-
-        closeRequestGameBtn?.addEventListener('click', closeRequestModal);
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
-            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bgColor} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Form submissions
-        document.getElementById('waitlistForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            showToast('Successfully added to waitlist! 🎮');
-            e.target.reset();
-        });
-
-        document.getElementById('footerForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            showToast('Thanks for subscribing! 📧');
-            e.target.reset();
-        });
-
-        document.getElementById('notifyForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            closeModal();
-            showToast('We\'ll notify you when the store launches! 🚀');
-            e.target.reset();
-        });
-
-        // Request Game form submission
-        document.getElementById('requestGameForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const form = e.target;
-            const fd = new FormData(form);
-            const game = (fd.get('game_name') || '').toString().trim();
-            const edition = (fd.get('edition') || '').toString().trim();
-            const format = (fd.get('format') || '').toString().trim();
-
-            if (!game) {
-                showToast('Please enter the game name', 'error');
-                return;
-            }
-
-            const btn = form.querySelector('button[type="submit"]');
-            const btnText = btn?.textContent;
-            btn && (btn.disabled = true, btn.textContent = 'Sending...');
-
-            try {
-                const res = await fetch('/api/request-game', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ game, edition, format })
-                });
-
-                const data = await res.json().catch(() => ({}));
-
-                if (!res.ok) {
-                    const msg = data?.detail || 'Could not submit request.';
-                    showToast(msg, 'error');
-                    return;
-                }
-
-                closeRequestModal();
-                showToast('Game request submitted! 🎮');
-                form.reset();
-
-            } catch (err) {
-                showToast('Network error. Please try again.', 'error');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = btnText;
-                }
-            }
-        });
-
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Delivery option selection (visual feedback)
-        document.querySelectorAll('.delivery-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.delivery-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                option.classList.add('selected');
-
-                const optionType = option.dataset.option;
-                const lang = document.body.classList.contains('sinhala-mode') ? 'si' : 'en';
-                const message = lang === 'si'
-                    ? `${optionType === 'dvd' ? 'DVD කට්ටල' : 'දෘඪ තැටි'} තෝරා ගන්නා ලදී! 💿`
-                    : `${optionType === 'dvd' ? 'DVD Sets' : 'Hard Disks'} selected! 💿`;
-                showToast(message);
-            });
-        });
-
-        // Store Filter Functionality
         document.addEventListener('DOMContentLoaded', function () {
-            const filterButtons = document.querySelectorAll('.store-filter-btn');
-            const storeCards = document.querySelectorAll('.store-card');
-
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-
-                    // Add active class to clicked button
-                    button.classList.add('active');
-
-                    const filter = button.dataset.filter;
-
-                    storeCards.forEach(card => {
-                        const category = card.dataset.category;
-
-                        if (filter === 'all') {
-                            card.classList.remove('filtered-out');
-                        } else if (filter === 'popular') {
-                            // Show cards with popular badges
-                            const hasPopularBadge = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('popular') ||
-                                card.querySelector('.absolute.top-3.right-3 span')?.textContent.includes('ජනප්‍රිය');
-                            if (hasPopularBadge) {
-                                card.classList.remove('filtered-out');
-                            } else {
-                                card.classList.add('filtered-out');
-                            }
-                        } else if (filter === 'new') {
-                            // Show cards with new badges
-                            const hasNewBadge = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('new') ||
-                                card.querySelector('.absolute.top-3.right-3 span')?.textContent.includes('අලුත්');
-                            if (hasNewBadge) {
-                                card.classList.remove('filtered-out');
-                            } else {
-                                card.classList.add('filtered-out');
-                            }
-                        } else {
-                            // Filter by category
-                            if (category === filter) {
-                                card.classList.remove('filtered-out');
-                            } else {
-                                card.classList.add('filtered-out');
-                            }
-                        }
-                    });
-                });
-            });
-
-            // Enhanced card interactions
-            storeCards.forEach(card => {
-                // Add click handler for card navigation
-                card.addEventListener('click', function (e) {
-                    // Don't trigger if clicking on a button
-                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-                        return;
-                    }
-
-                    const category = this.dataset.category;
-                    console.log(`Navigate to ${category} category page`);
-                    // Here you can add navigation logic to the specific category page
-                    // window.location.href = `/categories/${category}/`;
-                });
-
-                // Add enhanced hover effects
-                card.addEventListener('mouseenter', function () {
-                    this.style.transform = 'translateY(-12px) scale(1.03)';
-                });
-
-                card.addEventListener('mouseleave', function () {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
-
-            // Browse buttons functionality
-            const browseButtons = document.querySelectorAll('.store-card button');
-            browseButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.stopPropagation(); // Prevent card click
-                    const card = this.closest('.store-card');
-                    const category = card.dataset.category;
-
-                    // Add loading state
-                    this.innerHTML = '<span class="lang-en">Loading...</span><span class="lang-si">පූරණය වෙමින්...</span>';
-                    this.disabled = true;
-
-                    // Simulate navigation after brief delay
-                    setTimeout(() => {
-                        console.log(`Browse ${category} games`);
-                        // Navigate to category page
-                        // window.location.href = `/games/${category}/`;
-
-                        // Reset button state (in case navigation doesn't happen)
-                        this.innerHTML = '<span class="lang-en">Browse</span><span class="lang-si">බලන්න</span>';
-                        this.disabled = false;
-                    }, 800);
-                });
-            });
-
-            // Main CTA buttons
-            const mainBrowseBtn = document.querySelector('.shine');
-            const helpBtn = document.querySelector('button:not(.shine):not(.store-filter-btn):not(.store-card button)');
-
-            if (mainBrowseBtn) {
-                mainBrowseBtn.addEventListener('click', function () {
-                    console.log('Navigate to full games catalog');
-                    // window.location.href = '/games/';
-                });
+            // --- Utility Functions ---
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
             }
 
-            if (helpBtn) {
-                helpBtn.addEventListener('click', function () {
-                    console.log('Open help/contact modal or page');
-                    // You can open a modal here or navigate to contact page
-                    // showContactModal();
-                });
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+                toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bgColor} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             }
 
-            // Add smooth scroll reveal animation for cards
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
+            // --- Page Initializations ---
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // --- Off-canvas Mobile Menu Logic ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+            const openMenu = () => {
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
             };
 
-            const cardObserver = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
+            const closeMenu = () => {
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    mobileMenuContainer.classList.add('pointer-events-none');
+                }, 300);
+            };
+
+            navToggle.addEventListener('click', openMenu);
+            closeNav.addEventListener('click', closeMenu);
+            mobileMenuOverlay.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
+                }
+            });
+
+            // --- Smooth reveal on scroll ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.style.opacity = '1';
-                            entry.target.style.transform = 'translateY(0)';
-                        }, index * 100);
+                        entry.target.classList.add('in');
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Initially hide cards for reveal animation
-            storeCards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                cardObserver.observe(card);
+            // --- Modal Handling ---
+            const notifyModal = document.getElementById('notifyModal');
+            const openNotifyBtn = document.getElementById('openNotify');
+            const closeNotifyBtn = document.getElementById('closeNotify');
+            const requestGameModal = document.getElementById('requestGameModal');
+            const openRequestGameBtn = document.getElementById('openRequestGame');
+            const closeRequestGameBtn = document.getElementById('closeRequestGame');
+
+            openNotifyBtn?.addEventListener('click', () => notifyModal.classList.remove('hidden'));
+            closeNotifyBtn?.addEventListener('click', () => notifyModal.classList.add('hidden'));
+            openRequestGameBtn?.addEventListener('click', () => requestGameModal?.classList.remove('hidden'));
+            closeRequestGameBtn?.addEventListener('click', () => requestGameModal?.classList.add('hidden'));
+
+            // --- Form Submissions ---
+            document.getElementById('footerForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                showToast('Thanks for subscribing! 📧');
+                e.target.reset();
             });
-
-            // Rating stars interaction
-            const ratingStars = document.querySelectorAll('.store-card .flex.text-yellow-400');
-            ratingStars.forEach(rating => {
-                rating.addEventListener('mouseenter', function () {
-                    this.style.transform = 'scale(1.1)';
-                });
-
-                rating.addEventListener('mouseleave', function () {
-                    this.style.transform = 'scale(1)';
-                });
+            document.getElementById('notifyForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                notifyModal.classList.add('hidden');
+                showToast('We\'ll notify you when the store launches! 🚀');
+                e.target.reset();
             });
-
-            // Add keyboard navigation support
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Tab') {
-                    // Enhanced focus styles for accessibility
-                    const focusedElement = document.activeElement;
-                    if (focusedElement.classList.contains('store-card')) {
-                        focusedElement.style.outline = '2px solid #f6cd45';
-                        focusedElement.style.outlineOffset = '4px';
+            document.getElementById('requestGameForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const btn = form.querySelector('button[type="submit"]');
+                const btnText = btn?.textContent;
+                btn && (btn.disabled = true, btn.textContent = 'Sending...');
+                try {
+                    // Mock API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    showToast('Game request submitted! 🎮');
+                    requestGameModal?.classList.add('hidden');
+                    form.reset();
+                } catch (err) {
+                    showToast('Network error. Please try again.', 'error');
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = btnText;
                     }
                 }
-
-                if (e.key === 'Enter' && document.activeElement.classList.contains('store-card')) {
-                    document.activeElement.click();
-                }
             });
 
-            // Remove focus outline when not using keyboard
-            document.addEventListener('mousedown', function () {
-                storeCards.forEach(card => {
-                    card.style.outline = 'none';
+            // --- Smooth scroll for anchor links ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 });
             });
 
-            // Initialize filter state
-            const defaultFilter = document.querySelector('.store-filter-btn.active');
-            if (defaultFilter) {
-                defaultFilter.click();
-            }
+            // --- Delivery option selection ---
+            document.querySelectorAll('.delivery-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.delivery-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+
+            // --- Store Filter Functionality ---
+            const filterButtons = document.querySelectorAll('.store-filter-btn');
+            const storeCards = document.querySelectorAll('.store-card');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const filter = button.dataset.filter;
+                    storeCards.forEach(card => {
+                        const category = card.dataset.category;
+                        const isPopular = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('popular');
+                        const isNew = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('new');
+
+                        let show = false;
+                        if (filter === 'all') show = true;
+                        if (filter === 'popular' && isPopular) show = true;
+                        if (filter === 'new' && isNew) show = true;
+
+                        card.style.display = show ? '' : 'none';
+                    });
+                });
+            });
         });
-
     </script>
 
     <script>
+        // --- Language Toggle Logic ---
         document.addEventListener('DOMContentLoaded', function () {
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
@@ -1872,9 +1743,8 @@
             const setLanguage = (lang) => {
                 if (lang === 'si') {
                     body.classList.add('sinhala-mode');
-                    body.classList.add('font-sinhala'); // From home.css
+                    body.classList.add('font-sinhala');
                     langToggleBtn.textContent = 'EN';
-                    langToggleBtnMobile.textContent = 'EN';
                     document.title = siTitle;
                     metaDescription.setAttribute('content', siDesc);
                     localStorage.setItem('language', 'si');
@@ -1882,7 +1752,6 @@
                     body.classList.remove('sinhala-mode');
                     body.classList.remove('font-sinhala');
                     langToggleBtn.textContent = 'සිංහල';
-                    langToggleBtnMobile.textContent = 'සිංහල';
                     document.title = enTitle;
                     metaDescription.setAttribute('content', enDesc);
                     localStorage.setItem('language', 'en');
@@ -1898,15 +1767,11 @@
             langToggleBtn.addEventListener('click', toggleLanguage);
             langToggleBtnMobile.addEventListener('click', toggleLanguage);
 
-            // Set initial language based on localStorage
             const savedLang = localStorage.getItem('language');
-            if (savedLang) {
-                setLanguage(savedLang);
-            } else {
-                setLanguage('en'); // Default to English
-            }
+            setLanguage(savedLang || 'en');
         });
     </script>
 </body>
+
 
 </html>

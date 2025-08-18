@@ -40,11 +40,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
-    <!-- Shared site styles for aurora bg, glass, header blend, noise, Sinhala helpers -->
+    <!-- Shared site styles -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language visibility helpers (same as other pages) */
+        /* Language visibility helpers */
         .lang-si {
             display: none;
         }
@@ -72,8 +72,10 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header (consistent with site; mobile shows only logo + language toggle + hamburger) -->
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
@@ -86,29 +88,34 @@
                     </div>
                 </a>
 
-                <!-- Right controls -->
+                <!-- Desktop Navigation (hidden on mobile) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle (always visible) -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'cart_page' %}"
-                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
-                    <a href="{% url 'shop-page' %}"
-                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
-                    </a>
+
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
                         class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
@@ -119,48 +126,14 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu: Login/Account, Store, My Tickets + Language -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}</div>
-                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
-                        user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                <a href="{% url 'register-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
-                {% endif %}
-
-                <a href="{% url 'shop-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
-                <a href="{% url 'tickets-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
-                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -230,147 +203,256 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
-        // -------- Config & helpers --------
-        const API_LIST = "{% url 'api-storage-devices' %}"; // JSON list
-        const API_SELECT = "{% url 'api_cart_select_storage' %}"; // POST select
-        const SHOP_URL = "{% url 'shop-page' %}"; // redirect here after selecting
+        document.addEventListener('DOMContentLoaded', function () {
+            // -------- Config & helpers --------
+            const API_LIST = "{% url 'api-storage-devices' %}";
+            const API_SELECT = "{% url 'api_cart_select_storage' %}";
+            const SHOP_URL = "{% url 'shop-page' %}";
 
-        function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
-        const csrftoken = getCookie('csrftoken');
+            function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
+            const csrftoken = getCookie('csrftoken');
 
-        const grid = document.getElementById('grid');
-        const emptyState = document.getElementById('empty');
-        const countEl = document.getElementById('count');
-        const toast = document.getElementById('toast');
+            const grid = document.getElementById('grid');
+            const emptyState = document.getElementById('empty');
+            const countEl = document.getElementById('count');
+            const toast = document.getElementById('toast');
 
-        const L = {
-            en: {
-                device_one: 'device', device_many: 'devices',
-                toastSaved: 'Saved! Device selected.',
-                toastHeading: 'Device selected. Heading to the shop…',
-                selecting: 'Selecting…'
-            },
-            si: {
-                device_one: 'උපාංගයක්', device_many: 'උපාංග',
-                toastSaved: 'සුරැකිණි! උපාංගය තෝරා ඇත.',
-                toastHeading: 'උපාංගය තෝරාගන්නා ලදී. වෙළඳසැලට යයි…',
-                selecting: 'තේරෙමින්…'
+            const L = {
+                en: { device_one: 'device', device_many: 'devices', toastSaved: 'Saved! Device selected.', toastHeading: 'Device selected. Heading to the shop…', selecting: 'Selecting…' },
+                si: { device_one: 'උපාංගයක්', device_many: 'උපාංග', toastSaved: 'සුරැකිණි! උපාංගය තෝරා ඇත.', toastHeading: 'උපාංගය තෝරාගන්නා ලදී. වෙළඳසැලට යයි…', selecting: 'තේරෙමින්…' }
+            };
+            const getLang = () => localStorage.getItem('language') === 'si' ? 'si' : 'en';
+            const t = (k) => L[getLang()][k] || k;
+
+            const showToast = (msg) => { toast.textContent = msg; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 1400); };
+            const fmt = (x) => (x == null ? '0.00' : String(x));
+            const fmtGB = (x) => { const n = Number(x || 0); return (Number.isFinite(n) ? n.toFixed(0) : x) + ' GB'; };
+
+            // -------- API calls --------
+            async function fetchDevices() { const r = await fetch(API_LIST, { credentials: 'same-origin' }); if (!r.ok) throw new Error('Failed to load devices'); const d = await r.json(); return d.results || []; }
+            async function selectDevice(id) { const r = await fetch(API_SELECT, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ device_id: id }) }); if (!r.ok) { const e = await r.json().catch(() => ({ detail: 'Failed to set device' })); throw new Error(e.detail || 'Failed to set device'); } return r.json(); }
+
+            // -------- Renderers --------
+            function cardHtml(d) {
+                const img = d.image_url || "{% static 'images/drive-placeholder-16x9.jpg' %}";
+                const currency = d.currency || '';
+                const price = d.price != null ? `${currency} ${fmt(d.price)}` : '';
+                return `
+                <article class="group relative overflow-hidden rounded-2xl glass ring-1 ring-white/10 hover:ring-white/20 transition-all">
+                    <div class="aspect-video w-full overflow-hidden bg-white/5"><img src="${img}" alt="${d.name}" class="h-full w-full object-cover" /></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold leading-tight">${d.name}</h3>
+                            <div class="mt-0.5 text-xs text-white/60">${d.category_label || d.category || ''}</div>
+                        </div>
+                        ${price ? `<div class="shrink-0 px-2 py-1 rounded-lg bg-white/10 text-xs font-semibold">${price}</div>` : ''}
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-white/70">
+                        <div class="rounded-lg bg-white/5 px-2 py-1"><span class="lang-en">Capacity</span><span class="lang-si">ධාරිතාව</span> <span class="font-semibold text-white/90">${fmtGB(d.true_capacity_gb)}</span></div>
+                        <div class="rounded-lg bg-white/5 px-2 py-1"><span class="lang-en">Label</span><span class="lang-si">ලේබල්</span> <span class="font-semibold text-white/90">${fmtGB(d.marketing_capacity_gb)}</span></div>
+                        </div>
+                        <div class="mt-4 grid grid-cols-1">
+                        <button class="select-btn px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold" data-id="${d.id}"><span class="lang-en">Use this device</span><span class="lang-si">මෙම උපාංගය භාවිතා කරන්න</span></button>
+                        </div>
+                    </div>
+                </article>`;
             }
-        };
-        const getLang = () => localStorage.getItem('language') === 'si' ? 'si' : 'en';
-        const t = (k) => L[getLang()][k] || k;
 
-        const showToast = (msg) => { toast.textContent = msg; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 1400); };
-        const fmt = (x) => (x == null ? '0.00' : String(x));
-        const fmtGB = (x) => { const n = Number(x || 0); return (Number.isFinite(n) ? n.toFixed(0) : x) + ' GB'; };
+            function render(list) {
+                const n = list.length;
+                countEl.textContent = `${n} ${n === 1 ? t('device_one') : t('device_many')}`;
+                if (!n) { grid.innerHTML = ''; emptyState.classList.remove('hidden'); return; }
+                emptyState.classList.add('hidden');
+                grid.innerHTML = list.map(cardHtml).join('');
+            }
 
-        // -------- API calls --------
-        async function fetchDevices() { const r = await fetch(API_LIST, { credentials: 'same-origin' }); if (!r.ok) throw new Error('Failed to load devices'); const d = await r.json(); return d.results || []; }
-        async function selectDevice(id) { const r = await fetch(API_SELECT, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, body: JSON.stringify({ device_id: id }) }); if (!r.ok) { const e = await r.json().catch(() => ({ detail: 'Failed to set device' })); throw new Error(e.detail || 'Failed to set device'); } return r.json(); }
+            // -------- Init / filters --------
+            let ALL = [];
+            function applyFilters() {
+                const c = document.getElementById('category').value;
+                const filtered = ALL.filter(d => !c || d.category === c);
+                render(filtered);
+            }
 
-        // -------- Renderers --------
-        function cardHtml(d) {
-            const img = d.image_url || "{% static 'images/drive-placeholder-16x9.jpg' %}";
-            const currency = d.currency || '';
-            const price = d.price != null ? `${currency} ${fmt(d.price)}` : '';
-            return `
-        <article class="group relative overflow-hidden rounded-2xl glass ring-1 ring-white/10 hover:ring-white/20 transition-all">
-          <div class="aspect-video w-full overflow-hidden bg-white/5"><img src="${img}" alt="${d.name}" class="h-full w-full object-cover" /></div>
-          <div class="p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <h3 class="font-bold leading-tight">${d.name}</h3>
-                <div class="mt-0.5 text-xs text-white/60">${d.category_label || d.category || ''}</div>
-              </div>
-              ${price ? `<div class="shrink-0 px-2 py-1 rounded-lg bg-white/10 text-xs font-semibold">${price}</div>` : ''}
-            </div>
-            <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-white/70">
-              <div class="rounded-lg bg-white/5 px-2 py-1"><span class="lang-en">Capacity</span><span class="lang-si">ධාරිතාව</span> <span class="font-semibold text-white/90">${fmtGB(d.true_capacity_gb)}</span></div>
-              <div class="rounded-lg bg-white/5 px-2 py-1"><span class="lang-en">Label</span><span class="lang-si">ලේබල්</span> <span class="font-semibold text-white/90">${fmtGB(d.marketing_capacity_gb)}</span></div>
-            </div>
-            <div class="mt-4 grid grid-cols-1">
-              <button class="select-btn px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold" data-id="${d.id}"><span class="lang-en">Use this device</span><span class="lang-si">මෙම උපාංගය භාවිතා කරන්න</span></button>
-            </div>
-          </div>
-        </article>`;
-        }
-
-        function render(list) {
-            const n = list.length;
-            countEl.textContent = `${n} ${n === 1 ? t('device_one') : t('device_many')}`;
-            if (!n) { grid.innerHTML = ''; emptyState.classList.remove('hidden'); return; }
-            emptyState.classList.add('hidden');
-            grid.innerHTML = list.map(cardHtml).join('');
-        }
-
-        // -------- Init / filters --------
-        let ALL = [];
-        function applyFilters() {
-            const c = document.getElementById('category').value;
-            const filtered = ALL.filter(d => !c || d.category === c);
-            render(filtered);
-        }
-
-        async function boot() {
-            document.getElementById('year').textContent = new Date().getFullYear();
-            ALL = await fetchDevices();
-            applyFilters();
-
-            document.getElementById('category').addEventListener('change', applyFilters);
-
-            grid.addEventListener('click', async (e) => {
-                const btn = e.target.closest('.select-btn');
-                if (!btn) return;
-                const id = btn.getAttribute('data-id');
-                btn.disabled = true; const oldHTML = btn.innerHTML; btn.textContent = t('selecting');
+            async function boot() {
+                document.getElementById('year').textContent = new Date().getFullYear();
                 try {
-                    await selectDevice(id);
-                    showToast(t('toastHeading'));
-                    setTimeout(() => window.location.href = SHOP_URL, 600);
+                    ALL = await fetchDevices();
+                    applyFilters();
                 } catch (err) {
-                    alert(err.message || 'Failed to set device');
-                    btn.disabled = false; btn.innerHTML = oldHTML;
+                    console.error(err);
+                    emptyState.classList.remove('hidden');
+                    emptyState.textContent = 'Failed to load devices.';
+                }
+
+                document.getElementById('category').addEventListener('change', applyFilters);
+
+                grid.addEventListener('click', async (e) => {
+                    const btn = e.target.closest('.select-btn');
+                    if (!btn) return;
+                    const id = btn.getAttribute('data-id');
+                    btn.disabled = true; const oldHTML = btn.innerHTML; btn.textContent = t('selecting');
+                    try {
+                        await selectDevice(id);
+                        showToast(t('toastHeading'));
+                        setTimeout(() => window.location.href = SHOP_URL, 600);
+                    } catch (err) {
+                        alert(err.message || 'Failed to set device');
+                        btn.disabled = false; btn.innerHTML = oldHTML;
+                    }
+                });
+            }
+
+            // --- Mobile Menu Logic ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
+
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
                 }
             });
-        }
 
-        // ---- Header: mobile menu & language toggle (same behavior as other pages) ----
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-
-        document.addEventListener('DOMContentLoaded', function () {
+            // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
-
-            const enTitle = 'Select a Storage Device — Virtual Lab Games';
-            const siTitle = 'සංග්‍රහණ උපාංගය තෝරන්න — Virtual Lab Games';
-            const enDesc = "Choose a storage device and we'll preload your selected games. You pay only for the hardware.";
-            const siDesc = 'සංග්‍රහණ උපාංගයක් තෝරා ඔබේ තේරීම් පෙර-පූරණය කරගන්න. ඔබ ගෙවන්නේ උපාංගයට පමණි.';
             const metaDescription = document.querySelector('meta[name="description"]');
 
             const setLanguage = (lang) => {
-                if (lang === 'si') {
-                    body.classList.add('sinhala-mode');
-                    body.classList.add('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'EN');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
-                    document.title = siTitle;
-                    metaDescription?.setAttribute('content', siDesc);
-                    localStorage.setItem('language', 'si');
-                } else {
-                    body.classList.remove('sinhala-mode');
-                    body.classList.remove('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
-                    document.title = enTitle;
-                    metaDescription?.setAttribute('content', enDesc);
-                    localStorage.setItem('language', 'en');
-                }
-                // update dynamic strings like count/toast
-                applyFilters();
+                const enTitle = 'Select a Storage Device — Virtual Lab Games';
+                const siTitle = 'සංග්‍රහණ උපාංගය තෝරන්න — Virtual Lab Games';
+                const enDesc = "Choose a storage device and we'll preload your selected games. You pay only for the hardware.";
+                const siDesc = 'සංග්‍රහණ උපාංගයක් තෝරා ඔබේ තේරීම් පෙර-පූරණය කරගන්න. ඔබ ගෙවන්නේ උපාංගයට පමණි.';
+                const isSi = lang === 'si';
+
+                body.classList.toggle('sinhala-mode', isSi);
+                body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+
+                document.title = isSi ? siTitle : enTitle;
+                metaDescription?.setAttribute('content', isSi ? siDesc : enDesc);
+                localStorage.setItem('language', lang);
+                applyFilters(); // Re-render dynamic text
             };
 
             const toggleLanguage = () => {
@@ -381,15 +463,10 @@
             langToggleBtn?.addEventListener('click', toggleLanguage);
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
 
-            const savedLang = localStorage.getItem('language');
-            setLanguage(savedLang || 'en');
-        });
+            setLanguage(localStorage.getItem('language') || 'en');
 
-        // Start
-        boot().catch(err => {
-            console.error(err);
-            emptyState.classList.remove('hidden');
-            emptyState.textContent = 'Failed to load devices.';
+            // Start the main application logic
+            boot();
         });
     </script>
 </body>

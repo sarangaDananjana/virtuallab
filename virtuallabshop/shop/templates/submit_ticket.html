@@ -40,11 +40,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
-    <!-- Shared site styles for aurora bg, glass, header blend, noise, Sinhala helpers -->
+    <!-- Shared site styles -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language helpers (same as other pages) */
+        /* Language helpers */
         .lang-si {
             display: none;
         }
@@ -69,7 +69,7 @@
             display: block;
         }
 
-        /* Selected-state styling for option & slot labels */
+        /* Custom styles for form elements */
         .option,
         .slot-label {
             transition: background .2s, border-color .2s, box-shadow .2s, transform .1s;
@@ -108,23 +108,6 @@
             transform: scale(1);
         }
 
-        /* Slots */
-        .slot-label {
-            position: relative;
-        }
-
-        .slot-time {
-            letter-spacing: -0.01em;
-            white-space: nowrap;
-        }
-
-        .slot-ampm {
-            text-transform: uppercase;
-            opacity: .7;
-            font-size: .75rem;
-            line-height: 1rem;
-        }
-
         .slot-label.unavailable {
             opacity: .65;
             border-style: dashed;
@@ -150,13 +133,8 @@
             pointer-events: none;
         }
 
-        /* Photos */
         .photo-slot {
             aspect-ratio: 1/1;
-        }
-
-        .photo-slot .photo-empty {
-            transition: opacity .15s;
         }
 
         .photo-slot:hover .photo-empty {
@@ -166,8 +144,10 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header (consistent with site; mobile shows only logo + language toggle + hamburger) -->
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
@@ -180,29 +160,34 @@
                     </div>
                 </a>
 
-                <!-- Right controls -->
+                <!-- Desktop Navigation (hidden on mobile) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle (always visible) -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'cart_page' %}"
-                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
-                    <a href="{% url 'shop-page' %}"
-                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
-                    </a>
+
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
                         class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
@@ -213,48 +198,14 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu: Login/Register, Store, My Tickets + Language -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}</div>
-                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
-                        user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                <a href="{% url 'register-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
-                {% endif %}
-
-                <a href="{% url 'shop-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
-                <a href="{% url 'tickets-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
-                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -284,7 +235,7 @@
 
             <!-- Stepper -->
             <div class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-6">
-                <ol class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <ol class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <li class="step-bullet active flex items-center gap-3"><span
                             class="w-8 h-8 rounded-full bg-brand-500 text-black font-black flex items-center justify-center">1</span><span
                             class="text-sm"><span class="lang-en">Source</span><span
@@ -314,7 +265,6 @@
                     <h2 class="text-xl font-bold mb-4"><span class="lang-en">Where did this order come from?</span><span
                             class="lang-si">මෙම ඇණවුම කොහින්ද ආවේ?</span></h2>
                     <div class="grid sm:grid-cols-2 gap-4">
-                        <!-- Virtual Lab -->
                         <label
                             class="option relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
                             <input type="radio" name="source" value="VIRTUAL_LAB" class="sr-only" />
@@ -331,7 +281,6 @@
                                     <path d="M4 10l4 4 8-8" />
                                 </svg></span>
                         </label>
-                        <!-- Daraz -->
                         <label
                             class="option relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
                             <input type="radio" name="source" value="DARAZ" class="sr-only" />
@@ -359,7 +308,6 @@
                 <section class="step-panel glass rounded-2xl sm:rounded-3xl p-5 sm:p-6 hidden">
                     <h2 class="text-xl font-bold mb-4"><span class="lang-en">Order Details</span><span
                             class="lang-si">ඇණවුම් විස්තර</span></h2>
-                    <!-- Virtual Lab orders selector -->
                     <div id="vlOrderBlock" class="space-y-3 hidden">
                         <label class="block text-sm font-medium"><span class="lang-en">Select your order</span><span
                                 class="lang-si">ඔබගේ ඇණවුම තෝරන්න</span></label>
@@ -379,7 +327,6 @@
                                 the previous step if it’s from Daraz.</span><span class="lang-si">ඔබගේ ඇණවුම හමු නොවන්නේ
                                 නම්, පෙර පියවරෙන් Daraz තෝරන්න.</span></p>
                     </div>
-                    <!-- Daraz fields -->
                     <div id="darazBlock" class="grid sm:grid-cols-2 gap-4 hidden">
                         <div>
                             <label class="block text-sm font-medium mb-2"><span class="lang-en">Daraz Order
@@ -425,7 +372,6 @@
                                 placeholder="Explain the problem in detail..."></textarea>
                         </div>
                         <div class="grid sm:grid-cols-2 gap-4">
-                            <!-- Video -->
                             <div>
                                 <label class="block text-sm font-medium mb-2"><span class="lang-en">Video (optional, ≤ 2
                                         minutes)</span><span class="lang-si">වීඩියෝ (විකල්ප, විනාඩි 2ට
@@ -437,7 +383,6 @@
                                         මාදිලි: mp4, mov, m4v, webm, avi • උපරිම කාලය 2:00</span></p>
                                 <video id="videoPreview" class="mt-3 rounded-lg w-full hidden" controls></video>
                             </div>
-                            <!-- Photos (5 slots) -->
                             <div>
                                 <label class="block text-sm font-medium mb-2"><span class="lang-en">Photos (up to
                                         5)</span><span class="lang-si">ඡායාරූප (උපරිම 5)</span></label>
@@ -536,8 +481,6 @@
                                     නොමැති වේලා පරාස අක්‍රීය වේ.</span></p>
                         </div>
                     </div>
-
-                    <!-- Review summary -->
                     <div class="space-y-4">
                         <div class="grid sm:grid-cols-2 gap-4">
                             <div class="p-4 rounded-xl bg-white/5 border border-white/10">
@@ -603,269 +546,340 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    ORIGINAL SCRIPT (RESTORED) WITH NEW MOBILE MENU LOGIC
+    ================================================================== -->
     <script>
-        // ---------- Year ----------
-        document.getElementById('year').textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('year').textContent = new Date().getFullYear();
 
-        // ---------- Mobile menu toggle ----------
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            // --- NEW Mobile Menu Logic ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
 
-        // ---------- i18n ----------
-        const L = {
-            en: {
-                toast_ok: 'Ticket submitted! ',
-                err_source: 'Please select a source',
-                err_vl_order: 'Please select your Virtual Lab order',
-                err_daraz_no: 'Please enter Daraz order number',
-                err_daraz_date: 'Please enter Daraz order date',
-                err_subject: 'Subject is required',
-                err_desc: 'Description is required',
-                video_long: 'Video must be 2 minutes or less.',
-                src_vl: 'Virtual Lab website',
-                src_daraz: 'Daraz',
-                unavailable: 'Unavailable'
-            },
-            si: {
-                toast_ok: 'ටිකට් යවා ඇත! ',
-                err_source: 'කරුණාකර මූලාශ්‍රයක් තෝරන්න',
-                err_vl_order: 'කරුණාකර Virtual Lab ඇණවුම තෝරන්න',
-                err_daraz_no: 'Daraz ඇණවුම් අංකය ඇතුල් කරන්න',
-                err_daraz_date: 'Daraz ඇණවුම් දිනය ඇතුල් කරන්න',
-                err_subject: 'මාතෘකාව අවශ්‍යයි',
-                err_desc: 'විස්තරය අවශ්‍යයි',
-                video_long: 'වීඩියෝව විනාඩි 2ට අඩු විය යුතුය.',
-                src_vl: 'Virtual Lab වෙබ්අඩවිය',
-                src_daraz: 'Daraz',
-                unavailable: 'ප්‍රයෝජනයට නෙවෙයි'
-            }
-        };
-        const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
-        const t = (k) => L[getLang()][k] || k;
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
 
-        // ---------- Toast helper ----------
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
-            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
-        }
-
-        // ---------- Wizard logic ----------
-        const form = document.getElementById('ticketForm');
-        const panels = Array.from(document.querySelectorAll('.step-panel'));
-        const bullets = Array.from(document.querySelectorAll('.step-bullet'));
-        let step = 0;
-        function setStep(n) {
-            step = Math.max(0, Math.min(panels.length - 1, n));
-            panels.forEach((p, i) => p.classList.toggle('hidden', i !== step));
-            bullets.forEach((b, i) => {
-                const circle = b.querySelector('span');
-                if (i <= step) { circle.classList.add('bg-brand-500', 'text-black'); circle.classList.remove('bg-white/10'); }
-                else { circle.classList.remove('bg-brand-500', 'text-black'); circle.classList.add('bg-white/10'); }
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (step === 3) buildReview();
-        }
-        function next() { if (validateStep(step)) setStep(step + 1); }
-        function prev() { setStep(step - 1); }
-        document.querySelectorAll('.btn-next').forEach(btn => btn.addEventListener('click', next));
-        document.querySelectorAll('.btn-prev').forEach(btn => btn.addEventListener('click', prev));
-
-        // Step 1: source
-        const sourceRadios = document.querySelectorAll('input[name="source"]');
-
-        // Step 2 blocks
-        const vlBlock = document.getElementById('vlOrderBlock');
-        const darazBlock = document.getElementById('darazBlock');
-        const orderSelect = document.getElementById('orderSelect');
-        const darazNumber = form.querySelector('[name="daraz_order_number"]');
-        const darazDate = form.querySelector('[name="daraz_order_date"]');
-
-        sourceRadios.forEach(r => r.addEventListener('change', () => {
-            if (r.checked && r.value === 'VIRTUAL_LAB') {
-                vlBlock.classList.remove('hidden');
-                darazBlock.classList.add('hidden');
-                orderSelect?.setAttribute('required', 'required');
-                darazNumber?.removeAttribute('required');
-                darazDate?.removeAttribute('required');
-            }
-            if (r.checked && r.value === 'DARAZ') {
-                darazBlock.classList.remove('hidden');
-                vlBlock.classList.add('hidden');
-                orderSelect?.removeAttribute('required');
-                darazNumber?.setAttribute('required', 'required');
-                darazDate?.setAttribute('required', 'required');
-            }
-        }));
-        function getSource() { const s = Array.from(sourceRadios).find(r => r.checked); return s ? s.value : ''; }
-
-        // Step 3: uploads & validation
-        const videoInput = document.getElementById('videoInput');
-        const videoPreview = document.getElementById('videoPreview');
-
-        // Step 4: scheduling
-        const visitDate = document.getElementById('visitDate');
-        const slotRadios = document.querySelectorAll('input[name="slot"]');
-        const photoInputs = Array.from(document.querySelectorAll('.photo-input'));
-
-        function wirePhotoSlot(slotEl) {
-            const input = slotEl.querySelector('.photo-input');
-            const empty = slotEl.querySelector('.photo-empty');
-            const img = slotEl.querySelector('.photo-img');
-            const remove = slotEl.querySelector('.photo-remove');
-            function clearSlot() { input.value = ''; img.removeAttribute('src'); img.classList.add('hidden'); remove.classList.add('hidden'); empty.classList.remove('hidden'); }
-            input.addEventListener('change', () => { const file = input.files && input.files[0]; if (!file) { clearSlot(); return; } const url = URL.createObjectURL(file); img.src = url; img.classList.remove('hidden'); empty.classList.add('hidden'); remove.classList.remove('hidden'); });
-            remove.addEventListener('click', (e) => { e.preventDefault(); clearSlot(); });
-        }
-        document.querySelectorAll('.photo-slot').forEach(wirePhotoSlot);
-        function resetPhotoSlots() { document.querySelectorAll('.photo-slot').forEach(slot => { const remove = slot.querySelector('.photo-remove'); if (!remove.classList.contains('hidden')) remove.click(); }); }
-
-        videoInput?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) { videoPreview.classList.add('hidden'); videoPreview.removeAttribute('src'); return; }
-            const ok = await checkVideoDuration(file, 120);
-            if (!ok) { showToast(t('video_long'), 'error'); e.target.value = ''; videoPreview.classList.add('hidden'); videoPreview.removeAttribute('src'); return; }
-            const url = URL.createObjectURL(file); videoPreview.src = url; videoPreview.classList.remove('hidden');
-        });
-        function checkVideoDuration(file, maxSeconds) { return new Promise((resolve) => { const v = document.createElement('video'); v.preload = 'metadata'; v.onloadedmetadata = () => { URL.revokeObjectURL(v.src); resolve((v.duration || 0) <= maxSeconds); }; v.onerror = () => resolve(false); v.src = URL.createObjectURL(file); }); }
-
-        function validateStep(s) {
-            if (s === 0) { if (!getSource()) { showToast(t('err_source'), 'error'); return false; } }
-            if (s === 1) {
-                const src = getSource();
-                if (src === 'VIRTUAL_LAB' && (!orderSelect || !orderSelect.value)) { showToast(t('err_vl_order'), 'error'); return false; }
-                if (src === 'DARAZ') { if (!darazNumber.value) { showToast(t('err_daraz_no'), 'error'); return false; } if (!darazDate.value) { showToast(t('err_daraz_date'), 'error'); return false; } }
-            }
-            if (s === 2) {
-                const subject = document.getElementById('subject'); const description = document.getElementById('description');
-                if (!subject.value.trim()) { showToast(t('err_subject'), 'error'); return false; }
-                if (!description.value.trim()) { showToast(t('err_desc'), 'error'); return false; }
-            }
-            return true;
-        }
-
-        function slotHuman(v) { if (v === '09:00-10:00') return '9:00–10:00 AM'; if (v === '21:00-22:00') return '9:00–10:00 PM'; if (v === '22:00-23:00') return '10:00–11:00 PM'; return v || ''; }
-        function getSelectedSlotValue() { const r = Array.from(slotRadios).find(r => r.checked); return r ? r.value : ''; }
-
-        function buildReview() {
-            const src = getSource();
-            document.getElementById('revSource').textContent = src === 'VIRTUAL_LAB' ? t('src_vl') : t('src_daraz');
-            if (src === 'VIRTUAL_LAB') { const txt = orderSelect?.selectedOptions[0]?.text || '—'; document.getElementById('revOrder').textContent = txt; }
-            else {
-                const parts = []; if (darazNumber.value) parts.push('#' + darazNumber.value); if (darazDate.value) parts.push(new Date(darazDate.value).toISOString().slice(0, 10)); document.getElementById('revOrder').textContent = parts.join(' • ') || '—';
-            }
-            document.getElementById('revSubject').textContent = document.getElementById('subject').value || '—';
-            document.getElementById('revDescription').textContent = document.getElementById('description').value || '—';
-            const selectedSlot = getSelectedSlotValue();
-            const dateText = (visitDate && visitDate.value) ? new Date(visitDate.value).toISOString().slice(0, 10) : '';
-            const human = slotHuman(selectedSlot);
-            const revSlot = document.getElementById('revSlot'); revSlot.textContent = (dateText && human) ? `${dateText} • ${human}` : '—';
-            const revVideo = document.getElementById('revVideo'); const revVideoNone = document.getElementById('revVideoNone');
-            if (videoInput.files && videoInput.files[0]) { revVideo.src = URL.createObjectURL(videoInput.files[0]); revVideo.classList.remove('hidden'); revVideoNone.classList.add('hidden'); }
-            else { revVideo.removeAttribute('src'); revVideo.classList.add('hidden'); revVideoNone.classList.remove('hidden'); }
-            const revPhotos = document.getElementById('revPhotos'); const revPhotosNone = document.getElementById('revPhotosNone'); revPhotos.innerHTML = '';
-            const photoFiles = photoInputs.map(inp => inp.files[0]).filter(Boolean);
-            if (photoFiles.length) { photoFiles.forEach(f => { const url = URL.createObjectURL(f); const img = document.createElement('img'); img.src = url; img.alt = f.name; img.className = 'w-full h-16 object-cover rounded-lg'; const wrap = document.createElement('div'); wrap.className = 'rounded-lg overflow-hidden border border-white/10'; wrap.appendChild(img); revPhotos.appendChild(wrap); }); revPhotosNone.classList.add('hidden'); }
-            else { revPhotosNone.classList.remove('hidden'); }
-        }
-
-        // Initialize defaults
-        if (visitDate && !visitDate.value) {
-            const tnow = new Date(); const yyyy = tnow.getFullYear(); const mm = String(tnow.getMonth() + 1).padStart(2, '0'); const dd = String(tnow.getDate()).padStart(2, '0'); visitDate.value = `${yyyy}-${mm}-${dd}`;
-        }
-
-        // Slots availability
-        const slotsApiUrl = "{% url 'api-reserved-slots' %}";
-        function applyUnavailable(dateStr, unavailable) {
-            document.querySelectorAll('input[name="slot"]').forEach((radio) => {
-                const label = radio.closest('label.slot-label');
-                label.querySelector('.unavailable-badge')?.remove();
-                label.classList.remove('unavailable', 'disabled');
-                label.removeAttribute('aria-disabled');
-                radio.disabled = false;
-                const isUnavailable = (unavailable || []).includes(radio.value);
-                if (isUnavailable) {
-                    if (radio.checked) radio.checked = false;
-                    radio.disabled = true; label.classList.add('unavailable', 'disabled'); label.setAttribute('aria-disabled', 'true');
-                    const badge = document.createElement('span'); badge.className = 'unavailable-badge'; badge.textContent = t('unavailable'); label.appendChild(badge);
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
                 }
             });
-            if (step === 3) buildReview();
-        }
-        async function refreshSlots(dateStr) {
-            try {
-                const res = await fetch(`${slotsApiUrl}?date=${encodeURIComponent(dateStr)}`, { headers: { 'Accept': 'application/json' } });
-                if (!res.ok) throw new Error('Failed to load slots');
-                const data = await res.json();
-                applyUnavailable(data.date, data.unavailable || []);
-            } catch (e) { console.error(e); showToast('Could not load time slots. Please try again.', 'error'); }
-        }
-        if (visitDate) { const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0'); visitDate.min = `${yyyy}-${mm}-${dd}`; refreshSlots(visitDate.value); }
-        visitDate?.addEventListener('change', () => { refreshSlots(visitDate.value); if (step === 3) buildReview(); });
-        document.querySelectorAll('input[name="slot"]').forEach(r => r.addEventListener('change', () => { if (step === 3) buildReview(); }));
 
-        // Fallback selected-state sync
-        function syncCheckedStyles() {
-            document.querySelectorAll('label.option').forEach(l => { const isChecked = !!l.querySelector('input[type="radio"]:checked'); l.classList.toggle('selected', isChecked); });
-            document.querySelectorAll('label.slot-label').forEach(l => { const isChecked = !!l.querySelector('input[type="radio"]:checked'); l.classList.toggle('selected', isChecked); });
-        }
-        document.addEventListener('change', (e) => { if (e.target.matches('input[name="source"], input[name="slot"]')) { syncCheckedStyles(); } });
-        syncCheckedStyles();
-        setStep(0);
+            // --- ORIGINAL SCRIPT LOGIC (RESTORED) ---
+            const L = {
+                en: { toast_ok: 'Ticket submitted! ', err_source: 'Please select a source', err_vl_order: 'Please select your Virtual Lab order', err_daraz_no: 'Please enter Daraz order number', err_daraz_date: 'Please enter Daraz order date', err_subject: 'Subject is required', err_desc: 'Description is required', video_long: 'Video must be 2 minutes or less.', src_vl: 'Virtual Lab website', src_daraz: 'Daraz', unavailable: 'Unavailable' },
+                si: { toast_ok: 'ටිකට් යවා ඇත! ', err_source: 'කරුණාකර මූලාශ්‍රයක් තෝරන්න', err_vl_order: 'කරුණාකර Virtual Lab ඇණවුම තෝරන්න', err_daraz_no: 'Daraz ඇණවුම් අංකය ඇතුල් කරන්න', err_daraz_date: 'Daraz ඇණවුම් දිනය ඇතුල් කරන්න', err_subject: 'මාතෘකාව අවශ්‍යයි', err_desc: 'විස්තරය අවශ්‍යයි', video_long: 'වීඩියෝව විනාඩි 2ට අඩු විය යුතුය.', src_vl: 'Virtual Lab වෙබ්අඩවිය', src_daraz: 'Daraz', unavailable: 'ප්‍රයෝජනයට නෙවෙයි' }
+            };
+            const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
+            const t = (k) => L[getLang()][k] || k;
 
-        // CSRF helper
-        function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return parts.pop().split(';').shift(); }
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+                toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+            }
 
-        // Submit
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(form);
-            try {
-                const res = await fetch("{% url 'api-ticket-create' %}", { method: "POST", headers: { "X-CSRFToken": getCookie('csrftoken') }, body: fd });
-                const json = await res.json();
-                if (!res.ok || json.ok === false) { throw new Error(json.error || "Could not submit ticket"); }
-                showToast(`${t('toast_ok')}#${json.ticket.reference}`);
-                form.reset(); resetPhotoSlots();
-                videoPreview?.removeAttribute('src'); videoPreview?.classList.add('hidden');
-                setStep(0);
-            } catch (err) { console.error(err); showToast(err.message, 'error'); }
-        });
+            const form = document.getElementById('ticketForm');
+            const panels = Array.from(document.querySelectorAll('.step-panel'));
+            const bullets = Array.from(document.querySelectorAll('.step-bullet'));
+            let step = 0;
+            function setStep(n) {
+                step = Math.max(0, Math.min(panels.length - 1, n));
+                panels.forEach((p, i) => p.classList.toggle('hidden', i !== step));
+                bullets.forEach((b, i) => {
+                    const circle = b.querySelector('span');
+                    if (i <= step) { circle.classList.add('bg-brand-500', 'text-black'); circle.classList.remove('bg-white/10'); }
+                    else { circle.classList.remove('bg-brand-500', 'text-black'); circle.classList.add('bg-white/10'); }
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (step === 3) buildReview();
+            }
+            function next() { if (validateStep(step)) setStep(step + 1); }
+            function prev() { setStep(step - 1); }
+            document.querySelectorAll('.btn-next').forEach(btn => btn.addEventListener('click', next));
+            document.querySelectorAll('.btn-prev').forEach(btn => btn.addEventListener('click', prev));
 
-        // ---------- Language toggle (same behavior as other pages) ----------
-        document.addEventListener('DOMContentLoaded', function () {
+            const sourceRadios = document.querySelectorAll('input[name="source"]');
+            const vlBlock = document.getElementById('vlOrderBlock');
+            const darazBlock = document.getElementById('darazBlock');
+            const orderSelect = document.getElementById('orderSelect');
+            const darazNumber = form.querySelector('[name="daraz_order_number"]');
+            const darazDate = form.querySelector('[name="daraz_order_date"]');
+            sourceRadios.forEach(r => r.addEventListener('change', () => {
+                if (r.checked && r.value === 'VIRTUAL_LAB') {
+                    vlBlock.classList.remove('hidden'); darazBlock.classList.add('hidden');
+                    orderSelect?.setAttribute('required', 'required');
+                    darazNumber?.removeAttribute('required'); darazDate?.removeAttribute('required');
+                }
+                if (r.checked && r.value === 'DARAZ') {
+                    darazBlock.classList.remove('hidden'); vlBlock.classList.add('hidden');
+                    orderSelect?.removeAttribute('required');
+                    darazNumber?.setAttribute('required', 'required'); darazDate?.setAttribute('required', 'required');
+                }
+            }));
+            function getSource() { const s = Array.from(sourceRadios).find(r => r.checked); return s ? s.value : ''; }
+
+            const videoInput = document.getElementById('videoInput');
+            const videoPreview = document.getElementById('videoPreview');
+            const visitDate = document.getElementById('visitDate');
+            const slotRadios = document.querySelectorAll('input[name="slot"]');
+            const photoInputs = Array.from(document.querySelectorAll('.photo-input'));
+
+            function wirePhotoSlot(slotEl) {
+                const input = slotEl.querySelector('.photo-input');
+                const empty = slotEl.querySelector('.photo-empty');
+                const img = slotEl.querySelector('.photo-img');
+                const remove = slotEl.querySelector('.photo-remove');
+                function clearSlot() { input.value = ''; img.removeAttribute('src'); img.classList.add('hidden'); remove.classList.add('hidden'); empty.classList.remove('hidden'); }
+                input.addEventListener('change', () => { const file = input.files && input.files[0]; if (!file) { clearSlot(); return; } const url = URL.createObjectURL(file); img.src = url; img.classList.remove('hidden'); empty.classList.add('hidden'); remove.classList.remove('hidden'); });
+                remove.addEventListener('click', (e) => { e.preventDefault(); clearSlot(); });
+            }
+            document.querySelectorAll('.photo-slot').forEach(wirePhotoSlot);
+            function resetPhotoSlots() { document.querySelectorAll('.photo-slot').forEach(slot => { const remove = slot.querySelector('.photo-remove'); if (!remove.classList.contains('hidden')) remove.click(); }); }
+
+            videoInput?.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) { videoPreview.classList.add('hidden'); videoPreview.removeAttribute('src'); return; }
+                const ok = await checkVideoDuration(file, 120);
+                if (!ok) { showToast(t('video_long'), 'error'); e.target.value = ''; videoPreview.classList.add('hidden'); videoPreview.removeAttribute('src'); return; }
+                const url = URL.createObjectURL(file); videoPreview.src = url; videoPreview.classList.remove('hidden');
+            });
+            function checkVideoDuration(file, maxSeconds) { return new Promise((resolve) => { const v = document.createElement('video'); v.preload = 'metadata'; v.onloadedmetadata = () => { URL.revokeObjectURL(v.src); resolve((v.duration || 0) <= maxSeconds); }; v.onerror = () => resolve(false); v.src = URL.createObjectURL(file); }); }
+
+            function validateStep(s) {
+                if (s === 0) { if (!getSource()) { showToast(t('err_source'), 'error'); return false; } }
+                if (s === 1) {
+                    const src = getSource();
+                    if (src === 'VIRTUAL_LAB' && (!orderSelect || !orderSelect.value)) { showToast(t('err_vl_order'), 'error'); return false; }
+                    if (src === 'DARAZ') { if (!darazNumber.value) { showToast(t('err_daraz_no'), 'error'); return false; } if (!darazDate.value) { showToast(t('err_daraz_date'), 'error'); return false; } }
+                }
+                if (s === 2) {
+                    const subject = document.getElementById('subject'); const description = document.getElementById('description');
+                    if (!subject.value.trim()) { showToast(t('err_subject'), 'error'); return false; }
+                    if (!description.value.trim()) { showToast(t('err_desc'), 'error'); return false; }
+                }
+                return true;
+            }
+
+            function slotHuman(v) { if (v === '09:00-10:00') return '9:00–10:00 AM'; if (v === '21:00-22:00') return '9:00–10:00 PM'; if (v === '22:00-23:00') return '10:00–11:00 PM'; return v || ''; }
+            function getSelectedSlotValue() { const r = Array.from(slotRadios).find(r => r.checked); return r ? r.value : ''; }
+
+            function buildReview() {
+                const src = getSource();
+                document.getElementById('revSource').textContent = src === 'VIRTUAL_LAB' ? t('src_vl') : t('src_daraz');
+                if (src === 'VIRTUAL_LAB') { const txt = orderSelect?.selectedOptions[0]?.text || '—'; document.getElementById('revOrder').textContent = txt; }
+                else {
+                    const parts = []; if (darazNumber.value) parts.push('#' + darazNumber.value); if (darazDate.value) parts.push(new Date(darazDate.value).toISOString().slice(0, 10)); document.getElementById('revOrder').textContent = parts.join(' • ') || '—';
+                }
+                document.getElementById('revSubject').textContent = document.getElementById('subject').value || '—';
+                document.getElementById('revDescription').textContent = document.getElementById('description').value || '—';
+                const selectedSlot = getSelectedSlotValue();
+                const dateText = (visitDate && visitDate.value) ? new Date(visitDate.value).toISOString().slice(0, 10) : '';
+                const human = slotHuman(selectedSlot);
+                const revSlot = document.getElementById('revSlot'); revSlot.textContent = (dateText && human) ? `${dateText} • ${human}` : '—';
+                const revVideo = document.getElementById('revVideo'); const revVideoNone = document.getElementById('revVideoNone');
+                if (videoInput.files && videoInput.files[0]) { revVideo.src = URL.createObjectURL(videoInput.files[0]); revVideo.classList.remove('hidden'); revVideoNone.classList.add('hidden'); }
+                else { revVideo.removeAttribute('src'); revVideo.classList.add('hidden'); revVideoNone.classList.remove('hidden'); }
+                const revPhotos = document.getElementById('revPhotos'); const revPhotosNone = document.getElementById('revPhotosNone'); revPhotos.innerHTML = '';
+                const photoFiles = photoInputs.map(inp => inp.files[0]).filter(Boolean);
+                if (photoFiles.length) { photoFiles.forEach(f => { const url = URL.createObjectURL(f); const img = document.createElement('img'); img.src = url; img.alt = f.name; img.className = 'w-full h-16 object-cover rounded-lg'; const wrap = document.createElement('div'); wrap.className = 'rounded-lg overflow-hidden border border-white/10'; wrap.appendChild(img); revPhotos.appendChild(wrap); }); revPhotosNone.classList.add('hidden'); }
+                else { revPhotosNone.classList.remove('hidden'); }
+            }
+
+            if (visitDate && !visitDate.value) {
+                const tnow = new Date(); const yyyy = tnow.getFullYear(); const mm = String(tnow.getMonth() + 1).padStart(2, '0'); const dd = String(tnow.getDate()).padStart(2, '0'); visitDate.value = `${yyyy}-${mm}-${dd}`;
+            }
+
+            const slotsApiUrl = "{% url 'api-reserved-slots' %}";
+            function applyUnavailable(dateStr, unavailable) {
+                document.querySelectorAll('input[name="slot"]').forEach((radio) => {
+                    const label = radio.closest('label.slot-label');
+                    label.querySelector('.unavailable-badge')?.remove();
+                    label.classList.remove('unavailable', 'disabled');
+                    label.removeAttribute('aria-disabled');
+                    radio.disabled = false;
+                    const isUnavailable = (unavailable || []).includes(radio.value);
+                    if (isUnavailable) {
+                        if (radio.checked) radio.checked = false;
+                        radio.disabled = true; label.classList.add('unavailable', 'disabled'); label.setAttribute('aria-disabled', 'true');
+                        const badge = document.createElement('span'); badge.className = 'unavailable-badge'; badge.textContent = t('unavailable'); label.appendChild(badge);
+                    }
+                });
+                if (step === 3) buildReview();
+            }
+            async function refreshSlots(dateStr) {
+                try {
+                    const res = await fetch(`${slotsApiUrl}?date=${encodeURIComponent(dateStr)}`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('Failed to load slots');
+                    const data = await res.json();
+                    applyUnavailable(data.date, data.unavailable || []);
+                } catch (e) { console.error(e); showToast('Could not load time slots. Please try again.', 'error'); }
+            }
+            if (visitDate) { const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0'); visitDate.min = `${yyyy}-${mm}-${dd}`; refreshSlots(visitDate.value); }
+            visitDate?.addEventListener('change', () => { refreshSlots(visitDate.value); if (step === 3) buildReview(); });
+            document.querySelectorAll('input[name="slot"]').forEach(r => r.addEventListener('change', () => { if (step === 3) buildReview(); }));
+
+            function syncCheckedStyles() {
+                document.querySelectorAll('label.option').forEach(l => { const isChecked = !!l.querySelector('input[type="radio"]:checked'); l.classList.toggle('selected', isChecked); });
+                document.querySelectorAll('label.slot-label').forEach(l => { const isChecked = !!l.querySelector('input[type="radio"]:checked'); l.classList.toggle('selected', isChecked); });
+            }
+            document.addEventListener('change', (e) => { if (e.target.matches('input[name="source"], input[name="slot"]')) { syncCheckedStyles(); } });
+            syncCheckedStyles();
+            setStep(0);
+
+            function getCookie(name) { const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`); if (parts.length === 2) return parts.pop().split(';').shift(); }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fd = new FormData(form);
+                try {
+                    const res = await fetch("{% url 'api-ticket-create' %}", { method: "POST", headers: { "X-CSRFToken": getCookie('csrftoken') }, body: fd });
+                    const json = await res.json();
+                    if (!res.ok || json.ok === false) { throw new Error(json.error || "Could not submit ticket"); }
+                    showToast(`${t('toast_ok')}#${json.ticket.reference}`);
+                    form.reset(); resetPhotoSlots();
+                    videoPreview?.removeAttribute('src'); videoPreview?.classList.add('hidden');
+                    setStep(0);
+                } catch (err) { console.error(err); showToast(err.message, 'error'); }
+            });
+
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
-
-            const enTitle = 'Open Support Ticket — Virtual Lab Games';
-            const siTitle = 'සහාය ටිකට් එකක් අරඹන්න — Virtual Lab Games';
-            const enDesc = "Open a support ticket with Virtual Lab Games. Tell us the issue and preferred time — we'll help you get playing again fast.";
-            const siDesc = 'Virtual Lab Games සමඟ සහාය ටිකට් එකක් අරඹන්න. ගැටලුව හා කැමති වේලාව දන්වා — ඉක්මනින් විසඳන්නම්.';
             const metaDescription = document.querySelector('meta[name="description"]');
-
             const setLanguage = (lang) => {
+                const enTitle = 'Open Support Ticket — Virtual Lab Games';
+                const siTitle = 'සහාය ටිකට් එකක් අරඹන්න — Virtual Lab Games';
+                const enDesc = "Open a support ticket with Virtual Lab Games. Tell us the issue and preferred time — we'll help you get playing again fast.";
+                const siDesc = 'Virtual Lab Games සමඟ සහාය ටිකට් එකක් අරඹන්න. ගැටලුව හා කැමති වේලාව දන්වා — ඉක්මනින් විසඳන්නම්.';
                 if (lang === 'si') {
-                    body.classList.add('sinhala-mode');
-                    body.classList.add('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'EN');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'EN');
-                    document.title = siTitle;
-                    metaDescription?.setAttribute('content', siDesc);
+                    body.classList.add('sinhala-mode'); body.classList.add('font-sinhala');
+                    if (langToggleBtn) langToggleBtn.textContent = 'EN';
+                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'EN';
+                    document.title = siTitle; metaDescription?.setAttribute('content', siDesc);
                     localStorage.setItem('language', 'si');
                 } else {
-                    body.classList.remove('sinhala-mode');
-                    body.classList.remove('font-sinhala');
-                    langToggleBtn && (langToggleBtn.textContent = 'සිංහල');
-                    langToggleBtnMobile && (langToggleBtnMobile.textContent = 'සිංහල');
-                    document.title = enTitle;
-                    metaDescription?.setAttribute('content', enDesc);
+                    body.classList.remove('sinhala-mode'); body.classList.remove('font-sinhala');
+                    if (langToggleBtn) langToggleBtn.textContent = 'සිංහල';
+                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'සිංහල';
+                    document.title = enTitle; metaDescription?.setAttribute('content', enDesc);
                     localStorage.setItem('language', 'en');
                 }
-                // refresh any dynamic review text
                 if (step === 3) buildReview();
             };
             const toggleLanguage = () => { const currentLang = localStorage.getItem('language') || 'en'; setLanguage(currentLang === 'en' ? 'si' : 'en'); };

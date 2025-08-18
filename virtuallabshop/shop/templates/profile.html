@@ -39,11 +39,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
-    <!-- Shared site styles (aurora bg, noise layer, glass, header blend, Sinhala helpers) -->
+    <!-- Shared site styles -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language helpers (match other pages) */
+        /* Language helpers */
         .lang-si {
             display: none;
         }
@@ -77,7 +77,7 @@
             box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
         }
 
-        /* Skeletons */
+        /* Skeletons for loading state */
         .skeleton {
             position: relative;
             overflow: hidden;
@@ -102,8 +102,10 @@
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header (consistent; mobile shows only logo + language toggle + hamburger) -->
-    <header class="header-blend">
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU
+    ================================================================== -->
+    <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
@@ -116,29 +118,34 @@
                     </div>
                 </a>
 
-                <!-- Right controls -->
+                <!-- Desktop Navigation (hidden on mobile) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Language Toggle (always visible) -->
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <!-- Desktop actions (hidden on mobile) -->
                     <a href="{% url 'cart_page' %}"
-                        class="hidden lg:inline-flex shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="lang-en">Cart</span><span class="lang-si">Cart</span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
                     </a>
-                    <a href="{% url 'shop-page' %}"
-                        class="hidden lg:inline-flex store-pop shine items-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span>
-                    </a>
+
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
                         class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
@@ -149,48 +156,14 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <!-- Mobile nav toggle (only icon on mobile) -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open menu">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu: Login/Register, Store, My Tickets + Language -->
-        <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-xl">
-            <div class="container mx-auto px-4 py-4 space-y-2 text-gray-800">
-                {% if user.is_authenticated %}
-                <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-900/5">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-gold-400/20 font-bold uppercase text-gray-800">
-                        {{ user_initial }}</div>
-                    <div class="text-sm"><span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{
-                        user.username }}</div>
-                </div>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                <a href="{% url 'register-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Register</span><span class="lang-si">ලියාපදිංචි වන්න</span></a>
-                {% endif %}
-
-                <a href="{% url 'shop-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span
-                        class="lang-en">Store</span><span class="lang-si">වෙළඳසැල</span></a>
-                <a href="{% url 'tickets-page' %}"
-                    class="block px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors"><span class="lang-en">My
-                        Tickets</span><span class="lang-si">මගේ ටිකට්</span></a>
-
-                <button id="langToggleBtnMobile"
-                    class="block w-full text-left px-4 py-2 rounded-lg hover:bg-gray-900/5 transition-colors font-bold">EN</button>
             </div>
         </div>
     </header>
@@ -224,7 +197,6 @@
                         </svg>
                         <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ගැටලු</span>
                     </a>
-                    <!--  url 'orders_page' -->
                     <a href="{% url 'orders-page' %}"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,7 +228,6 @@
                             <a href="{% url 'cart_page' %}"
                                 class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold text-center"><span
                                     class="lang-en">Open Cart</span><span class="lang-si">කරත්තය</span></a>
-                            <!--  url 'api-orders-me'  -->
                             <a href="{% url 'orders-page' %}"
                                 class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold text-center"><span
                                     class="lang-en">View Orders</span><span class="lang-si">ඇණවුම්</span></a>
@@ -351,8 +322,6 @@
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-bold"><span class="lang-en">Security</span><span
                                     class="lang-si">ආරක්ෂාව</span></h2>
-
-                            <!--  url 'password_change'  -->
                             <a href="#"
                                 class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold"><span
                                     class="lang-en">Update password</span><span class="lang-si">මුරපදය
@@ -380,212 +349,260 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}
+                    </div>
+                    <div class="text-sm text-white/90">
+                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
+                    </div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
-        // ---------- Year ----------
-        document.getElementById('year').textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Set current year in footer ---
+            document.getElementById('year').textContent = new Date().getFullYear();
 
-        // ---------- Mobile menu toggle ----------
-        const navToggle = document.getElementById('navToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        navToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            // --- Mobile Menu Logic ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
 
-        // ---------- i18n ----------
-        const L = {
-            en: {
-                edit: 'Edit', save: 'Save', cancel: 'Cancel',
-                contact: 'Contact information', security: 'Security', member_since: 'Member since',
-                name: 'Full name', phone: 'Phone number', addr1: 'Address line 1', addr2: 'Address line 2', city: 'City', postal: 'Postal code',
-                save_note: "We’ll save changes to your account.",
-            },
-            si: {
-                edit: 'සංස්කරණය', save: 'සුරකින්න', cancel: 'අවලංගු',
-                contact: 'සම්බන්ධතා තොරතුරු', security: 'ආරක්ෂාව', member_since: 'සාමාජිකත්වය සිට',
-                name: 'සම්පූර්ණ නම', phone: 'දුරකථනය', addr1: 'ලිපිනය 1', addr2: 'ලිපිනය 2', city: 'නගරය', postal: 'අංකය',
-                save_note: 'වෙනස්කම් ඔබගේ ගිණුමට සුරකිමු.',
-            }
-        };
-        const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
-
-        // ---------- Placeholder API (replace later) ----------
-        const API_ME = '/api/me';
-        const API_UPDATE = '/api/me/update';
-
-        function getCookie(name) {
-            const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
-            return match ? decodeURIComponent(match[2]) : null;
-        }
-
-        // Mock user (used until API is wired)
-        const mockUser = {
-            name: 'Player One',
-            email: 'player@example.com',
-            phone: '071-1234567',
-            address_line1: '123 High St',
-            address_line2: 'Apartment 5B',
-            city: 'Colombo',
-            postal_code: '00100',
-            member_since: '2024-02-15'
-        };
-
-        function formatDate(d) { return formatDateSafe(d); }
-
-
-        function fillDisplay(u) {
-            const nameDisp = document.getElementById('nameDisp');
-            const emailDisp = document.getElementById('emailDisp');
-            const memberSince = document.getElementById('memberSince');
-            const secEmail = document.getElementById('secEmail');
-            nameDisp.classList.remove('skeleton'); emailDisp.classList.remove('skeleton'); memberSince.classList.remove('skeleton'); secEmail.classList.remove('skeleton');
-            nameDisp.textContent = u.name || '—';
-            emailDisp.textContent = u.email || '—';
-            secEmail.textContent = u.email || '—';
-            memberSince.textContent = formatDate(u.member_since) || '—';
-        }
-
-        function fillForm(u) {
-            document.getElementById('name').value = u.name || '';
-            document.getElementById('email').value = u.email || '';
-            document.getElementById('phone').value = u.phone || '';
-            document.getElementById('addr1').value = u.address_line1 || '';
-            document.getElementById('addr2').value = u.address_line2 || '';
-            document.getElementById('city').value = u.city || '';
-            document.getElementById('postal').value = u.postal_code || '';
-        }
-
-        async function loadProfile() {
-            try {
-                const data = await fetchJSON(API_ME);
-                // normalize date if your template expects YYYY-MM-DD
-                if (data && data.member_since) data.member_since = formatDateSafe(data.member_since);
-                fillDisplay(data);
-                fillForm(data);
-                setEditing(false);
-                return data;
-            } catch (err) {
-                showToast(err.message || 'Failed to load profile', 'error');
-                throw err;
-            }
-        }
-
-        async function fetchJSON(url, opts = {}) {
-            const merged = {
-                credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
-                ...opts,
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
             };
-            const res = await fetch(url, merged);
-            const ct = res.headers.get('content-type') || '';
-            const data = ct.includes('application/json') ? await res.json() : null;
-            if (!res.ok) {
-                const msg = (data && (data.detail || data.error)) || `Request failed (${res.status})`;
-                throw new Error(msg);
-            }
-            return data;
-        }
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
 
-        function setEditing(enabled) {
-            ['name', 'email', 'phone', 'addr1', 'addr2', 'city', 'postal'].forEach(id => {
-                const el = document.getElementById(id);
-                if (enabled) { el.removeAttribute('disabled'); el.classList.add('focus:outline-none', 'focus:border-brand-400'); }
-                else { el.setAttribute('disabled', 'disabled'); el.classList.remove('focus:outline-none', 'focus:border-brand-400'); }
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
+                }
             });
-            document.getElementById('editBtn').classList.toggle('hidden', enabled);
-            document.getElementById('saveBtn').classList.toggle('hidden', !enabled);
-            document.getElementById('cancelBtn').classList.toggle('hidden', !enabled);
-            document.getElementById('saveNote').classList.toggle('hidden', !enabled);
-        }
 
-        function formatDateSafe(d) {
-            try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
-        }
+            // --- API and Form Logic ---
+            const API_ME = '/api/me';
+            const API_UPDATE = '/api/me/update';
 
-        document.getElementById('editBtn').addEventListener('click', () => setEditing(true));
-        document.getElementById('cancelBtn').addEventListener('click', async () => { const u = await loadProfile(); setEditing(false); fillForm(u); });
-
-        // ---------- Toast helper ----------
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
-            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2200);
-        }
-
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const body = {
-                name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                address_line1: document.getElementById('addr1').value.trim(),
-                address_line2: document.getElementById('addr2').value.trim(),
-                city: document.getElementById('city').value.trim(),
-                postal_code: document.getElementById('postal').value.trim(),
-                // address_no is supported by the API; if you add an input later, include it here.
-            };
-
-            try {
-                const updated = await fetch(API_UPDATE, {
-                    method: 'PATCH',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify(body),
-                }).then(r => r.json());
-                // reflect server-truth back into the UI
-                if (updated && updated.member_since) updated.member_since = formatDateSafe(updated.member_since);
-                fillDisplay(updated);
-                fillForm(updated);
-                setEditing(false);
-                showToast('Profile updated');
-            } catch (err) {
-                showToast(err.message || 'Update failed', 'error');
+            function getCookie(name) {
+                const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
+                return match ? decodeURIComponent(match[2]) : null;
             }
-        });
 
-        // On load: fetch from /api/me (no localStorage fallback)
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadProfile();
-            setEditing(false);
-        });
+            async function fetchJSON(url, opts = {}) {
+                const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+                const merged = { credentials: 'same-origin', ...opts, headers };
+                const res = await fetch(url, merged);
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error((data && (data.detail || data.error)) || `Request failed (${res.status})`);
+                return data;
+            }
 
-        // ---------- Language toggle (same behavior as other pages) ----------
-        document.addEventListener('DOMContentLoaded', async function () {
+            function formatDateSafe(d) {
+                try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
+            }
+
+            function fillDisplay(u) {
+                ['nameDisp', 'emailDisp', 'memberSince', 'secEmail'].forEach(id => document.getElementById(id)?.classList.remove('skeleton'));
+                document.getElementById('nameDisp').textContent = u.name || '—';
+                document.getElementById('emailDisp').textContent = u.email || '—';
+                document.getElementById('secEmail').textContent = u.email || '—';
+                document.getElementById('memberSince').textContent = formatDateSafe(u.member_since) || '—';
+            }
+
+            function fillForm(u) {
+                document.getElementById('name').value = u.name || '';
+                document.getElementById('email').value = u.email || '';
+                document.getElementById('phone').value = u.phone || '';
+                document.getElementById('addr1').value = u.address_line1 || '';
+                document.getElementById('addr2').value = u.address_line2 || '';
+                document.getElementById('city').value = u.city || '';
+                document.getElementById('postal').value = u.postal_code || '';
+            }
+
+            function setEditing(enabled) {
+                ['name', 'email', 'phone', 'addr1', 'addr2', 'city', 'postal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.disabled = !enabled;
+                    el.classList.toggle('focus:outline-none', enabled);
+                    el.classList.toggle('focus:border-brand-400', enabled);
+                });
+                document.getElementById('editBtn').classList.toggle('hidden', enabled);
+                document.getElementById('saveBtn').classList.toggle('hidden', !enabled);
+                document.getElementById('cancelBtn').classList.toggle('hidden', !enabled);
+                document.getElementById('saveNote').classList.toggle('hidden', !enabled);
+            }
+
+            async function loadProfile() {
+                try {
+                    const data = await fetchJSON(API_ME);
+                    fillDisplay(data);
+                    fillForm(data);
+                    setEditing(false);
+                    return data;
+                } catch (err) {
+                    showToast(err.message || 'Failed to load profile', 'error');
+                    throw err;
+                }
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+                toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2200);
+            }
+
+            document.getElementById('editBtn').addEventListener('click', () => setEditing(true));
+            document.getElementById('cancelBtn').addEventListener('click', async () => { const u = await loadProfile(); fillForm(u); setEditing(false); });
+
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const body = Object.fromEntries(new FormData(e.target).entries());
+                try {
+                    const updated = await fetchJSON(API_UPDATE, { method: 'PATCH', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify(body) });
+                    fillDisplay(updated);
+                    fillForm(updated);
+                    setEditing(false);
+                    showToast('Profile updated');
+                } catch (err) {
+                    showToast(err.message || 'Update failed', 'error');
+                }
+            });
+
+            // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
             const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
-
-            const enTitle = 'My Profile — Virtual Lab Games';
-            const siTitle = 'මගේ පැතිකඩ — Virtual Lab Games';
-            const enDesc = 'View and update your account details. Quickly jump to your cart or orders.';
-            const siDesc = 'ඔබගේ ගිණුම් විස්තර බලන්න හා යාවත්කාල කරන්න. කරත්තය හෝ ඇණවුම් වෙත ඉක්මණින් යන්න.';
             const metaDescription = document.querySelector('meta[name="description"]');
 
             const setLanguage = (lang) => {
-                if (lang === 'si') {
-                    body.classList.add('sinhala-mode'); body.classList.add('font-sinhala');
-                    if (langToggleBtn) langToggleBtn.textContent = 'EN';
-                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'EN';
-                    document.title = siTitle; metaDescription?.setAttribute('content', siDesc);
-                    localStorage.setItem('language', 'si');
-                } else {
-                    body.classList.remove('sinhala-mode'); body.classList.remove('font-sinhala');
-                    if (langToggleBtn) langToggleBtn.textContent = 'සිංහල';
-                    if (langToggleBtnMobile) langToggleBtnMobile.textContent = 'සිංහල';
-                    document.title = enTitle; metaDescription?.setAttribute('content', enDesc);
-                    localStorage.setItem('language', 'en');
-                }
+                const isSi = lang === 'si';
+                body.classList.toggle('sinhala-mode', isSi);
+                body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+
+                document.title = isSi ? 'මගේ පැතිකඩ — Virtual Lab Games' : 'My Profile — Virtual Lab Games';
+                const newDesc = isSi
+                    ? 'ඔබගේ ගිණුම් විස්තර බලන්න හා යාවත්කාල කරන්න. කරත්තය හෝ ඇණවුම් වෙත ඉක්මණින් යන්න.'
+                    : 'View and update your account details. Quickly jump to your cart or orders.';
+                metaDescription?.setAttribute('content', newDesc);
+                localStorage.setItem('language', lang);
             };
-            const toggleLanguage = () => { const currentLang = localStorage.getItem('language') || 'en'; setLanguage(currentLang === 'en' ? 'si' : 'en'); };
+
+            const toggleLanguage = () => {
+                const newLang = (localStorage.getItem('language') || 'en') === 'en' ? 'si' : 'en';
+                setLanguage(newLang);
+            };
+
             langToggleBtn?.addEventListener('click', toggleLanguage);
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
-            const savedLang = localStorage.getItem('language'); setLanguage(savedLang || 'en');
 
-            // Load profile: API → fallback → local edits
+            setLanguage(localStorage.getItem('language') || 'en');
+            loadProfile();
         });
     </script>
 </body>
