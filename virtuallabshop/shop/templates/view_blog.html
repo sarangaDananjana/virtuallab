@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading… | Virtual Lab Games</title>
+    <meta name="description"
+        content="Read the latest stories, gaming news, and tech insights from Virtual Lab Games." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts + site-wide CSS to match Home/Blog -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Maname&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        /* Language helpers (match Blog/Home) */
+        .lang-si {
+            display: none
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, .06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .header-blend {
+            background: rgba(10, 37, 89, .8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden
+        }
+
+        .shine::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            left: -100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+            transition: left .5s
+        }
+
+        .shine:hover::before {
+            left: 100%
+        }
+
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .25rem .75rem;
+            border-radius: 9999px;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em
+        }
+
+        .category-stories {
+            background: rgba(168, 85, 247, .15);
+            color: rgb(196, 181, 253);
+            border: 1px solid rgba(168, 85, 247, .3)
+        }
+
+        .category-news {
+            background: rgba(59, 130, 246, .15);
+            color: rgb(147, 197, 253);
+            border: 1px solid rgba(59, 130, 246, .3)
+        }
+
+        .category-tech {
+            background: rgba(16, 185, 129, .15);
+            color: rgb(110, 231, 183);
+            border: 1px solid rgba(16, 185, 129, .3)
+        }
+
+        .prose-wrap p {
+            margin-bottom: 1rem;
+            line-height: 1.8
+        }
+
+        .prose-wrap figure {
+            margin: 1.25rem 0
+        }
+
+        .prose-wrap img {
+            border-radius: 1rem
+        }
+
+        .featured-hero {
+            min-height: 14rem
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise isolate min-h-screen">
+    <!-- HEADER (same as Blog/Home) -->
+    <header class="header-blend sticky top-0 z-[80]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <a href="/" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+                <!-- Desktop Navigation (links point to Home sections) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors text-gold-400">
+                        <span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+                    <a href="{% url 'cart_page' %}"
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                        </svg>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
+                    </a>
+                    <a href="{% url 'shop-page' %}"
+                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                        aria-label="Shop">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="hidden sm:inline"><span class="lang-en">Shop</span><span
+                                class="lang-si">වෙළඳසැල</span></span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
+                    <button id="navToggle" type="button"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}</div>
+                    <div class="text-sm text-white/90"><span class="lang-en">Hello</span><span
+                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold"><svg
+                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg><span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු
+                            වන්න</span></span></a>
+                {% endif %}
+                <hr class="border-white/10 my-4">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold"><svg
+                        class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg><span><span class="lang-en">Home</span><span class="lang-si">Home</span></span></a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold"><svg
+                        class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg><span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span></a>
+                <a href="{% url 'blog_page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 text-gold-400 font-semibold"><svg
+                        class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg><span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span></a>
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold"><svg
+                        class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
+                    </svg><span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span></a>
+            </nav>
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <main id="page" data-slug="{{ slug|default:'' }}" class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+
+            <!-- Back link -->
+            <div class="mb-6">
+                <a href="{% url 'blog_page' %}"
+                    class="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span class="lang-en">Back to Blog</span>
+                    <span class="lang-si">බ්ලොග් වෙත</span>
+                </a>
+            </div>
+
+            <!-- Hero / Title / Meta -->
+            <section id="heroCard" class="glass rounded-3xl overflow-hidden">
+                <div class="grid lg:grid-cols-2 gap-0">
+                    <div class="relative featured-hero h-64 lg:h-full overflow-hidden" id="heroImgWrap">
+                        <div id="heroImgFallback"
+                            class="absolute inset-0 bg-gradient-to-br from-brand-700/60 to-brand-900/60 flex items-center justify-center">
+                            <svg class="w-16 h-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 7h18M3 12h18M3 17h18" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="p-6 lg:p-8 flex flex-col justify-center">
+                        <div class="flex items-center gap-2 mb-3 text-sm text-white/60">
+                            <span id="metaDate">—</span><span>•</span><span id="metaRead">—</span>
+                        </div>
+                        <h1 id="postTitle" class="text-2xl lg:text-3xl font-black mb-4 leading-tight">…</h1>
+                        <div id="categoryPillWrap"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Article Body -->
+            <article id="articleBody" class="prose-wrap mt-8"></article>
+
+            <!-- Gallery (optional separate strip) -->
+            <section id="galleryStrip" class="mt-10 hidden">
+                <h3 class="text-sm uppercase tracking-wider text-white/60 mb-3"><span class="lang-en">Images</span><span
+                        class="lang-si">ඡායාරූ</span></h3>
+                <div id="galleryGrid" class="grid sm:grid-cols-2 gap-4"></div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER (same as Blog) -->
+    <footer class="border-t border-white/10 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-gold-400 shadow-lg"><span
+                                class="text-xl">🎮</span></span>
+                        <div>
+                            <div class="font-black text-xl">Virtual Lab</div>
+                            <div class="text-xs text-white/60 -mt-1">GAMES</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white/70 leading-relaxed mb-4">Premium PC games on DVDs and Hard Disks with
+                        multiple format options. Serving Sri Lankan gamers since 2019.</p>
+                    <div class="flex gap-3">
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs"><span
+                                class="text-emerald-400">●</span> 5+ Years</span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs"><span
+                                class="text-yellow-400">★</span> #1 Rated</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="/#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="/#delivery" class="hover:text-white transition-colors">Delivery Options</a></li>
+                        <li><a href="/#how" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="/#benefits" class="hover:text-white transition-colors">Why Choose Us?</a></li>
+                        <li><a href="/#collections" class="hover:text-white transition-colors">Collections</a></li>
+                        <li><a href="/#faq" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="{% url 'tickets-page' %}" class="hover:text-white transition-colors">Support
+                                Center</a></li>
+                        <li><a href="{% url 'ticket-submit' %}" class="hover:text-white transition-colors">Open
+                                Ticket</a></li>
+                        <li><a href="{% url 'login-page' %}" class="hover:text-white transition-colors">Customer
+                                Login</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Installation Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Stay Updated</h4>
+                    <p class="text-sm text-white/70 mb-4">Get notified about new games and exclusive offers.</p>
+                    <form id="footerForm" class="space-y-3">
+                        <input required type="email" name="email" placeholder="your@email.com"
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-sm focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        <button
+                            class="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold text-sm hover:shadow-lg transition-all">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div
+                class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
+                <p>© <span id="year"></span> Virtual Lab Games. All rights reserved.</p>
+                <p>🇱🇰 Proudly serving Sri Lankan gamers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ===== Utils =====
+            const $ = (s, r = document) => r.querySelector(s);
+            const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+            const byId = (id) => document.getElementById(id);
+            const esc = (s) => (s || '').replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+            const catClass = (c) => ({ stories: 'category-stories', news: 'category-news', tech: 'category-tech' }[c] || 'category-stories');
+            const formatDate = (iso) => { const lang = localStorage.getItem('language') === 'si' ? 'si-LK' : 'en-US'; try { return new Date(iso).toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' }) } catch { return iso } };
+            const readTimeText = (min) => (localStorage.getItem('language') === 'si' ? `${min} min read` : `${min} min read`);
+            const currentLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
+
+            // ===== DOM refs =====
+            const page = byId('page');
+            const featuredHero = byId('heroImgWrap');
+            const heroFallback = byId('heroImgFallback');
+            const categoryPillWrap = byId('categoryPillWrap');
+            const postTitle = byId('postTitle');
+            const metaDate = byId('metaDate');
+            const metaRead = byId('metaRead');
+            const articleBody = byId('articleBody');
+            const galleryStrip = byId('galleryStrip');
+            const galleryGrid = byId('galleryGrid');
+
+            // Footer year
+            const yearEl = byId('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            // Mobile menu
+            const navToggle = byId('navToggle');
+            const closeNav = byId('closeNav');
+            const mobileMenuContainer = byId('mobileMenuContainer');
+            const mobileMenu = byId('mobileMenu');
+            const mobileMenuOverlay = byId('mobileMenuOverlay');
+            const mobileMenuLinks = $$('.mobile-menu-link');
+            const openMenu = () => { mobileMenuContainer.classList.remove('pointer-events-none'); mobileMenuOverlay.classList.remove('opacity-0'); mobileMenu.classList.remove('translate-x-full'); document.body.style.overflow = 'hidden'; };
+            const closeMenuFn = () => { mobileMenuOverlay.classList.add('opacity-0'); mobileMenu.classList.add('translate-x-full'); document.body.style.overflow = ''; setTimeout(() => mobileMenuContainer.classList.add('pointer-events-none'), 300); };
+            navToggle?.addEventListener('click', openMenu); closeNav?.addEventListener('click', closeMenuFn); mobileMenuOverlay?.addEventListener('click', closeMenuFn); mobileMenuLinks.forEach(l => l.addEventListener('click', closeMenuFn));
+            let post = null; // cached
+            // Language toggle (keep in sync with site)
+            const langToggleBtn = byId('langToggleBtn');
+            const langToggleBtnMobile = byId('langToggleBtnMobile');
+            const setLanguage = (lang) => {
+                const isSi = lang === 'si';
+                document.body.classList.toggle('sinhala-mode', isSi);
+                document.body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+                localStorage.setItem('language', lang);
+                renderArticle();
+            };
+            const toggleLanguage = () => setLanguage(localStorage.getItem('language') === 'si' ? 'en' : 'si');
+            setLanguage(localStorage.getItem('language') || 'en');
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            // ===== Data fetch =====
+            const slugFromPath = () => {
+                const attr = page?.dataset?.slug || '';
+                if (attr) return attr;
+                // try parse /blog/<slug>/ or /blog/<slug>
+                const parts = window.location.pathname.split('/').filter(Boolean);
+                // assume last non-empty segment is the slug
+                return parts[parts.length - 1] || '';
+            };
+            const slug = slugFromPath();
+            const API_URL = `/api/blog/${encodeURIComponent(slug)}/`;
+
+
+
+            const buildCategoryPill = (category, label) => `
+        <span class="category-pill ${catClass(category)} inline-flex">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+          <span>${esc(label)}</span>
+        </span>`;
+
+            const renderHero = () => {
+                if (!post) return;
+                // Title + meta
+                postTitle.textContent = post.title || '';
+                document.title = `${post.title || 'Blog'} | Virtual Lab Games`;
+                metaDate.textContent = formatDate(post.created_at);
+                metaRead.textContent = readTimeText(post.reading_time_minutes);
+                categoryPillWrap.innerHTML = buildCategoryPill(post.category, post.category_label);
+
+                // Cover image
+                if (post.cover_url) {
+                    heroFallback.remove();
+                    const img = new Image();
+                    img.src = post.cover_url; img.alt = esc(post.title || '');
+                    img.className = 'absolute inset-0 w-full h-full object-cover';
+                    featuredHero.appendChild(img);
+                }
+            };
+
+            const renderBlocks = (blocks = []) => {
+                const frag = document.createDocumentFragment();
+                blocks.forEach(b => {
+                    if (b.type === 'paragraph') {
+                        const p = document.createElement('p');
+                        p.className = 'text-white/80';
+                        p.textContent = b.text || '';
+                        frag.appendChild(p);
+                    } else if (b.type === 'image') {
+                        const figure = document.createElement('figure');
+                        figure.className = 'glass p-2 rounded-2xl';
+                        const img = document.createElement('img');
+                        img.src = b.url || ''; img.alt = b.alt_text || '';
+                        img.className = 'w-full object-cover rounded-xl';
+                        figure.appendChild(img);
+                        if (b.alt_text) {
+                            const cap = document.createElement('figcaption');
+                            cap.className = 'text-xs text-white/60 mt-2 px-2';
+                            cap.textContent = b.alt_text;
+                            figure.appendChild(cap);
+                        }
+                        frag.appendChild(figure);
+                    }
+                });
+                return frag;
+            };
+
+            const renderGallery = () => {
+                if (!post || !post.photos || !post.photos.length) { galleryStrip.classList.add('hidden'); return; }
+                galleryStrip.classList.remove('hidden');
+                galleryGrid.innerHTML = post.photos.map(ph => `
+          <div class="glass rounded-xl overflow-hidden">
+            <img src="${esc(ph.url || '')}" alt="${esc(ph.alt_text || '')}" class="w-full h-full object-cover" />
+          </div>`).join('');
+            };
+
+            function renderArticle() {
+                if (!post) return;
+                const lang = currentLang();
+                const blocks = (post.content && post.content[lang] && post.content[lang].blocks) ? post.content[lang].blocks : [];
+                articleBody.innerHTML = '';
+                articleBody.appendChild(renderBlocks(blocks));
+            }
+
+            const fetchPost = async () => {
+                try {
+                    const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('Failed to fetch post');
+                    post = await res.json();
+                    renderHero();
+                    renderArticle();
+                    renderGallery();
+                } catch (e) {
+                    console.error(e);
+                    postTitle.textContent = 'Post not found';
+                    articleBody.innerHTML = '<p class="text-white/70">Sorry, we couldn\'t load this article.</p>';
+                }
+            };
+
+            fetchPost();
+        });
+    </script>
+</body>
+
+</html>

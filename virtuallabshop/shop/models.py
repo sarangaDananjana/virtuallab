@@ -629,3 +629,103 @@ class StorageDevice(models.Model):
 
     def __str__(self):
         return f"{self.name} • {self.get_category_display()}"
+
+
+# --- BLOG --------------------------------------------------------------------
+# Add this near the bottom of models.py (after existing imports/classes).
+# Reuses: slugify, uuid4, os, TimestampedModel, _ (already imported)
+
+class BlogCategory(models.TextChoices):
+    STORIES = "stories", _("Game Stories")
+    NEWS = "news",    _("Gaming News")
+    TECH = "tech",    _("Tech Insights")
+
+
+def blog_cover_upload_to(instance, filename):
+    """
+    media/blog/<slug>/cover.<ext>
+    """
+    base, ext = os.path.splitext(filename)
+    slug = (instance.slug or slugify(instance.title) or "blog").strip()
+    return f"blog/{slug}/cover{ext.lower()}"
+
+
+def blog_photo_upload_to(instance, filename):
+    """
+    media/blog/<slug>/sub/<uuid>.<ext>
+    """
+    base, ext = os.path.splitext(filename)
+    blog = instance.blog
+    slug = (blog.slug or slugify(blog.title) or "blog").strip()
+    return f"blog/{slug}/sub/{uuid4().hex}{ext.lower()}"
+
+
+class Blog(TimestampedModel):
+    """
+    A bilingual blog post with a main image, category, 'featured' flag,
+    reading time, and Sinhala/English content.
+    """
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+
+    # Main/hero image
+    main_image = models.ImageField(upload_to=blog_cover_upload_to)
+
+    # UX bits seen in blog.html (category pills + featured banner)
+    category = models.CharField(max_length=20, choices=BlogCategory.choices)
+    is_featured = models.BooleanField(default=False)
+
+    # e.g. "5 min read" shown in the card
+    reading_time_minutes = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1)],
+        help_text=_("Approximate minutes to read"),
+    )
+
+    # Bilingual long-form content
+    content_si = models.TextField(help_text=_("Content in Sinhala"))
+    content_en = models.TextField(help_text=_("Content in English"))
+
+    class Meta:
+        ordering = ["-created_at"]  # newest first
+        indexes = [
+            models.Index(fields=["slug"]),
+            models.Index(fields=["category"]),
+            models.Index(fields=["-created_at"]),
+        ]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        # Auto-generate unique slug from title if not set
+        if not self.slug:
+            base = slugify(self.title) or uuid4().hex[:8]
+            slug = base
+            n = 1
+            while Blog.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                n += 1
+                slug = f"{base}-{n}"
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    # Optional convenience for templates/links
+    def get_absolute_url(self):
+        return f"/blog/{self.slug}/"
+
+
+class BlogPhoto(TimestampedModel):
+    """
+    Optional sub-images gallery for a post.
+    """
+    blog = models.ForeignKey(
+        "Blog", on_delete=models.CASCADE, related_name="photos"
+    )
+    image = models.ImageField(upload_to=blog_photo_upload_to)
+    alt_text = models.CharField(max_length=150, blank=True)
+    order = models.PositiveIntegerField(default=0, db_index=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"Photo for {self.blog.title} (#{self.pk})"

@@ -1359,16 +1359,11 @@
     </footer>
 
     <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
-
-        <!-- Overlay -->
         <div id="mobileMenuOverlay"
             class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
         </div>
-
-        <!-- Menu Panel -->
         <div id="mobileMenu"
             class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
-            <!-- Menu Header -->
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <div class="flex items-center gap-2">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
@@ -1378,25 +1373,21 @@
                 <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
-            <!-- Menu Links -->
             <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-                <!-- User Profile/Login for Mobile (moved from header) -->
                 {% if user.is_authenticated %}
                 <a href="{% url 'profile-page' %}"
                     class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
                     <div
                         class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
-                        {{ user_initial }}
-                    </div>
-                    <div class="text-sm text-white/90">
-                        <span class="lang-en">Hello</span><span class="lang-si">ආයුබෝවන්</span>, {{ user.username }}
-                    </div>
+                        {{ user_initial }}</div>
+                    <div class="text-sm text-white/90"><span class="lang-en">Hello</span><span
+                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
                 </a>
                 {% else %}
                 <a href="{% url 'login-page' %}"
@@ -1404,8 +1395,7 @@
                     <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
-                        </path>
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                     <span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු වන්න</span></span>
                 </a>
@@ -1413,48 +1403,53 @@
 
                 <hr class="border-white/10 my-4">
 
-                <a href="#home"
-                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 text-gold-400 transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                         </path>
                     </svg>
                     <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
                 </a>
-
-                <a href="#benefits"
+                <a href="{% url 'shop-page' %}"
                     class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
-                    <span><span class="lang-en">Why Choose Us?</span><span class="lang-si">අපි විශේෂ ඇයි?</span></span>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
                 </a>
 
-                <a href="#collections"
+                <a href="{% url 'blog_page' %}"
                     class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400 transition-colors pointer-events-none"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span>
+                </a>
+
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
                         </path>
                     </svg>
-                    <span><span class="lang-en">Collections</span><span class="lang-si">ගේම් එකතුව</span></span>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
                 </a>
             </nav>
 
-
-            <!-- Menu Footer -->
             <div class="p-4 mt-auto border-t border-white/10">
                 <button id="langToggleBtnMobile"
                     class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z">
-                        </path>
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z" />
                     </svg>
                     <span class="lang-en">Switch to සිංහල</span>
                     <span class="lang-si">Switch to English</span>

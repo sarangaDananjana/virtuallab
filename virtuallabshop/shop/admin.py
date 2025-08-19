@@ -1,4 +1,5 @@
 from .models import Ticket, TicketPhoto  # add these to your existing imports
+from django.utils.html import format_html
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 from .models import (
@@ -15,7 +16,7 @@ from .models import (
     GameRequest,
     DLC,
     StorageDevice,
-    OrderStorageItem
+    OrderStorageItem, Blog, BlogPhoto
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -390,3 +391,99 @@ class StorageDeviceAdmin(admin.ModelAdmin):
                     "marketing_capacity_gb")
     list_filter = ("category",)
     search_fields = ("name",)
+
+
+class BlogPhotoInline(admin.TabularInline):
+    model = BlogPhoto
+    extra = 0
+    fields = ("image", "alt_text", "order", "preview")
+    readonly_fields = ("preview",)
+    ordering = ("order", "id")
+
+    def preview(self, obj):
+        if getattr(obj, "image", None):
+            # Small thumbnail preview
+            return format_html(
+                "<img src='{}' style='height:70px;border-radius:6px'/>",
+                obj.image.url,
+            )
+        return "—"
+
+    preview.short_description = "Preview"
+
+# 3) Blog admin with cover preview and handy actions
+
+
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    inlines = [BlogPhotoInline]
+
+    list_display = (
+        "title",
+        "category",
+        "is_featured",
+        "reading_time_minutes",
+        "created_at",
+        "cover_preview",
+    )
+    list_filter = ("category", "is_featured", "created_at")
+    search_fields = ("title", "content_en", "content_si")
+    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("created_at", "updated_at", "cover_preview")
+    fields = (
+        "title",
+        "slug",
+        "category",
+        "is_featured",
+        "reading_time_minutes",
+        "main_image",
+        "cover_preview",
+        "content_en",
+        "content_si",
+    )
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+
+    def cover_preview(self, obj):
+        if getattr(obj, "main_image", None):
+            return format_html(
+                "<img src='{}' style='height:120px;border-radius:8px'/>",
+                obj.main_image.url,
+            )
+        return "—"
+
+    cover_preview.short_description = "Main image"
+
+    # Quick feature/unfeature actions
+    actions = ["mark_featured", "unmark_featured"]
+
+    @admin.action(description="Mark selected posts as FEATURED")
+    def mark_featured(self, request, queryset):
+        updated = queryset.update(is_featured=True)
+        self.message_user(request, f"Featured {updated} post(s).")
+
+    @admin.action(description="Unmark selected posts as featured")
+    def unmark_featured(self, request, queryset):
+        updated = queryset.update(is_featured=False)
+        self.message_user(request, f"Unfeatured {updated} post(s).")
+
+# 4) (Optional) Standalone admin for BlogPhoto for quick searching
+
+
+@admin.register(BlogPhoto)
+class BlogPhotoAdmin(admin.ModelAdmin):
+    list_display = ("blog", "order", "image_preview", "alt_text")
+    list_filter = ("blog__category",)
+    search_fields = ("blog__title", "alt_text")
+    autocomplete_fields = ("blog",)
+    ordering = ("blog__created_at", "order", "id")
+
+    def image_preview(self, obj):
+        if getattr(obj, "image", None):
+            return format_html(
+                "<img src='{}' style='height:50px;border-radius:5px'/>",
+                obj.image.url,
+            )
+        return "—"
+
+    image_preview.short_description = "Preview"

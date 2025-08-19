@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog — Virtual Lab Games</title>
+    <meta name="description"
+        content="Stay updated with the latest stories, gaming news, and tech insights from Virtual Lab Games." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559'
+                        },
+                        gold: {
+                            50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        gradient: {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Maname&display=swap" rel="stylesheet">
+
+    <!-- Site-wide CSS from Home for consistent background/noise/etc. -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        /* Language helpers (match Home) */
+        .lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline;
+        }
+
+        .block-lang.lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+
+        /* Blog-specific UI */
+        .glass {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-blend {
+            background: rgba(10, 37, 89, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .shine:hover::before {
+            left: 100%;
+        }
+
+        .post-card {
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .post-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .post-image {
+            transition: transform 0.3s ease;
+        }
+
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .category-stories {
+            background: rgba(168, 85, 247, 0.15);
+            color: rgb(196, 181, 253);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .category-news {
+            background: rgba(59, 130, 246, 0.15);
+            color: rgb(147, 197, 253);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .category-tech {
+            background: rgba(16, 185, 129, 0.15);
+            color: rgb(110, 231, 183);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .featured-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise isolate min-h-screen">
+
+    <!-- =================================================================
+       HEADER — copied/adapted from Home for consistency
+      ================================================================= -->
+    <header class="header-blend sticky top-0 z-[80]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation (links point to Home sections) -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors text-gold-400">
+                        <span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Language Toggle -->
+                    <button id="langToggleBtn"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+
+                    <!-- Cart Button -->
+                    <a href="{% url 'cart_page' %}"
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                        </svg>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
+                    </a>
+
+                    <!-- Store Button -->
+                    <a href="{% url 'shop-page' %}"
+                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                        aria-label="Shop">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="hidden sm:inline"><span class="lang-en">Shop</span><span
+                                class="lang-si">වෙළඳසැල</span></span>
+                    </a>
+
+                    <!-- Login / Avatar -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{ user_initial }}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all">
+                        <span class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Mobile Nav Toggle -->
+                    <button id="navToggle" type="button"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu (copied from Home) -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}</div>
+                    <div class="text-sm text-white/90"><span class="lang-en">Hello</span><span
+                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    <span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+
+                <hr class="border-white/10 my-4">
+
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+
+                <a href="{% url 'blog_page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 text-gold-400 transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span>
+                </a>
+
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+       MAIN
+      ================================================================= -->
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <!-- Hero -->
+            <div class="mb-8 sm:mb-12">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold mb-4">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-400"></span>
+                    </span>
+                    <span class="lang-en">Gaming • Blog</span>
+                    <span class="lang-si">ක්‍රීඩා • බ්ලොග්</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black mb-4">
+                    <span class="block block-lang lang-en">Game Universe</span>
+                    <span class="block block-lang lang-si">ක්‍රීඩා විශ්වය</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-white/70 max-w-2xl">
+                    <span class="lang-en">Discover amazing game stories, latest gaming news, and cutting-edge tech
+                        insights from the world of Virtual Lab Games.</span>
+                    <span class="lang-si">Virtual Lab Games ලෝකයෙන් අපූරු ක්‍රීඩා කතා, නවතම ප්‍රවෘත්ති සහ තාක්ෂණික අවබෝධ
+                        ලබා ගන්න.</span>
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <section class="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-8">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex flex-wrap gap-2" id="categoryTabs">
+                        <button data-category="all"
+                            class="category-filter active px-4 py-2 rounded-xl text-sm font-semibold bg-white/20 hover:bg-white/25 transition-colors">
+                            <span class="lang-en">All Posts</span>
+                            <span class="lang-si">සියළු ලිපි</span>
+                        </button>
+                        <button data-category="stories"
+                            class="category-filter px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-colors">
+                            <span class="lang-en">Game Stories</span>
+                            <span class="lang-si">ක්‍රීඩා කතා</span>
+                        </button>
+                        <button data-category="news"
+                            class="category-filter px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-colors">
+                            <span class="lang-en">Gaming News</span>
+                            <span class="lang-si">ප්‍රවෘත්ති</span>
+                        </button>
+                        <button data-category="tech"
+                            class="category-filter px-4 py-2 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 transition-colors">
+                            <span class="lang-en">Tech Insights</span>
+                            <span class="lang-si">තාක්ෂණය</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="search" id="searchInput"
+                            class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm w-full sm:w-64"
+                            placeholder="Search posts..." />
+                        <button
+                            class="shine px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold text-sm">
+                            <span class="lang-en">Search</span>
+                            <span class="lang-si">සොයන්න</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Post -->
+            <section id="featuredSection" class="mb-8 sm:mb-12 hidden">
+                <div id="featuredCard" class="glass rounded-3xl overflow-hidden post-card"></div>
+            </section>
+
+            <!-- Posts Grid -->
+            <section class="grid md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8" id="postsGrid"></section>
+
+            <!-- Empty State -->
+            <div id="noPosts" class="text-center text-white/70 py-16 hidden">
+                <p class="text-lg font-semibold">
+                    <span class="lang-en">No posts to show.</span>
+                    <span class="lang-si">පෙන්වීමට ලිපි නොමැත.</span>
+                </p>
+            </div>
+
+            <!-- Load more (to be wired later) -->
+            <div class="text-center mt-12">
+                <button id="loadMoreBtn"
+                    class="shine inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-lg transition-all">
+                    <span class="lang-en">Load More Posts</span>
+                    <span class="lang-si">තවත් ලිපි</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Newsletter -->
+            <section class="glass rounded-3xl p-6 lg:p-8 mt-16 text-center">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-2xl lg:text-3xl font-black mb-4">
+                        <span class="lang-en">Stay in the Game</span>
+                        <span class="lang-si">ක්‍රීඩාවේ රැඳී සිටින්න</span>
+                    </h2>
+                    <p class="text-white/70 mb-6">
+                        <span class="lang-en">Get the latest gaming insights, stories, and tech updates delivered
+                            straight to your inbox.</span>
+                        <span class="lang-si">නවතම ක්‍රීඩා කතා සහ තාක්ෂණික යාවත්කාලීන ඔබට ඊමේල් කරන්නම්.</span>
+                    </p>
+                    <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                        <input type="email" placeholder="Enter your email"
+                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm" />
+                        <button type="submit"
+                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold text-sm whitespace-nowrap">
+                            <span class="lang-en">Subscribe</span>
+                            <span class="lang-si">දායක වන්න</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- =================================================================
+       FOOTER — copied from Home for consistency
+      ================================================================= -->
+    <footer class="border-t border-white/10 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-gold-400 shadow-lg"><span
+                                class="text-xl">🎮</span></span>
+                        <div>
+                            <div class="font-black text-xl">Virtual Lab</div>
+                            <div class="text-xs text-white/60 -mt-1">GAMES</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white/70 leading-relaxed mb-4">Premium PC games on DVDs and Hard Disks with
+                        multiple format options. Serving Sri Lankan gamers since 2019.</p>
+                    <div class="flex gap-3">
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs"><span
+                                class="text-emerald-400">●</span> 5+ Years</span>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 text-xs"><span
+                                class="text-yellow-400">★</span> #1 Rated</span>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="/#home" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="/#delivery" class="hover:text-white transition-colors">Delivery Options</a></li>
+                        <li><a href="/#how" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="/#benefits" class="hover:text-white transition-colors">Why Choose Us?</a></li>
+                        <li><a href="/#collections" class="hover:text-white transition-colors">Collections</a></li>
+                        <li><a href="/#faq" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-white/70">
+                        <li><a href="{% url 'tickets-page' %}" class="hover:text-white transition-colors">Support
+                                Center</a></li>
+                        <li><a href="{% url 'ticket-submit' %}" class="hover:text-white transition-colors">Open
+                                Ticket</a></li>
+                        <li><a href="{% url 'login-page' %}" class="hover:text-white transition-colors">Customer
+                                Login</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Installation Guide</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Stay Updated</h4>
+                    <p class="text-sm text-white/70 mb-4">Get notified about new games and exclusive offers.</p>
+                    <form id="footerForm" class="space-y-3">
+                        <input required type="email" name="email" placeholder="your@email.com"
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 text-sm focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        <button
+                            class="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-bold text-sm hover:shadow-lg transition-all">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div
+                class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
+                <p>© <span id="year"></span> Virtual Lab Games. All rights reserved.</p>
+                <p>🇱🇰 Proudly serving Sri Lankan gamers</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =================================================================
+       SCRIPTS
+      ================================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = '/api/blog/home/'; // same endpoint as earlier
+
+            // Utilities
+            const $ = (sel, root = document) => root.querySelector(sel);
+            const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+            const byId = (id) => document.getElementById(id);
+
+            // DOM refs
+            const featuredSection = byId('featuredSection');
+            const featuredCard = byId('featuredCard');
+            const postsGrid = byId('postsGrid');
+            const noPosts = byId('noPosts');
+
+            // Footer year
+            const yearEl = byId('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            // Mobile menu logic (match Home)
+            const navToggle = byId('navToggle');
+            const closeNav = byId('closeNav');
+            const mobileMenuContainer = byId('mobileMenuContainer');
+            const mobileMenu = byId('mobileMenu');
+            const mobileMenuOverlay = byId('mobileMenuOverlay');
+            const mobileMenuLinks = $$('.mobile-menu-link');
+
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenuFn = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenuFn);
+            mobileMenuOverlay?.addEventListener('click', closeMenuFn);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenuFn));
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) closeMenuFn(); });
+
+            // Language toggle (match Home)
+            const langToggleBtn = byId('langToggleBtn');
+            const langToggleBtnMobile = byId('langToggleBtnMobile');
+            const searchInput = byId('searchInput');
+
+            const setLanguage = (lang) => {
+                const isSi = lang === 'si';
+                document.body.classList.toggle('sinhala-mode', isSi);
+                document.body.classList.toggle('font-sinhala', isSi);
+                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+                if (searchInput) searchInput.placeholder = isSi ? 'ලිපි සොයන්න...' : 'Search posts...';
+                localStorage.setItem('language', lang);
+                window.dispatchEvent(new CustomEvent('languagechange-ui', { detail: { lang } }));
+            };
+            const toggleLanguage = () => {
+                const next = (localStorage.getItem('language') === 'si') ? 'en' : 'si';
+                setLanguage(next);
+                // Re-render text blocks from current payload
+                renderAll();
+            };
+            // Init language from storage
+            setLanguage(localStorage.getItem('language') || 'en');
+            langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
+            // Category Filter + Search
+            const categoryButtons = $$('.category-filter');
+            let activeCategory = 'all';
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    activeCategory = button.dataset.category;
+                    categoryButtons.forEach(btn => { btn.classList.remove('active', 'bg-white/20', 'font-semibold'); btn.classList.add('bg-white/10', 'hover:bg-white/15'); });
+                    button.classList.add('active', 'bg-white/20', 'font-semibold');
+                    button.classList.remove('bg-white/10', 'hover:bg-white/15');
+                    applyFilterAndSearch();
+                });
+            });
+
+            const clamp = (text, n = 260) => {
+                text = (text || '').trim();
+                if (text.length <= n) return text;
+                // avoid cutting mid-word
+                return text.slice(0, n).replace(/\s+\S*$/, '') + '…';
+            };
+
+            const applyFilterAndSearch = () => {
+                const term = (searchInput?.value || '').toLowerCase();
+                const cards = $$('#postsGrid article.post-card-item');
+                let shown = 0;
+                cards.forEach(post => {
+                    const matchesCategory = (activeCategory === 'all' || post.dataset.category === activeCategory);
+                    const title = post.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const desc = post.querySelector('p')?.textContent.toLowerCase() || '';
+                    const matchesSearch = (!term || title.includes(term) || desc.includes(term));
+                    const visible = matchesCategory && matchesSearch;
+                    post.style.display = visible ? 'block' : 'none';
+                    if (visible) shown++;
+                });
+                const hasFeatured = !featuredSection.classList.contains('hidden');
+                noPosts.classList.toggle('hidden', (shown > 0) || hasFeatured);
+            };
+            searchInput?.addEventListener('input', applyFilterAndSearch);
+
+            // Render helpers
+            const catClass = (c) => ({ stories: 'category-stories', news: 'category-news', tech: 'category-tech' }[c] || 'category-stories');
+            const formatDate = (iso) => {
+                const lang = localStorage.getItem('language') === 'si' ? 'si-LK' : 'en-US';
+                try { return new Date(iso).toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' }); } catch { return iso; }
+            };
+            const readTimeText = (min) => (localStorage.getItem('language') === 'si' ? `${min} min read` : `${min} min read`);
+            const esc = (s) => (s || '').replace(/[&<>"]+/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            const currentLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
+            const textByLang = (b, key) => currentLang() === 'si' ? (b[`${key}_si`] ?? b[`${key}_si_excerpt`] ?? '') : (b[`${key}_en`] ?? b[`${key}_en_excerpt`] ?? '');
+
+            const renderFeatured = (b) => {
+                if (!b) { featuredSection.classList.add('hidden'); return; }
+                const categoryClass = catClass(b.category);
+                const imgHtml = b.cover_url ? `<img src="${esc(b.cover_url)}" alt="${esc(b.title)}" class="w-full h-full object-cover post-image" />` : `
+          <div class="w-full h-full bg-gradient-to-br from-brand-700/60 to-brand-900/60 flex items-center justify-center">
+            <svg class="w-16 h-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" /></svg>
+          </div>`;
+                const para = clamp(textByLang(b, 'content'), 260);
+                featuredCard.innerHTML = `
+          <div class="grid lg:grid-cols-2 gap-0">
+            <div class="relative h-64 lg:h-full overflow-hidden">${imgHtml}
+              <div class="absolute top-4 left-4">
+                <span class="category-pill ${categoryClass}">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span class="lang-en">Featured</span>
+                  <span class="lang-si">විශේෂ</span>
+                </span>
+              </div>
+            </div>
+            <div class="p-6 lg:p-8 flex flex-col justify-center">
+              <div class="flex items-center gap-2 text-sm text-white/60 mb-3"><span>${formatDate(b.created_at)}</span><span>•</span><span>${readTimeText(b.reading_time_minutes)}</span></div>
+              <h2 class="text-2xl lg:text-3xl font-black mb-4 leading-tight">${esc(b.title)}</h2>
+              <p class="text-white/70 mb-6 leading-relaxed featured-desc">${esc(para)}</p>
+              <a href="${esc(b.url)}" class="inline-flex items-center gap-2 text-brand-300 hover:text-brand-200 font-semibold group">
+                <span class="lang-en">Read Full Story</span><span class="lang-si">සම්පූර්ණ කතාව</span>
+                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              </a>
+            </div>
+          </div>`;
+                featuredSection.classList.remove('hidden');
+            };
+
+            const renderCard = (b) => {
+                const categoryClass = catClass(b.category);
+                const para = textByLang(b, 'content');
+                const cover = b.cover_url ? `<img src="${esc(b.cover_url)}" alt="${esc(b.title)}" class="w-full h-full object-cover post-image" />` : `
+          <div class="w-full h-full bg-gradient-to-br from-brand-700/60 to-brand-900/60 flex items-center justify-center">
+            <svg class="w-10 h-10 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" /></svg>
+          </div>`;
+                return `
+          <article class="glass rounded-2xl overflow-hidden post-card post-card-item" data-category="${esc(b.category)}">
+            <div class="relative h-48 overflow-hidden">
+              ${cover}
+              <div class="absolute top-3 left-3">
+                <span class="category-pill ${categoryClass}">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                  <span>${esc(b.category_label)}</span>
+                </span>
+              </div>
+            </div>
+            <div class="p-5">
+              <div class="flex items-center gap-2 text-xs text-white/60 mb-3"><span>${formatDate(b.created_at)}</span><span>•</span><span>${readTimeText(b.reading_time_minutes)}</span></div>
+              <h3 class="text-lg font-bold mb-3 leading-tight">${esc(b.title)}</h3>
+              <p class="text-white/70 text-sm mb-4 leading-relaxed">${esc(para)}</p>
+              <a href="/blog/${encodeURIComponent(b.slug)}/" class="inline-flex items-center gap-2 text-brand-300 hover:text-brand-200 font-semibold text-sm group">
+                <span class="lang-en">Read More</span><span class="lang-si">තව කියවන්න</span>
+                <svg class="w-3 h-3 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              </a>
+            </div>
+          </article>`;
+            };
+
+            let statePayload = null;
+            const renderAll = () => {
+                if (!statePayload) return;
+                renderFeatured(statePayload.featured);
+                postsGrid.innerHTML = (statePayload.latest || []).map(renderCard).join('');
+                const anyCards = postsGrid.children.length > 0;
+                noPosts.classList.toggle('hidden', anyCards || !!statePayload.featured);
+                applyFilterAndSearch();
+            };
+
+            const fetchHome = async () => {
+                try {
+                    postsGrid.innerHTML = '';
+                    noPosts.classList.add('hidden');
+                    featuredSection.classList.add('hidden');
+
+                    const res = await fetch(API_URL, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('Failed to load posts');
+                    const data = await res.json();
+                    statePayload = data || { featured: null, latest: [] };
+                    renderAll();
+                } catch (e) {
+                    console.error(e);
+                    postsGrid.innerHTML = '';
+                    featuredSection.classList.add('hidden');
+                    noPosts.classList.remove('hidden');
+                }
+            };
+
+            // Initial fetch
+            fetchHome();
+        });
+    </script>
+</body>
+
+</html>

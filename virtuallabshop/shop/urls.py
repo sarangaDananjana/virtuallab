@@ -15,6 +15,9 @@ urlpatterns = [
     path("storage/select/", views.storage_pick_page, name="pick_storage"),
     path("orders/", views.orders_page, name="orders-page"),
     path("genie-webhook/", views.genie_webhook, name="genie_webhook"),
+    path("payment-done/", views.payment_done_page, name="payment_done_page"),
+    path("blog/", views.blog_page, name="blog_page"),
+    path("blog/<slug:slug>/", views.blog_detail_page, name="blog_detail_page"),
     path('d-p-calculator/', views.calculator_view, name="calculater"),
 
 
@@ -53,6 +56,8 @@ urlpatterns = [
     path("api/orders/me", views.api_orders_me, name="api-orders-me"),
     path("api/orders/finalize/", views.api_finalize_order_from_customer,
          name="api-orders-finalize"),
+    path("api/blog/home/", views.api_blog_home, name="api-blog-home"),
+    path("api/blog/<slug:slug>/", views.api_blog_detail, name="api_blog_detail"),
 
 
 ]

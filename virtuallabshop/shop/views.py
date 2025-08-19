@@ -1,6 +1,7 @@
 import hmac
 import hashlib
 import json
+import re
 from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
@@ -16,7 +17,7 @@ from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
 from decimal import Decimal
-from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem
+from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -1592,6 +1593,250 @@ def api_finalize_order_from_customer(request):
         },
         status=status.HTTP_201_CREATED,
     )
+
+
+def _excerpt(text: str, n: int = 220) -> str:
+    text = (text or "").strip()
+    if len(text) <= n:
+        return text
+    cut = text[:n].rsplit(" ", 1)[0]  # don’t mid-word cut
+    return cut + "…"
+
+
+def serialize_blog_card(b: Blog, request) -> dict:
+    """Smaller payload for grids/cards (blog.html uses date + 'min read' + title + short text)."""
+    try:
+        cover = _abs(request, b.main_image.url) if b.main_image else None
+    except Exception:
+        cover = None
+    return {
+        "id": b.id,
+        "slug": b.slug,
+        "title": b.title,
+        "created_at": b.created_at.isoformat(),
+        "category": b.category,
+        "category_label": b.get_category_display(),
+        "reading_time_minutes": b.reading_time_minutes,  # e.g. "3 min read"
+        "cover_url": cover,
+        "content_en_excerpt": _excerpt(b.content_en),
+        "content_si_excerpt": _excerpt(b.content_si),
+        "url": f"/blog/{b.slug}/",
+    }
+
+
+def serialize_blog_full(b: Blog, request) -> dict:
+    """Richer payload for the featured/hero block (includes sub images)."""
+    data = serialize_blog_card(b, request)
+    # include full content + sub images for the featured section
+    data.update({
+        "is_featured": b.is_featured,
+        "content_en": b.content_en or "",
+        "content_si": b.content_si or "",
+        "photos": [{
+            "id": p.id,
+            "url": _abs(request, p.image.url) if p.image else None,
+            "alt_text": p.alt_text or "",
+            "order": p.order,
+        } for p in b.photos.all().order_by("order", "id")],
+    })
+    return data
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([AllowAny])
+def api_blog_home(request):
+    """
+    Returns:
+    {
+      "featured": { ... } | null,
+      "latest": [ { ... up to 3 items ... } ]
+    }
+    """
+    qs = (
+        Blog.objects
+        .prefetch_related(
+            Prefetch("photos", queryset=BlogPhoto.objects.order_by("order", "id"))
+        )
+        .order_by("-created_at")
+    )
+
+    featured = qs.filter(is_featured=True).first()
+    latest_qs = qs.exclude(pk=featured.pk) if featured else qs
+    latest = list(latest_qs[:3])
+
+    payload = {
+        "featured": serialize_blog_full(featured, request) if featured else None,
+        "latest": [serialize_blog_card(b, request) for b in latest],
+    }
+    return Response(payload)
+
+
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def blog_page(request):
+    """Renders the HTML that lets the user choose a storage device."""
+    user_initial = None
+    if request.user.is_authenticated:
+        name = request.user.get_username() or getattr(request.user, "email", "") or ""
+        if name:
+            user_initial = name[0].upper()
+    return Response({"user": request.user, "user_initial": user_initial}, template_name="blog.html")
+
+
+def _split_paragraphs(text: str) -> list[str]:
+    """
+    Split long content into logical paragraphs.
+    - Primary split on blank lines (two or more newlines)
+    - Fallback: single newlines if no blank lines present
+    """
+    text = (text or "").strip()
+    if not text:
+        return []
+    parts = [p.strip() for p in re.split(r"\n\s*\n+", text) if p.strip()]
+    if len(parts) <= 1:
+        parts = [p.strip() for p in text.split("\n") if p.strip()]
+    return parts
+
+
+def _serialize_blog_detail(b: Blog, request) -> dict:
+    """
+    Shape for a single blog detail, including an interleaved 'blocks' structure
+    for Sinhala and English. Photo order determines where images appear.
+    """
+    # Base card info (reuse your card shape)
+    base = serialize_blog_card(b, request)
+
+    # Main fields
+    base.update({
+        "is_featured": b.is_featured,
+        "cover_url": base.get("cover_url"),
+    })
+
+    # Photos sorted by (order, id)
+    photos = list(b.photos.all().order_by("order", "id"))
+    photos_by_order = {}
+    for p in photos:
+        photos_by_order.setdefault(p.order, []).append(p)
+
+    def build_blocks(body_text: str) -> list[dict]:
+        paras = _split_paragraphs(body_text)
+        blocks = []
+        # Determine how far to iterate:
+        # at least as many steps as we have paragraphs or the highest image order
+        max_order = max([p.order for p in photos], default=0)
+        steps = max(len(paras), max_order)
+        for i in range(1, steps + 1):
+            # paragraph i
+            if i <= len(paras):
+                blocks.append({
+                    "type": "paragraph",
+                    "index": i,                # paragraph number
+                    "text": paras[i - 1],
+                })
+            # image with order i (could be multiple if duplicates)
+            for ph in photos_by_order.get(i, []):
+                try:
+                    url = request.build_absolute_uri(
+                        ph.image.url) if ph.image else None
+                except Exception:
+                    url = None
+                blocks.append({
+                    "type": "image",
+                    "index": ph.order,        # image number from 'order'
+                    "url": url,
+                    "alt_text": ph.alt_text or "",
+                    "id": ph.id,
+                })
+        # Any remaining images with order > steps (unlikely) appended at end:
+        for ph in photos:
+            if ph.order > steps:
+                try:
+                    url = request.build_absolute_uri(
+                        ph.image.url) if ph.image else None
+                except Exception:
+                    url = None
+                blocks.append({
+                    "type": "image",
+                    "index": ph.order,
+                    "url": url,
+                    "alt_text": ph.alt_text or "",
+                    "id": ph.id,
+                })
+        return blocks
+
+    # Full bilingual blocks
+    data = {
+        **base,
+        "content": {
+            "en": {
+                "full": b.content_en or "",
+                "blocks": build_blocks(b.content_en or ""),
+            },
+            "si": {
+                "full": b.content_si or "",
+                "blocks": build_blocks(b.content_si or ""),
+            },
+        },
+        "photos": [{
+            "id": ph.id,
+            "url": request.build_absolute_uri(ph.image.url) if ph.image else None,
+            "alt_text": ph.alt_text or "",
+            "order": ph.order,
+        } for ph in photos],
+    }
+    return data
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([AllowAny])
+def api_blog_detail(request, slug: str):
+    """
+    Return one blog post with interleaved blocks:
+    {
+      "id": ..., "slug": ..., "title": ...,
+      "created_at": "...",
+      "category": "news",
+      "category_label": "Gaming News",
+      "reading_time_minutes": 5,
+      "cover_url": "...",
+      "is_featured": false,
+      "content": {
+        "en": {
+          "full": "<full English>",
+          "blocks": [
+            {"type":"paragraph","index":1,"text":"..."},
+            {"type":"image","index":1,"url":"...","alt_text":"..."},
+            {"type":"paragraph","index":2,"text":"..."},
+            {"type":"image","index":2,"url":"...","alt_text":"..."}
+          ]
+        },
+        "si": { ... same structure for Sinhala ... }
+      },
+      "photos": [{ "id":..., "order":1, "url":"...", "alt_text":"" }, ...]
+    }
+    """
+    qs = (
+        Blog.objects
+        .prefetch_related(
+            Prefetch("photos", queryset=BlogPhoto.objects.order_by("order", "id"))
+        )
+    )
+    b = get_object_or_404(qs, slug=slug)
+    return Response(_serialize_blog_detail(b, request))
+
+
+def blog_detail_page(request, slug: str):
+    return render(request, "view_blog.html", {"slug": slug})
+
+
+@api_view(["GET"])  # Register page (renders form)
+@renderer_classes([TemplateHTMLRenderer])
+def payment_done_page(request):
+    """this renders the register HTML page"""
+    return Response({}, template_name="payment_done.html")
 
 
 def calculator_view(request):

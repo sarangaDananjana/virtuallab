@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment Successful — Virtual Lab Games</title>
+    <meta name="description" content="Your payment was successful. Thank you for your order." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        float: 'float 6s ease-in-out infinite',
+                        gradient: 'gradient 8s ease infinite',
+                        pop: 'pop 650ms cubic-bezier(.2,1,.2,1) both'
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
+                        pop: { '0%': { transform: 'scale(.6)', opacity: 0 }, '60%': { transform: 'scale(1.05)', opacity: 1 }, '100%': { transform: 'scale(1)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts (match site) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared site styles to get the exact aurora bg / glass / noise -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif
+        }
+
+        /* Extra utilities used here */
+        .glass {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            left: -100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .22), transparent);
+            transition: left .6s;
+        }
+
+        .shine:hover::before {
+            left: 100%;
+        }
+
+        .lottie-wrap {
+            width: 160px;
+            height: 160px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bg-aurora {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen">
+    <!-- Plain, centered success card (no navbar, no DB bits) -->
+    <main class="min-h-screen flex items-center justify-center px-4 py-14">
+        <section
+            class="glass rounded-2xl sm:rounded-3xl p-7 sm:p-10 w-full max-w-xl text-center relative overflow-hidden">
+            <!-- soft glow accents to match site style -->
+            <div
+                class="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gradient-to-tr from-brand-500/30 to-gold-400/30 blur-2xl animate-float">
+            </div>
+            <div class="pointer-events-none absolute -bottom-12 -left-8 w-52 h-52 rounded-full bg-gradient-to-tl from-gold-400/20 to-brand-500/20 blur-2xl animate-float"
+                style="animation-delay:1s"></div>
+
+            <!-- Lottie placeholder (plays once) -->
+            <div id="lottieSuccess" class="lottie-wrap mx-auto mb-6" aria-hidden="true"></div>
+
+            <h1 class="text-3xl sm:text-4xl font-black leading-tight animate-pop">Payment Successful</h1>
+            <p class="mt-3 text-white/80">Thank you for your purchase. A confirmation email is on its way.</p>
+
+            <div class="mt-8">
+                <a href="{% url 'orders-page' %}"
+                    class="shine inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-black font-extrabold shadow-lg hover:shadow-xl transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17v-6a2 2 0 114 0v6m-7 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    View my orders
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Lottie: replace the JSON path with your asset. Plays once. -->
+    <script src="https://unpkg.com/lottie-web/build/player/lottie.min.js"></script>
+    <script>
+            (function () {
+                const container = document.getElementById('lottieSuccess');
+                if (!container) return;
+                if (window.lottie) {
+                    window.lottie.loadAnimation({
+                        container,
+                        renderer: 'svg',
+                        loop: false,   // play only once
+                        autoplay: true,
+                        path: '{% static "images/payment_success.json" %}' // ← replace with your Lottie JSON
+                    });
+                } else {
+                    // Fallback checkmark if lottie fails
+                    container.innerHTML = '<svg viewBox="0 0 120 120" class="w-full h-full"><circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="8" stroke-linecap="round"/><path d="M38 62 L54 78 L84 46" fill="none" stroke="#f6cd45" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                }
+            })();
+    </script>
+</body>
+
+</html>
