@@ -1319,6 +1319,7 @@ def api_genie_start(request):
 
     currency = (data.get("currency") or "LKR").upper()
     webhook = GENIE_WEBHOOK_URL
+    redirect_url = "https://virtuallabgames.com/payment-done/"
 
     # --- build payload from logged-in user's profile ---
     full_name = (f"{u.first_name} {u.last_name}".strip()
@@ -1339,6 +1340,9 @@ def api_genie_start(request):
     }
     if webhook:
         payload["webhook"] = webhook
+
+    if redirect_url:
+        payload["redirectUrl"] = redirect_url
 
     # --- call Genie ---
     api_key = GENIE_API_KEY
