@@ -364,85 +364,201 @@
     </div>
 
     <!-- =================================================================
-    CHECKOUT MODAL - UPDATED FOR MOBILE RESPONSIVENESS
+    CHECKOUT MODAL - UPDATED FOR MULTI-STEP PAYMENT FLOW
     ================================================================== -->
     <div id="checkoutModal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="checkoutModalBackdrop"></div>
         <div class="relative flex items-center justify-center min-h-screen p-4">
-            <!-- The main change is adding a flex container to the form and making the content scrollable -->
-            <div class="glass rounded-3xl max-w-lg w-full mx-auto flex flex-col max-h-[90vh]">
-                <div class="p-6 sm:p-8 border-b border-white/10">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="text-2xl font-black"><span class="lang-en">Shipping Details</span><span
-                                    class="lang-si">නැව්ගත කිරීමේ විස්තර</span></h3>
-                            <p class="text-sm text-white/60"><span class="lang-en">Confirm your delivery
-                                    information.</span><span class="lang-si">ඔබගේ බෙදාහැරීමේ තොරතුරු තහවුරු
-                                    කරන්න.</span></p>
+            <div id="checkoutModalContent" class="glass rounded-3xl max-w-lg w-full mx-auto flex flex-col max-h-[90vh]">
+
+                <!-- STEP 1: Shipping Details -->
+                <div id="checkoutStep1">
+                    <div class="p-6 sm:p-8 border-b border-white/10">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-2xl font-black"><span class="lang-en">Step 1: Shipping
+                                        Details</span><span class="lang-si">පියවර 1: නැව්ගත කිරීමේ විස්තර</span></h3>
+                                <p class="text-sm text-white/60"><span class="lang-en">Confirm your delivery
+                                        information.</span><span class="lang-si">ඔබගේ බෙදාහැරීමේ තොරතුරු තහවුරු
+                                        කරන්න.</span></p>
+                            </div>
+                            <button id="closeCheckoutModal"
+                                class="text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
                         </div>
-                        <button id="closeCheckoutModal"
-                            class="text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
+                    </div>
+                    <form id="checkoutForm" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4">
+                        <!-- Form inputs remain the same -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium mb-2"><span class="lang-en">Full
+                                    Name</span><span class="lang-si">සම්පූර්ණ නම</span></label>
+                            <input required type="text" id="name" name="name"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="email" class="block text-sm font-medium mb-2"><span
+                                        class="lang-en">Email</span><span class="lang-si">විද්යුත් තැපෑල</span></label>
+                                <input required type="email" id="email" name="email"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium mb-2"><span class="lang-en">Phone
+                                        Number</span><span class="lang-si">දුරකථන අංකය</span></label>
+                                <input required type="tel" id="phone" name="phone"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="address_line1" class="block text-sm font-medium mb-2"><span
+                                    class="lang-en">Address Line 1</span><span class="lang-si">ලිපිනය 1</span></label>
+                            <input required type="text" id="address_line1" name="address_line1"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                        <div>
+                            <label for="address_line2" class="block text-sm font-medium mb-2"><span
+                                    class="lang-en">Address Line 2 (Optional)</span><span class="lang-si">ලිපිනය 2
+                                    (අත්‍යවශ්‍ය නොවේ)</span></label>
+                            <input type="text" id="address_line2" name="address_line2"
+                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="city" class="block text-sm font-medium mb-2"><span
+                                        class="lang-en">City</span><span class="lang-si">නගරය</span></label>
+                                <input required type="text" id="city" name="city"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            </div>
+                            <div>
+                                <label for="postal_code" class="block text-sm font-medium mb-2"><span
+                                        class="lang-en">Postal Code</span><span class="lang-si">තැපැල්
+                                        කේතය</span></label>
+                                <input required type="text" id="postal_code" name="postal_code"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="p-6 sm:p-8 border-t border-white/10">
+                        <button id="btnConfirmDetails" type="submit" form="checkoutForm"
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
+                            <span class="lang-en">Save & Choose Payment</span><span class="lang-si">තහවුරු කර ගෙවීම
+                                තෝරන්න</span>
+                        </button>
+                        <p id="checkoutErrorStep1" class="text-xs text-red-400 text-center mt-3 hidden"></p>
                     </div>
                 </div>
-                <form id="checkoutForm" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium mb-2"><span class="lang-en">Full
-                                Name</span><span class="lang-si">සම්පූර්ණ නම</span></label>
-                        <input required type="text" id="name" name="name"
-                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
-                    </div>
-                    <div class="grid sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="email" class="block text-sm font-medium mb-2"><span
-                                    class="lang-en">Email</span><span class="lang-si">විද්යුත් තැපෑල</span></label>
-                            <input required type="email" id="email" name="email"
-                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium mb-2"><span class="lang-en">Phone
-                                    Number</span><span class="lang-si">දුරකථන අංකය</span></label>
-                            <input required type="tel" id="phone" name="phone"
-                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+
+                <!-- STEP 2: Payment Method Selection -->
+                <div id="checkoutStep2" class="hidden">
+                    <div class="p-6 sm:p-8 border-b border-white/10">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-2xl font-black"><span class="lang-en">Step 2: Payment Method</span><span
+                                        class="lang-si">පියවර 2: ගෙවීමේ ක්‍රමය</span></h3>
+                                <p class="text-sm text-white/60"><span class="lang-en">How would you like to
+                                        pay?</span><span class="lang-si">ඔබ ගෙවීමට කැමති කෙසේද?</span></p>
+                            </div>
+                            <button
+                                class="close-checkout text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
                         </div>
                     </div>
-                    <div>
-                        <label for="address_line1" class="block text-sm font-medium mb-2"><span class="lang-en">Address
-                                Line 1</span><span class="lang-si">ලිපිනය 1</span></label>
-                        <input required type="text" id="address_line1" name="address_line1"
-                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    <div class="p-6 sm:p-8 space-y-4">
+                        <button id="btnGoToOnlinePayment"
+                            class="w-full text-left p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all flex items-center gap-4 disabled:opacity-50">
+                            <svg class="w-8 h-8 text-brand-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M20 4H4C2.89 4 2.01 4.89 2.01 6L2 18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V8H20V18ZM4 6H20V6H4Z" />
+                            </svg>
+                            <div>
+                                <div class="font-bold"><span class="lang-en">Online Payment</span><span
+                                        class="lang-si">මාර්ගගත ගෙවීම</span></div>
+                                <div class="text-sm text-white/70"><span class="lang-en">Pay with Credit/Debit Card,
+                                        etc.</span><span class="lang-si">ක්‍රෙඩිට්/ඩෙබිට් කාඩ්පත සමඟ ගෙවන්න.</span>
+                                </div>
+                            </div>
+                        </button>
+                        <button id="btnGoToCod"
+                            class="w-full text-left p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-8 h-8 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M20 7V5H4V7H2V17H4V19H12V17H14V19H20V17H22V7H20ZM14.17 11.83L12 14L9.83 11.83L8.41 13.24L12 16.83L15.59 13.24L14.17 11.83ZM18 15H16V13H8V15H6V9H18V15Z" />
+                            </svg>
+                            <div>
+                                <div class="font-bold"><span class="lang-en">Cash on Delivery (COD)</span><span
+                                        class="lang-si">භාණ්ඩ ලැබුණු පසු මුදල්</span></div>
+                                <div id="codMessage" class="text-sm text-white/70"><span class="lang-en">Pay at your
+                                        doorstep.</span><span class="lang-si">ඔබේ දොරකඩදී ගෙවන්න.</span></div>
+                            </div>
+                        </button>
                     </div>
-                    <div>
-                        <label for="address_line2" class="block text-sm font-medium mb-2"><span class="lang-en">Address
-                                Line 2 (Optional)</span><span class="lang-si">ලිපිනය 2 (අත්‍යවශ්‍ය නොවේ)</span></label>
-                        <input type="text" id="address_line2" name="address_line2"
-                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
+                    <div class="p-6 sm:p-8 border-t border-white/10 flex items-center justify-between">
+                        <button id="btnBackToStep1"
+                            class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 font-semibold"><span
+                                class="lang-en">Back</span><span class="lang-si">ආපසු</span></button>
+                        <p id="checkoutErrorStep2" class="text-xs text-red-400 text-center hidden"></p>
                     </div>
-                    <div class="grid sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="city" class="block text-sm font-medium mb-2"><span
-                                    class="lang-en">City</span><span class="lang-si">නගරය</span></label>
-                            <input required type="text" id="city" name="city"
-                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
-                        </div>
-                        <div>
-                            <label for="postal_code" class="block text-sm font-medium mb-2"><span class="lang-en">Postal
-                                    Code</span><span class="lang-si">තැපැල් කේතය</span></label>
-                            <input required type="text" id="postal_code" name="postal_code"
-                                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all">
-                        </div>
-                    </div>
-                </form>
-                <div class="p-6 sm:p-8 border-t border-white/10">
-                    <button id="btnConfirmPayment" type="submit" form="checkoutForm"
-                        class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
-                        <span class="lang-en">Confirm & Proceed to Payment</span><span class="lang-si">තහවුරු කර ගෙවීමට
-                            යන්න</span>
-                    </button>
-                    <p id="checkoutError" class="text-xs text-red-400 text-center mt-3 hidden"></p>
                 </div>
+
+                <!-- STEP 3: COD Confirmation -->
+                <div id="checkoutStep3" class="hidden">
+                    <div class="p-6 sm:p-8 border-b border-white/10">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-2xl font-black"><span class="lang-en">Step 3: Confirm COD
+                                        Order</span><span class="lang-si">පියවර 3: COD ඇණවුම තහවුරු කරන්න</span></h3>
+                                <p class="text-sm text-white/60"><span class="lang-en">Please confirm the final
+                                        amount.</span><span class="lang-si">කරුණාකර අවසාන මුදල තහවුරු කරන්න.</span></p>
+                            </div>
+                            <button
+                                class="close-checkout text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
+                        </div>
+                    </div>
+                    <div class="p-6 sm:p-8 text-center">
+                        <p class="text-white/80"><span class="lang-en">You will pay</span><span class="lang-si">ඔබ ගෙවනු
+                                ඇත</span></p>
+                        <div id="cod-grand-total" class="text-4xl font-black my-2"></div>
+                        <p class="text-sm text-white/70"><span class="lang-en">to the courier within 3 days at your
+                                doorstep. Please keep the exact amount ready.</span><span class="lang-si">කුරියර් වෙත
+                                දින 3ක් ඇතුළත ඔබේ දොරකඩදී. කරුණාකර නිශ්චිත මුදල සූදානම්ව තබා ගන්න.</span></p>
+                    </div>
+                    <div class="p-6 sm:p-8 border-t border-white/10">
+                        <button id="btnConfirmCod"
+                            class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
+                            <span class="lang-en">Confirm Order</span><span class="lang-si">ඇණවුම තහවුරු කරන්න</span>
+                        </button>
+                        <button id="btnBackToStep2"
+                            class="w-full mt-3 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 font-semibold"><span
+                                class="lang-en">Back to Payment Methods</span><span class="lang-si">ගෙවීම් ක්‍රම වෙත
+                                ආපසු</span></button>
+                        <p id="checkoutErrorStep3" class="text-xs text-red-400 text-center mt-3 hidden"></p>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Success Message -->
+                <div id="checkoutStepSuccess" class="hidden">
+                    <div class="p-6 sm:p-8 text-center">
+                        <svg class="w-16 h-16 mx-auto text-emerald-400" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                        <h3 class="text-2xl font-black mt-4"><span class="lang-en">Order Placed!</span><span
+                                class="lang-si">ඇණවුම තැන්පත් කරන ලදී!</span></h3>
+                        <p class="text-white/80 mt-2"><span class="lang-en">Thank you for your purchase. We will process
+                                your order shortly.</span><span class="lang-si">ඔබගේ මිලදී ගැනීමට ස්තූතියි. අපි ඔබගේ
+                                ඇණවුම ഉടൻ ක්‍රියාත්මක කරන්නෙමු.</span></p>
+                        <a href="{% url 'profile-page' %}"
+                            class="mt-6 inline-block shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-xl transition-all">
+                            <span class="lang-en">View My Orders</span><span class="lang-si">මගේ ඇණවුම් බලන්න</span>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+
 
     <!-- =================================================================
     UPDATED SCRIPT SECTION
@@ -453,11 +569,14 @@
             const fmt = (x) => (x === null || x === undefined) ? '0.00' : String(x);
             function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
             const csrftoken = getCookie('csrftoken');
+
+            // --- State Variables ---
             let currentGrandTotal = 0;
+            let isCodApproved = false;
 
             const L = {
-                en: { remove: 'Remove', removing: 'Removing…', removeDeviceConfirm: 'Remove the selected device and all games on it?', confirming: 'Confirming...', redirecting: 'Redirecting...', fillAllFields: 'Please fill all required fields.', paymentFailed: 'Could not initiate payment.' },
-                si: { remove: 'ඉවත් කරන්න', removing: 'ඉවත් කරමින්…', removeDeviceConfirm: 'තෝරාගත් උපාංගය සහ එහි ඇති සියලු ගේම් ඉවත් කරලෑද?', confirming: 'තහවුරු කරමින්...', redirecting: 'යොමු වෙමින්...', fillAllFields: 'කරුණාකර අවශ්‍ය සියලුම ක්ෂේත්‍ර පුරවන්න.', paymentFailed: 'ගෙවීම ආරම්භ කිරීමට නොහැකි විය.' }
+                en: { remove: 'Remove', removing: 'Removing…', removeDeviceConfirm: 'Remove the selected device and all games on it?', saving: 'Saving...', redirecting: 'Redirecting...', placingOrder: 'Placing Order...', confirmOrder: 'Confirm Order', choosePayment: 'Save & Choose Payment', fillAllFields: 'Please fill all required fields.', paymentFailed: 'Could not initiate payment.', codFinalizeFailed: 'Could not finalize COD order.', codMessageDisabled: 'Fulfil at least one order with online payment from us to be eligible for the COD feature.' },
+                si: { remove: 'ඉවත් කරන්න', removing: 'ඉවත් කරමින්…', removeDeviceConfirm: 'තෝරාගත් උපාංගය සහ එහි ඇති සියලු ගේම් ඉවත් කරලෑද?', saving: 'සුරකිමින්...', redirecting: 'යොමු වෙමින්...', placingOrder: 'ඇණවුම තැන්පත් කරමින්...', confirmOrder: 'ඇණවුම තහවුරු කරන්න', choosePayment: 'තහවුරු කර ගෙවීම තෝරන්න', fillAllFields: 'කරුණාකර අවශ්‍ය සියලුම ක්ෂේත්‍ර පුරවන්න.', paymentFailed: 'ගෙවීම ආරම්භ කිරීමට නොහැකි විය.', codFinalizeFailed: 'COD ඇණවුම අවසන් කිරීමට නොහැකි විය.', codMessageDisabled: 'COD විශේෂාංගයට සුදුසුකම් ලැබීමට අපෙන් සබැඳි ගෙවීමක් සමඟ අවම වශයෙන් එක් ඇණවුමක්වත් සම්පූර්ණ කරන්න.' }
             };
             const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
             const t = (k) => L[getLang()][k] || k;
@@ -497,11 +616,16 @@
             async function apiCall(url, options = {}) {
                 const res = await fetch(url, { method: 'GET', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken }, ...options });
                 if (!res.ok) {
-                    const err = await res.json().catch(() => ({ detail: `Request failed` }));
+                    const err = await res.json().catch(() => ({ detail: `Request failed with status ${res.status}` }));
                     throw new Error(err.detail || 'An unknown error occurred');
                 }
-                return res.headers.get("content-type")?.includes("application/json") ? res.json() : {};
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    return res.json();
+                }
+                return {};
             }
+
 
             function calculateShippingFee(directGamesCount, hasDevice) {
                 if (!hasDevice && directGamesCount === 0) return 0;
@@ -513,24 +637,18 @@
             async function loadCart() {
                 const data = await apiCall("{% url 'api_cart' %}");
 
-                // Render items and totals
-                document.getElementById('left-items').innerHTML = data.left_items?.length ? data.left_items.map(item => `...`).join('') : `<p class="text-sm text-white/70">${t('noDirect')}</p>`;
-                document.getElementById('direct-total').textContent = `Rs ${fmt(parseFloat(data.direct_total || '0').toFixed(2))}`;
-                document.getElementById('device-block').innerHTML = data.device ? `...` : `<p class="text-sm text-white/70">...</p>`;
-                document.getElementById('right-items').innerHTML = data.right_items?.length ? data.right_items.map(item => `...`).join('') : `<p class="text-sm text-white/70">${t('noDeviceGames')}</p>`;
-
                 const devicePrice = parseFloat(data.storage_device_price || '0');
-                document.getElementById('device-price').textContent = `Rs ${fmt(devicePrice.toFixed(2))}`;
-
                 const shippingFee = calculateShippingFee(data.left_items?.length || 0, !!data.device);
-                document.getElementById('shipping-fee').textContent = shippingFee > 0 ? `Rs ${fmt(shippingFee.toFixed(2))}` : '—';
-
                 currentGrandTotal = parseFloat(data.direct_total || '0') + devicePrice + shippingFee;
+
+                document.getElementById('direct-total').textContent = `Rs ${fmt(parseFloat(data.direct_total || '0').toFixed(2))}`;
+                document.getElementById('device-price').textContent = `Rs ${fmt(devicePrice.toFixed(2))}`;
+                document.getElementById('shipping-fee').textContent = shippingFee > 0 ? `Rs ${fmt(shippingFee.toFixed(2))}` : '—';
                 document.getElementById('grand-total').textContent = `Rs ${fmt(currentGrandTotal.toFixed(2))}`;
+                document.getElementById('cod-grand-total').textContent = `Rs ${fmt(currentGrandTotal.toFixed(2))}`;
 
                 document.getElementById('btnCheckout').disabled = currentGrandTotal - shippingFee <= 0;
 
-                // Update capacity bar
                 const capBlock = document.getElementById('capacity-block');
                 if (data.device) {
                     capBlock.classList.remove('hidden');
@@ -542,10 +660,9 @@
                 } else {
                     capBlock.classList.add('hidden');
                 }
+                renderCartItems(data);
             }
 
-            // Re-rendering the full item rows in JS for brevity
-            // In a real app, this would be done properly
             function renderCartItems(data) {
                 const productRow = (item, type) => {
                     const p = item.product;
@@ -568,20 +685,142 @@
                 document.getElementById('device-block').innerHTML = data.device ? `<div class="flex items-center gap-3"><img src="${data.device.image_url || ''}" class="w-16 h-20 object-cover rounded-xl"/><div class="font-semibold">${data.device.name}</div></div>` : `<p class="text-sm text-white/70">Select a device to add games for free.</p>`;
             }
 
-            async function updateAndRenderCart() {
-                const data = await apiCall("{% url 'api_cart' %}");
-                renderCartItems(data); // Call the detailed render function
-                // ... rest of the loadCart logic for totals and capacity bar ...
-                const devicePrice = parseFloat(data.storage_device_price || '0');
-                document.getElementById('device-price').textContent = `Rs ${fmt(devicePrice.toFixed(2))}`;
-                const shippingFee = calculateShippingFee(data.left_items?.length || 0, !!data.device);
-                document.getElementById('shipping-fee').textContent = shippingFee > 0 ? `Rs ${fmt(shippingFee.toFixed(2))}` : '—';
-                currentGrandTotal = parseFloat(data.direct_total || '0') + devicePrice + shippingFee;
-                document.getElementById('grand-total').textContent = `Rs ${fmt(currentGrandTotal.toFixed(2))}`;
-                document.getElementById('btnCheckout').disabled = currentGrandTotal - shippingFee <= 0;
+            // --- Checkout Modal Logic ---
+            const checkoutModal = document.getElementById('checkoutModal');
+            const checkoutForm = document.getElementById('checkoutForm');
+
+            const steps = {
+                1: document.getElementById('checkoutStep1'),
+                2: document.getElementById('checkoutStep2'),
+                3: document.getElementById('checkoutStep3'),
+                4: document.getElementById('checkoutStepSuccess')
+            };
+
+            function showCheckoutStep(stepNumber) {
+                Object.values(steps).forEach(step => step.classList.add('hidden'));
+                if (steps[stepNumber]) steps[stepNumber].classList.remove('hidden');
+
+                if (stepNumber === 2) {
+                    const btnCod = document.getElementById('btnGoToCod');
+                    const codMessage = document.getElementById('codMessage');
+                    btnCod.disabled = !isCodApproved;
+                    if (!isCodApproved) {
+                        codMessage.textContent = t('codMessageDisabled');
+                        codMessage.classList.add('text-yellow-400');
+                    } else {
+                        codMessage.textContent = 'Pay at your doorstep.';
+                        codMessage.classList.remove('text-yellow-400');
+                    }
+                }
             }
 
-            // --- Event Handlers ---
+            function openCheckoutModal() {
+                checkoutModal.classList.remove('hidden');
+                showCheckoutStep(1);
+                const confirmBtn = document.getElementById('btnConfirmDetails');
+                confirmBtn.disabled = true;
+
+                apiCall('/api/me').then(data => {
+                    isCodApproved = data.is_cod_approved || false;
+                    Object.keys(data).forEach(key => {
+                        const el = checkoutForm.elements[key];
+                        if (el) el.value = data[key] || '';
+                    });
+                }).finally(() => {
+                    confirmBtn.disabled = false;
+                });
+            }
+
+            function closeCheckoutModal() {
+                checkoutModal.classList.add('hidden');
+            }
+
+            document.getElementById('btnCheckout')?.addEventListener('click', openCheckoutModal);
+            document.querySelectorAll('.close-checkout, #closeCheckoutModal, #checkoutModalBackdrop').forEach(el => {
+                el.addEventListener('click', closeCheckoutModal);
+            });
+
+            // Step 1: Submit shipping details
+            checkoutForm?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const confirmBtn = document.getElementById('btnConfirmDetails');
+                const errorEl = document.getElementById('checkoutErrorStep1');
+
+                confirmBtn.disabled = true;
+                confirmBtn.querySelector('span.lang-en').textContent = t('saving');
+                confirmBtn.querySelector('span.lang-si').textContent = t('saving');
+                errorEl.classList.add('hidden');
+
+                try {
+                    const data = Object.fromEntries(new FormData(checkoutForm).entries());
+                    await apiCall('/api/me/update', { method: 'PATCH', body: JSON.stringify(data) });
+                    showCheckoutStep(2);
+                } catch (err) {
+                    errorEl.textContent = err.message || t('fillAllFields');
+                    errorEl.classList.remove('hidden');
+                } finally {
+                    confirmBtn.disabled = false;
+                    confirmBtn.querySelector('span.lang-en').textContent = t('choosePayment');
+                    confirmBtn.querySelector('span.lang-si').textContent = t('choosePayment');
+                }
+            });
+
+            // Step 2 -> Online Payment
+            document.getElementById('btnGoToOnlinePayment').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                const errorEl = document.getElementById('checkoutErrorStep2');
+                btn.disabled = true;
+                btn.querySelector('.font-bold .lang-en').textContent = t('redirecting');
+                btn.querySelector('.font-bold .lang-si').textContent = t('redirecting');
+                errorEl.classList.add('hidden');
+
+                try {
+                    const paymentData = await apiCall('/api/payments/genie/start', { method: 'POST', body: JSON.stringify({ amount: Math.round(currentGrandTotal * 100) }) });
+                    if (paymentData.url) {
+                        window.location.href = paymentData.url;
+                    } else {
+                        throw new Error('Payment URL not found.');
+                    }
+                } catch (err) {
+                    errorEl.textContent = err.message || t('paymentFailed');
+                    errorEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.querySelector('.font-bold .lang-en').textContent = 'Online Payment';
+                    btn.querySelector('.font-bold .lang-si').textContent = 'මාර්ගගත ගෙවීම';
+                }
+            });
+
+            // Step 2 -> COD
+            document.getElementById('btnGoToCod').addEventListener('click', () => showCheckoutStep(3));
+
+            // Step 3 -> Confirm COD
+            document.getElementById('btnConfirmCod').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                const errorEl = document.getElementById('checkoutErrorStep3');
+                btn.disabled = true;
+                btn.querySelector('span.lang-en').textContent = t('placingOrder');
+                btn.querySelector('span.lang-si').textContent = t('placingOrder');
+                errorEl.classList.add('hidden');
+
+                try {
+                    await apiCall('/api/orders/cod-finalize/', { method: 'POST', body: JSON.stringify({ amount: Math.round(currentGrandTotal) }) });
+                    showCheckoutStep(4); // Show success step
+                    loadCart(); // Refresh cart in background
+                } catch (err) {
+                    errorEl.textContent = err.message || t('codFinalizeFailed');
+                    errorEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.querySelector('span.lang-en').textContent = t('confirmOrder');
+                    btn.querySelector('span.lang-si').textContent = t('confirmOrder');
+                }
+            });
+
+            // Back buttons
+            document.getElementById('btnBackToStep1').addEventListener('click', () => showCheckoutStep(1));
+            document.getElementById('btnBackToStep2').addEventListener('click', () => showCheckoutStep(2));
+
+
+            // --- General Event Handlers ---
             document.addEventListener('click', async (e) => {
                 const btn = e.target.closest('button[data-action]');
                 if (!btn) return;
@@ -591,61 +830,23 @@
                 try {
                     if (action === 'remove-on-device') await apiCall("{% url 'api_cart_remove_from_device' %}", { method: 'POST', body: JSON.stringify({ storage_item_id: id }) });
                     if (action === 'remove-left') await apiCall("{% url 'api_remove_product_from_cart' %}", { method: 'POST', body: JSON.stringify({ item_id: id }) });
-                    await updateAndRenderCart();
+                    await loadCart();
                 } catch (err) { alert(err.message); btn.disabled = false; btn.textContent = t('remove'); }
             });
 
             document.getElementById('btnRemoveDevice')?.addEventListener('click', async (e) => {
                 if (!confirm(t('removeDeviceConfirm'))) return;
-                e.target.disabled = true; e.target.textContent = t('removing');
+                const btn = e.target.closest('button');
+                btn.disabled = true; btn.querySelector('span').textContent = t('removing');
                 try {
                     await apiCall("{% url 'api_remove_storage_device_from_cart' %}", { method: 'POST' });
-                    await updateAndRenderCart();
+                    await loadCart();
                 } catch (err) { alert(err.message); }
-                finally { e.target.disabled = false; e.target.textContent = t('remove'); }
-            });
-
-            // Checkout Modal
-            const checkoutModal = document.getElementById('checkoutModal');
-            const checkoutForm = document.getElementById('checkoutForm');
-            const confirmBtn = document.getElementById('btnConfirmPayment');
-            const errorEl = document.getElementById('checkoutError');
-
-            document.getElementById('btnCheckout')?.addEventListener('click', async () => {
-                checkoutModal.classList.remove('hidden');
-                confirmBtn.disabled = true;
-                try {
-                    const data = await apiCall('/api/me');
-                    Object.keys(data).forEach(key => {
-                        const el = checkoutForm.elements[key];
-                        if (el) el.value = data[key] || '';
-                    });
-                } finally { confirmBtn.disabled = false; }
-            });
-
-            document.getElementById('closeCheckoutModal')?.addEventListener('click', () => checkoutModal.classList.add('hidden'));
-            document.getElementById('checkoutModalBackdrop')?.addEventListener('click', () => checkoutModal.classList.add('hidden'));
-
-            checkoutForm?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                confirmBtn.disabled = true; confirmBtn.textContent = t('confirming');
-                errorEl.classList.add('hidden');
-                try {
-                    const data = Object.fromEntries(new FormData(checkoutForm).entries());
-                    await apiCall('/api/me/update', { method: 'PATCH', body: JSON.stringify(data) });
-                    confirmBtn.textContent = t('redirecting');
-                    const paymentData = await apiCall('/api/payments/genie/start', { method: 'POST', body: JSON.stringify({ amount: Math.round(currentGrandTotal * 100) }) });
-                    if (paymentData.url) window.location.href = paymentData.url;
-                    else throw new Error('Payment URL not found.');
-                } catch (err) {
-                    errorEl.textContent = err.message || t('paymentFailed');
-                    errorEl.classList.remove('hidden');
-                    confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm & Proceed';
-                }
+                finally { btn.disabled = false; btn.querySelector('span').textContent = t('remove'); }
             });
 
             // Initial Load
-            updateAndRenderCart().catch(console.error);
+            loadCart().catch(console.error);
             document.getElementById('year').textContent = new Date().getFullYear();
         });
 
@@ -669,10 +870,8 @@
             const toggleLanguage = () => {
                 const newLang = (localStorage.getItem('language') || 'en') === 'en' ? 'si' : 'en';
                 setLanguage(newLang);
-                // We need to re-render the cart to update text
-                // This assumes a function `updateAndRenderCart` exists from the other script
-                if (typeof updateAndRenderCart === 'function') {
-                    updateAndRenderCart();
+                if (typeof loadCart === 'function') {
+                    loadCart();
                 }
             };
 

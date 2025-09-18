@@ -36,7 +36,7 @@ class UserAdmin(DjangoUserAdmin):
         (None, {"fields": ("phone_number",)}),
     )
     list_display = ("id", "username", "email",
-                    "phone_number", "is_staff", "customer_id")
+                    "phone_number", "is_staff", "customer_id", "is_cod_approved")
     search_fields = ("username", "email", "phone_number")
 
 

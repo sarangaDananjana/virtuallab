@@ -68,6 +68,7 @@ def _serialize_me(u: User) -> dict:
         "city": getattr(u, "city", "") or "",
         "postal_code": getattr(u, "postal_code", "") or "",
         "member_since": u.date_joined,  # ISO string in DRF response
+        "is_cod_approved": u.is_cod_approved or False,
     }
 
 
@@ -1553,6 +1554,125 @@ def api_finalize_order_from_customer(request):
             status=Order.OrderStatus.PAYMENT_SUCCESS,
             payment_method=Order.PaymentMethod.CARD,
             payment_reference=transaction_id,
+            order_value=amount,
+            currency="LKR",
+            storage_device_name=device_name,
+            storage_device_price=device_price,
+        )
+        order.users.add(user)
+
+        # LEFT: direct purchases -> OrderItem
+        for ci in cart_locked.cartitem_set.select_related("product"):
+            OrderItem.objects.create(
+                order=order,
+                product=ci.product,
+                quantity=ci.quantity,
+                unit_price=ci.unit_price,
+            )
+
+        # RIGHT: on-device games -> OrderStorageItem
+        for si in cart_locked.cartstorageitem_set.select_related("product"):
+            OrderStorageItem.objects.create(
+                order=order,
+                product=si.product,
+                quantity=si.quantity,
+                unit_price=si.unit_price,
+            )
+
+        # Clear cart (items + right side + device)
+        CartItem.objects.filter(cart=cart_locked).delete()
+        CartStorageItem.objects.filter(cart=cart_locked).delete()
+        if cart_locked.storage_device_id:
+            cart_locked.storage_device = None
+            cart_locked.save(update_fields=["storage_device"])
+
+    return Response(
+        {
+            "ok": True,
+            "order_id": order.id,
+            "reference": order.payment_reference,
+            "status": order.status,
+            "payment_method": order.payment_method,
+            "total": str(order.total),
+            "currency": order.currency,
+        },
+        status=status.HTTP_201_CREATED,
+    )
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])  # Authenticated users only
+def api_finalize_cod_order_for_user(request):
+    """
+    Finalizes a Cash On Delivery (COD) order for the currently authenticated user.
+    Body: { "amount": <integer> }
+    1) Use the authenticated user from the request session.
+    2) Take the user's most recent non-empty cart.
+    3) Create an Order:
+       - status = PAYMENT_SUCCESS
+       - payment_method = COD
+       - payment_reference = generated unique COD reference
+       - order_value = amount from request
+    4) Copy LEFT items to OrderItem and RIGHT (on-device) items to OrderStorageItem.
+    5) Clear the user's cart (remove items + clear storage_device).
+    6) Return the created order basics.
+    """
+    data = request.data or {}
+    # The user is taken directly from the request, not an ID in the body
+    user = request.user
+
+    try:
+        amount = int(data.get("amount"))
+    except (ValueError, TypeError):
+        return Response(
+            {"detail": "A valid 'amount' is required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # 2) Locate the user's most-recent non-empty cart
+    carts = (
+        Cart.objects.filter(users=user)
+        .select_related("storage_device")
+        .prefetch_related(
+            Prefetch("cartitem_set",
+                     queryset=CartItem.objects.select_related("product")),
+            Prefetch("cartstorageitem_set",
+                     queryset=CartStorageItem.objects.select_related("product")),
+        )
+        .order_by("-updated_at", "-created_at")
+    )
+
+    cart = None
+    for c in carts:
+        if c.cartitem_set.exists() or c.cartstorageitem_set.exists() or c.storage_device_id:
+            cart = c
+            break
+
+    if not cart:
+        return Response(
+            {"detail": "No non-empty cart found for this user."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    # 3–5) Create order from cart & clear cart atomically
+    with transaction.atomic():
+        # Lock the cart row to prevent concurrent mutations while we copy & clear
+        cart_locked = Cart.objects.select_for_update().get(pk=cart.pk)
+
+        device = cart_locked.storage_device
+        device_name = getattr(device, "name", "") or ""
+        device_price = getattr(
+            device, "price", Decimal("0.00")) or Decimal("0.00")
+
+        # For COD, we generate a unique reference instead of taking it as input
+        cod_reference = f"cod_{uuid.uuid4().hex}"
+
+        order = Order.objects.create(
+            status=Order.OrderStatus.PAYMENT_SUCCESS,
+            # Assuming a 'COD' choice exists in your Order model's PaymentMethod
+            payment_method=Order.PaymentMethod.COD,
+            payment_reference=cod_reference,
             order_value=amount,
             currency="LKR",
             storage_device_name=device_name,

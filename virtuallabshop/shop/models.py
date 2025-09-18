@@ -51,6 +51,7 @@ class User(AbstractUser):
     city = models.CharField(_("city"), max_length=100, blank=True, default="")
     postal_code = models.CharField(
         _("postal code"), max_length=20, blank=True, default="")
+    is_cod_approved = models.BooleanField(default=False)
 
     customer_id = models.CharField(
         _("Genie customer id"), max_length=64, blank=True, default="", db_index=True)
@@ -78,7 +79,7 @@ class Genre(TimestampedModel):
         ordering = ["name"]
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Company(TimestampedModel):
@@ -97,7 +98,7 @@ class Company(TimestampedModel):
         ordering = ["name"]
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 class Product(TimestampedModel):
