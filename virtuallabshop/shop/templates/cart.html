@@ -803,7 +803,7 @@
                 errorEl.classList.add('hidden');
 
                 try {
-                    await apiCall('/api/orders/cod-finalize/', { method: 'POST', body: JSON.stringify({ amount: Math.round(currentGrandTotal) }) });
+                    await apiCall('/api/orders/cod-finalize', { method: 'POST', body: JSON.stringify({ amount: Math.round(currentGrandTotal) }) });
                     showCheckoutStep(4); // Show success step
                     loadCart(); // Refresh cart in background
                 } catch (err) {
