@@ -56,7 +56,7 @@ urlpatterns = [
     path("api/orders/me", views.api_orders_me, name="api-orders-me"),
     path("api/orders/finalize/", views.api_finalize_order_from_customer,
          name="api-orders-finalize"),
-    path("api/orders/cod-finalize/", views.api_finalize_cod_order_for_user,
+    path("api/orders/cod-finalize", views.api_finalize_cod_order_for_user,
          name="api-cod-orders-finalize"),
     path("api/blog/home/", views.api_blog_home, name="api-blog-home"),
     path("api/blog/<slug:slug>/", views.api_blog_detail, name="api_blog_detail"),
