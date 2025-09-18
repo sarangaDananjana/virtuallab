@@ -371,6 +371,7 @@ class Order(TimestampedModel):
     class PaymentMethod(models.TextChoices):
         CARD = "CARD", _("Card")
         BANK_TRANSFER = "BANK_TRANSFER", _("Bank transfer")
+        COD = "COD", _("Cash On Delivery")
 
     # Spec asks for many-to-many with users; typically it is a single user,
     # but we honor the requirement while allowing guest orders via email.

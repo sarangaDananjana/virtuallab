@@ -16,7 +16,6 @@ from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
-from decimal import Decimal
 from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -1673,7 +1672,7 @@ def api_finalize_cod_order_for_user(request):
             # Assuming a 'COD' choice exists in your Order model's PaymentMethod
             payment_method=Order.PaymentMethod.COD,
             payment_reference=cod_reference,
-            order_value=Decimal(amount),
+            order_value=amount,
             currency="LKR",
             storage_device_name=device_name,
             storage_device_price=device_price,
