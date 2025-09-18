@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import json
 import re
+import uuid
 from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
@@ -1672,7 +1673,7 @@ def api_finalize_cod_order_for_user(request):
             # Assuming a 'COD' choice exists in your Order model's PaymentMethod
             payment_method=Order.PaymentMethod.COD,
             payment_reference=cod_reference,
-            order_value=Decimal(amount),
+            order_value=amount,
             currency="LKR",
             storage_device_name=device_name,
             storage_device_price=device_price,

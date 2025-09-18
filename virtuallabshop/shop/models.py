@@ -394,7 +394,7 @@ class Order(TimestampedModel):
     )
 
     storage_device_name = models.CharField(
-        max_length=255, null=True, blank=True, default="")
+        max_length=255,  blank=True, default="")
     storage_device_price = models.DecimalField(
         max_digits=10, decimal_places=2, default=Decimal("0.00"))
 
