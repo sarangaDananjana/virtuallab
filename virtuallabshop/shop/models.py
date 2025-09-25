@@ -137,6 +137,7 @@ class Product(TimestampedModel):
     )
 
     is_active = models.BooleanField(default=True)
+    is_cracked = models.BooleanField(default=True)
 
     class Meta:
         indexes = [models.Index(fields=["slug"])]

@@ -136,13 +136,15 @@ class ProductAdmin(admin.ModelAdmin):
         "price",
         "currency",
         "is_active",
+        "is_cracked",
         "developer",
         "publisher",
         "game_size_gb",
         "image_count",
         "created_at",
     )
-    list_filter = ("is_active", "developer", "publisher", "genres")
+    list_filter = ("is_active", "is_cracked",
+                   "developer", "publisher", "genres")
     search_fields = ("title", "sku", "description")
     list_select_related = ("developer", "publisher")
     prepopulated_fields = {"slug": ("title",)}

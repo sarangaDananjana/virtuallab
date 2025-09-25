@@ -687,6 +687,7 @@ def serialize_product(p, request) -> dict:
         "currency": getattr(p, "currency", "LKR"),
         "game_size_gb": float(p.game_size_gb) if getattr(p, "game_size_gb", None) is not None else None,
         "is_active": bool(getattr(p, "is_active", True)),
+        "is_cracked": bool(getattr(p, "is_cracked", True)),
         "images": images,
         "cover_url": images[0]["url"] if images else None,
         "url": f"/products/{p.slug}/",
