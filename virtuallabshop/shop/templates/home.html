@@ -184,11 +184,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- =================================================================
-        NEW MOBILE MENU (Off-canvas) - Z-INDEX FIXED
-        ================================================================== -->
-
     </header>
 
 
@@ -300,12 +295,23 @@
                     </div>
                 </div>
 
-                <div
+                <!-- NEW HERO SLIDER -->
+                <div id="hero-slider"
                     class="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] order-first lg:order-last rounded-3xl overflow-hidden ring-1 ring-white/10 bg-white/5">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gold-400/20 to-transparent"></div>
-                    <img src="{% static 'images/hero2.jpg' %}" alt="Virtual Lab" class="w-full h-full object-contain"
-                        onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 bg-gradient-to-br from-brand-500/30 to-gold-400/30 rounded-3xl flex items-center justify-center text-6xl animate-pulse\'>🎮</div>';">
+                    <img src="{% static 'images/hero/1.jpg' %}" alt="Hero Image 1"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-100">
+                    <img src="{% static 'images/hero/2.jpg' %}" alt="Hero Image 2"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
+                    <img src="{% static 'images/hero/3.jpg' %}" alt="Hero Image 3"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
+                    <img src="{% static 'images/hero/4.jpg' %}" alt="Hero Image 4"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
+                    <img src="{% static 'images/hero/5.jpg' %}" alt="Hero Image 5"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
+                    <img src="{% static 'images/hero/6.jpg' %}" alt="Hero Image 6"
+                        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out opacity-0">
                 </div>
+
             </div>
 
             <div class="mt-12 sm:mt-16 glass rounded-2xl sm:rounded-3xl p-4 sm:p-6">
@@ -823,29 +829,15 @@
                         <span class="lang-si">DVD සහ HDD දෙආකාරයෙන්ම ලබා ගත හැක</span>
                     </p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
-                        <span class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                        </span>
-                        <span class="lang-en">🎮 Store Live</span>
-                        <span class="lang-si">🎮 Store Live</span>
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                     </span>
-                    <button class="store-filter-btn active" data-filter="all">
-                        <span class="lang-en">All</span>
-                        <span class="lang-si">All</span>
-                    </button>
-                    <button class="store-filter-btn" data-filter="popular">
-                        <span class="lang-en">Popular</span>
-                        <span class="lang-si">Popular</span>
-                    </button>
-                    <button class="store-filter-btn" data-filter="new">
-                        <span class="lang-en">New</span>
-                        <span class="lang-si">New</span>
-                    </button>
-                </div>
+                    <span class="lang-en">🎮 Store Live</span>
+                    <span class="lang-si">🎮 Store Live</span>
+                </span>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -1619,6 +1611,20 @@
                 }
             });
 
+            // --- Hero Slider ---
+            const heroSlider = document.getElementById('hero-slider');
+            if (heroSlider) {
+                const slides = heroSlider.querySelectorAll('img');
+                let currentSlide = 0;
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('opacity-100');
+                    slides[currentSlide].classList.add('opacity-0');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.remove('opacity-0');
+                    slides[currentSlide].classList.add('opacity-100');
+                }, 5000); // Change image every 5 seconds
+            }
+
             // --- Smooth reveal on scroll ---
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -1693,29 +1699,6 @@
                 option.addEventListener('click', () => {
                     document.querySelectorAll('.delivery-option').forEach(opt => opt.classList.remove('selected'));
                     option.classList.add('selected');
-                });
-            });
-
-            // --- Store Filter Functionality ---
-            const filterButtons = document.querySelectorAll('.store-filter-btn');
-            const storeCards = document.querySelectorAll('.store-card');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    const filter = button.dataset.filter;
-                    storeCards.forEach(card => {
-                        const category = card.dataset.category;
-                        const isPopular = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('popular');
-                        const isNew = card.querySelector('.absolute.top-3.right-3 span')?.textContent.toLowerCase().includes('new');
-
-                        let show = false;
-                        if (filter === 'all') show = true;
-                        if (filter === 'popular' && isPopular) show = true;
-                        if (filter === 'new' && isNew) show = true;
-
-                        card.style.display = show ? '' : 'none';
-                    });
                 });
             });
         });

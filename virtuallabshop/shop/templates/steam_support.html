@@ -62,19 +62,27 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Toggle switch styles */
+        /* Fixed Toggle switch styles */
         .toggle-bg:after {
             content: '';
-            @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background-color: white;
+            border-radius: 9999px;
+            height: 1.25rem;
+            width: 1.25rem;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
         input:checked+.toggle-bg:after {
-            transform: translateX(100%);
-            @apply border-white;
+            transform: translateX(0.9rem);
         }
 
         input:checked+.toggle-bg {
-            @apply bg-brand-500 border-brand-500;
+            background-color: #2D86FF;
+            border-color: #2D86FF;
         }
     </style>
 </head>
@@ -237,30 +245,26 @@
                         <div class="mt-4 rounded-2xl glass p-6">
                             <h4 class="font-bold">For Windows 11</h4>
                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 1 Placeholder</div>
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 2 Placeholder</div>
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 3 Placeholder</div>
+                                <img src="{% static 'images/win11-step1.png' %}" alt="Windows 11 Security Settings"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                                <img src="{% static 'images/win11-step2.png' %}"
+                                    alt="Virus & threat protection settings"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                                <img src="{% static 'images/win11-step3.png' %}" alt="Real-time protection toggle off"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
                             </div>
                         </div>
 
                         <div class="mt-4 rounded-2xl glass p-6">
                             <h4 class="font-bold">For Windows 10</h4>
                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 1 Placeholder</div>
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 2 Placeholder</div>
-                                <div
-                                    class="aspect-square bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                                    Image 3 Placeholder</div>
+                                <img src="{% static 'images/win10-step1.png' %}" alt="Windows 10 Security Settings"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                                <img src="{% static 'images/win10-step2.png' %}"
+                                    alt="Virus & threat protection settings"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                                <img src="{% static 'images/win10-step3.png' %}" alt="Real-time protection toggle off"
+                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
                             </div>
                         </div>
                     </div>
@@ -323,9 +327,9 @@
                                     තෝරන්න. ඒවා ඔබේ desktop එකේ ඇති Steam icon එක මතට drag and drop කරන්න.</span></li>
                         </ol>
                         <div
-                            class="mt-4 aspect-video bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50">
-                            <span class="lang-en">16:9 GIF Placeholder</span><span class="lang-si">16:9 GIF එක සඳහා
-                                ඉඩ</span>
+                            class="mt-4 aspect-video bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50 overflow-hidden">
+                            <img src="{% static 'images/drag-drop-patch.gif' %}"
+                                alt="Dragging patch files to Steam icon" class="w-full h-full object-cover" />
                         </div>
                     </div>
                 </div>

@@ -592,7 +592,7 @@ def api_products(request):
     Optional filters: ?q= (title icontains), ?genre= (slug or name).
     """
     # fixed page size = 10 as requested
-    PER_PAGE = 50
+    PER_PAGE = 20
 
     qs = Product.objects.filter(is_active=True).prefetch_related("images")
     # filters (optional)
