@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Installation Guide — Virtual Lab Games</title>
+    <meta name="description" content="A step-by-step guide to installing your patched games using Steam Tools." />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' },
+                        danger: { 500: '#EF4444' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared site styles -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        .lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline;
+        }
+
+        .block-lang.lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+
+        .step-counter {
+            background: linear-gradient(to right, #2D86FF, #FCD34D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
+    <!-- Header -->
+    <header class="header-blend sticky top-0 z-[80]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <!-- Logo -->
+                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400">
+                        <span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors text-gold-400"><span
+                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                </nav>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="{% url 'shop-page' %}"
+                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                        aria-label="Shop">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="hidden sm:inline">
+                            <span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+
+            <div class="text-center mb-12">
+                <h1 class="text-3xl sm:text-4xl font-black leading-tight tracking-tight">Game Installation Guide</h1>
+                <p class="mt-2 text-lg text-white/70 max-w-2xl mx-auto">Follow these steps carefully to set up your game
+                    correctly.</p>
+            </div>
+
+            <!-- Section 1: Steam Account Safety -->
+            <section id="step1" class="mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="step-counter font-black text-6xl">1</div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Use a Dedicated Steam Account</h2>
+                        <p class="text-white/70 mt-1">This is the most important step for your account's safety.</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
+                    <!-- Sub-section 1.1: The Warning -->
+                    <div class="rounded-2xl glass border border-danger-500/50 p-6">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-danger-500/20 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6 text-danger-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">CRITICAL WARNING: Protect Your Main Steam Account</h3>
+                                <p class="text-sm text-white/80 mt-1">
+                                    The games you receive from us use a patch. While we ensure our files are safe, any
+                                    modification to game files carries a small risk. If something goes wrong, you could
+                                    lose access to games you have purchased on Steam.
+                                </p>
+                                <ul class="mt-3 text-sm text-white/70 list-disc list-inside space-y-1">
+                                    <li><b>We will always replace games you bought from us for free.</b></li>
+                                    <li><b>We CANNOT replace games you bought from the official Steam store.</b></li>
+                                </ul>
+                                <p class="text-sm text-white/80 mt-3">
+                                    To protect your library, <strong>ALWAYS use a separate Steam account</strong> for
+                                    games from Virtual Lab. This can be a new account or an old one you don't use and
+                                    haven't spent money on.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-section 1.2: How to Create a New Account -->
+                    <div>
+                        <h3 class="text-xl font-semibold">How to Create a New Steam Account</h3>
+                        <ol class="mt-4 space-y-3 text-white/80 list-decimal list-inside">
+                            <li>Go to the official Steam website: <a href="https://store.steampowered.com/join"
+                                    target="_blank"
+                                    class="text-gold-400 hover:underline">store.steampowered.com/join</a></li>
+                            <li>Enter your email address and complete the registration form.</li>
+                            <li>Verify your email address by clicking the link Steam sends you.</li>
+                            <li>Choose a new account name and password.</li>
+                            <li>Log out of your main Steam account and log in with your new one before proceeding.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Install Steam Tools -->
+            <section id="step2" class="mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="step-counter font-black text-6xl">2</div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Install Steam Tools</h2>
+                        <p class="text-white/70 mt-1">This tool is required to apply the game patches.</p>
+                    </div>
+                </div>
+                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
+                    <div class="rounded-2xl glass p-6">
+                        <ol class="space-y-4">
+                            <li><span class="font-bold">Download:</span> Find the `SteamTools.zip` file on DVD 1
+                                provided with your order.</li>
+                            <li><span class="font-bold">Extract:</span> Unzip the file to a memorable location, for
+                                example, `C:\SteamTools`.</li>
+                            <li><span class="font-bold">Run Setup:</span> Open the extracted folder and run `Setup.exe`.
+                                Follow the on-screen instructions to complete the installation.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Add Manifest Files -->
+            <section id="step3" class="mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="step-counter font-black text-6xl">3</div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Add Manifest Files</h2>
+                        <p class="text-white/70 mt-1">These files tell Steam Tools which games to patch.</p>
+                    </div>
+                </div>
+                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
+                    <div class="rounded-2xl glass p-6">
+                        <ol class="space-y-4">
+                            <li><span class="font-bold">Locate Manifests:</span> On DVD 1, find the `Manifests` folder.
+                                Inside, you will see files ending in `.acf`.</li>
+                            <li><span class="font-bold">Find SteamApps Folder:</span> Navigate to your Steam
+                                installation directory. Inside, find the `steamapps` folder. (e.g., `C:\Program Files
+                                (x86)\Steam\steamapps`).</li>
+                            <li><span class="font-bold">Copy Files:</span> Copy all the `.acf` files from the DVD's
+                                `Manifests` folder directly into your `steamapps` folder.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Copy Game Files -->
+            <section id="step4" class="mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="step-counter font-black text-6xl">4</div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Copy Game Files</h2>
+                        <p class="text-white/70 mt-1">The final step is to place the game data where Steam can find it.
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
+                    <div class="rounded-2xl glass p-6">
+                        <ol class="space-y-4">
+                            <li><span class="font-bold">Open DVDs:</span> Insert the game DVD(s) from your order. You
+                                will see a folder with the game's name.</li>
+                            <li><span class="font-bold">Navigate to `common`:</span> Go back to your `steamapps` folder.
+                                Inside, open the `common` folder.</li>
+                            <li><span class="font-bold">Copy Game Folder:</span> Copy the entire game folder from the
+                                DVD and paste it inside the `common` folder. This may take some time depending on the
+                                game size.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Enjoy! -->
+            <section id="step5">
+                <div class="flex items-start gap-4">
+                    <div class="step-counter font-black text-6xl">5</div>
+                    <div>
+                        <h2 class="text-2xl font-bold">Enjoy Your Game!</h2>
+                        <p class="text-white/70 mt-1">You're all set and ready to play.</p>
+                    </div>
+                </div>
+                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
+                    <div class="rounded-2xl glass p-6 bg-gradient-to-r from-brand-500/20 to-gold-400/20">
+                        <p class="font-semibold">Restart Steam completely. Once it relaunches, you will see the game in
+                            your library, ready to be launched. If you run into any issues, please open a support
+                            ticket.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

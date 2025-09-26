@@ -871,6 +871,19 @@ def serialize_cart(cart: Cart, request) -> dict:
 # --- HTML PAGE (TemplateHTMLRenderer), like your shop/tickets pages ----------
 
 
+@api_view(["GET"])  # Steam_support
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def steam_support_page(request):
+    """this renders the Home HTML page"""
+    user_initial = None
+    if request.user.is_authenticated:
+        name = request.user.get_username() or getattr(request.user, "email", "") or ""
+        if name:
+            user_initial = name[0].upper()
+    return Response({"user": request.user, "user_initial": user_initial}, template_name="steam_support.html")
+
+
 @api_view(["GET"])
 @renderer_classes([TemplateHTMLRenderer])
 @ensure_csrf_cookie
