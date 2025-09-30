@@ -656,6 +656,22 @@ class OfflineGames(models.Model):
     )
 
 
+class Files(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField(
+        upload_to="files/",
+        help_text="9:16 landscape image recommended."
+    )
+    file = models.FileField(
+        upload_to="files/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(
+            allowed_extensions=["exe", "zip", "rar"])],
+        help_text=_("Upload a single video file (rar, zip"),
+    )
+
+
 # --- BLOG --------------------------------------------------------------------
 # Add this near the bottom of models.py (after existing imports/classes).
 # Reuses: slugify, uuid4, os, TimestampedModel, _ (already imported)
