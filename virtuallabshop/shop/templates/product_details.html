@@ -280,8 +280,7 @@
             </section>
 
             <!-- Installation Support Section -->
-            {% if not p.is_cracked %}
-            <section class="mt-10">
+            <section id="installationSupportSection" class="mt-10 hidden">
                 <div
                     class="rounded-2xl glass p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
@@ -295,7 +294,6 @@
                     </a>
                 </div>
             </section>
-            {% endif %}
 
             <!-- Description -->
             <section class="mt-10">
@@ -576,6 +574,11 @@
                 const res = await fetch(API(slug));
                 if (!res.ok) { console.error('Failed to load product', res.status); return; }
                 const p = await res.json();
+
+                const installationSection = document.getElementById('installationSupportSection');
+                if (installationSection && p.is_cracked === false) {
+                    installationSection.classList.remove('hidden');
+                }
 
                 setText('title', p.title);
                 setText('edition', p.edition);

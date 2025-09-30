@@ -39,6 +39,7 @@ urlpatterns = [
     path("api/products/", views.api_products, name="api-products"),
     path("api/products/<slug:slug>/",
          views.api_product_detail_by_slug, name="api-product-detail"),
+    path("api/genres/", views.api_genres, name="api-genres"),
     path("api/storage-devices/", views.api_storage_devices,
          name="api-storage-devices"),
     path("api/cart/", views.api_cart, name="api_cart"),

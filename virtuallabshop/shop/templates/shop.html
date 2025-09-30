@@ -183,11 +183,7 @@
                             class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
                         <select id="genre"
                             class="w-full sm:w-auto px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
-                            <option value=""><span class="lang-en">All Genres</span></option>
-                            <option>Action</option>
-                            <option>RPG</option>
-                            <option>Racing</option>
-                            <option>Shooter</option>
+                            <option value="">All Genres</option>
                         </select>
                         <button
                             class="w-full sm:w-auto shine px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold"><span
@@ -335,10 +331,24 @@
                 const price = g.price_display || toCurrency(g.price, g.currency);
                 const size = g.size_display || (g.game_size_gb ? `${g.game_size_gb} GB` : '');
                 const edition = g.edition || 'Standard Edition';
+
+                // --- START: Badge Logic ---
+                let badgeHTML = '';
+                if (g.is_cracked === false) {
+                    badgeHTML = `
+                        <div class="absolute top-3 right-3 flex items-center gap-1 bg-gradient-to-r from-red-500 to-amber-400 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full shadow-lg">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11.5M11 14l-1 1"></path></svg>
+                            <span>Hot</span>
+                        </div>
+                    `;
+                }
+                // --- END: Badge Logic ---
+
                 return `
                 <a href="${detail}" class="group block rounded-3xl card-hover">
                     <div class="relative aspect-[3/4] rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5">
                         <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+                        ${badgeHTML} {/* <-- Badge is inserted here */}
                         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                     </div>
                     <div class="mt-3 p-3 sm:p-4">
@@ -351,6 +361,23 @@
                         </div>
                     </div>
                 </a>`;
+            }
+
+            // Add this new function inside the DOMContentLoaded listener
+            async function loadGenres() {
+                try {
+                    const res = await fetch('/api/genres/');
+                    const genres = await res.json();
+                    const selectEl = document.getElementById('genre');
+                    genres.forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        selectEl.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Failed to load genres:", error);
+                }
             }
 
             function setGridLoading() {
@@ -478,6 +505,7 @@
 
             // Initial load
             const initialPage = Number(new URLSearchParams(location.search).get('page') || '1');
+            loadGenres();
             loadGames(initialPage);
         });
     </script>

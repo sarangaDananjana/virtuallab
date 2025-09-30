@@ -17,7 +17,7 @@ from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
-from .models import Order, ReservedSlot, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto
+from .models import Order, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -591,11 +591,12 @@ def api_products(request):
     JSON list of games. Always 10 items per page.
     Optional filters: ?q= (title icontains), ?genre= (slug or name).
     """
-    # fixed page size = 10 as requested
     PER_PAGE = 20
 
-    qs = Product.objects.filter(is_active=True).prefetch_related("images")
-    # filters (optional)
+    # 1. ADDED .order_by() TO PRIORITIZE NON-CRACKED GAMES
+    qs = Product.objects.filter(is_active=True).prefetch_related(
+        "images").order_by('is_cracked')
+
     q = (request.query_params.get("q") or "").strip()
     if q:
         qs = qs.filter(title__icontains=q)
@@ -605,7 +606,6 @@ def api_products(request):
         qs = qs.filter(models.Q(genres__slug__iexact=genre) |
                        models.Q(genres__name__iexact=genre)).distinct()
 
-    # paginate
     paginator = Paginator(qs, PER_PAGE)
     try:
         page_number = int(request.query_params.get("page") or 1)
@@ -614,7 +614,6 @@ def api_products(request):
     page_obj = paginator.get_page(page_number)
 
     def product_image_url(p):
-        # pick primary image first, else the first one
         img = p.images.filter(is_primary=True).first() or p.images.first()
         if not img:
             return None
@@ -622,9 +621,8 @@ def api_products(request):
 
     def product_url(p):
         try:
-            return request.build_absolute_uri(reverse("game-detail", args=[p.slug]))
+            return request.build_absolute_uri(reverse("product_page", args=[p.slug]))
         except NoReverseMatch:
-            # fallback if you don't have a 'game-detail' route yet
             return request.build_absolute_uri(f"/products/{p.slug}/")
 
     def price_display(p):
@@ -644,16 +642,29 @@ def api_products(request):
             "edition": p.edition,
             "cover_url": product_image_url(p),
             "url": product_url(p),
+            "is_cracked": p.is_cracked,  # 2. ADDED THIS FIELD
         })
 
     return Response({
         "ok": True,
         "count": paginator.count,
-        "total_pages": paginator.num_pages,  # <-- used by the HTML pager
+        "total_pages": paginator.num_pages,
         "page": page_obj.number,
         "per_page": PER_PAGE,
         "results": results,
     })
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([AllowAny])
+def api_genres(request):
+    """
+    Returns a simple JSON list of all unique genre names.
+    """
+    genres = Genre.objects.order_by('name').values_list(
+        'name', flat=True).distinct()
+    return Response(list(genres))
 
 
 def _abs(request, url: str) -> str:
