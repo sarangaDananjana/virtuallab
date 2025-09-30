@@ -57,10 +57,10 @@ class User(AbstractUser):
         _("Genie customer id"), max_length=64, blank=True, default="", db_index=True)
 
     steam_username = models.CharField(
-        _("steam username"), max_length=20, blank=True, default="")
+        _("steam username"), max_length=100, blank=True, default="")
 
     steam_email = models.CharField(
-        _("steam email"), max_length=20, blank=True, default="")
+        _("steam email"), max_length=256, blank=True, default="")
 
     # username + password remain from AbstractUser
     # username is the USERNAME_FIELD by default
