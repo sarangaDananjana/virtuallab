@@ -17,7 +17,7 @@ from .models import (
     DLC,
     StorageDevice,
     OfflineGames,
-    OrderStorageItem, Blog, BlogPhoto
+    OrderStorageItem, Blog, BlogPhoto, Files
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -381,6 +381,11 @@ class ReservedSlotAdmin(admin.ModelAdmin):
 
 @admin.register(OfflineGames)
 class OfflineGamesAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "image", "file")
+
+
+@admin.register(Files)
+class FilesAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "image", "file")
 
 
