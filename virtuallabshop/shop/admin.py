@@ -31,7 +31,7 @@ from .models import User
 class UserAdmin(DjangoUserAdmin):
     fieldsets = DjangoUserAdmin.fieldsets + (
         ("Extra", {"fields": ("phone_number", "is_cod_approved", "address_no",
-         "address_line1", "address_line2", "city", "postal_code")}),
+         "address_line1", "address_line2", "city", "postal_code", "steam_username", "steam_email")}),
     )
     add_fieldsets = DjangoUserAdmin.add_fieldsets + (
         (None, {"fields": ("phone_number",)}),
