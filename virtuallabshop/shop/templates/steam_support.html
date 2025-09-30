@@ -96,8 +96,22 @@
 
         /* Section done styling */
         .section-done {
-            opacity: 0.4;
+            opacity: 0.5;
         }
+
+        /* This targets the checkmark button inside a completed section to make it stand out */
+        .section-done>div:first-of-type>button {
+            opacity: 1;
+            /* Counteract the parent's opacity */
+            background-color: #22c55e;
+            /* A nice, vibrant green (Tailwind's green-500) */
+        }
+
+        .section-done>div:first-of-type>button svg {
+            color: #ffffff;
+            /* Make the checkmark inside white for contrast */
+        }
+
 
         /* GIF container styles */
         .gif-container {
@@ -735,29 +749,65 @@
             }
 
             // --- Game Selection Logic ---
-            const games = [
-                { id: 1, name: "Cyberpunk 2077", img: "https://placehold.co/300x400/101014/FFF?text=Cyberpunk" },
-                { id: 2, name: "The Witcher 3", img: "https://placehold.co/300x400/101014/FFF?text=Witcher+3" },
-                { id: 3, name: "Red Dead 2", img: "https://placehold.co/300x400/101014/FFF?text=RDR2" },
-                { id: 4, name: "Elden Ring", img: "https://placehold.co/300x400/101014/FFF?text=Elden+Ring" },
-            ];
-
             const gameListContainer = document.getElementById('game-list');
-            games.forEach(game => {
-                const gameCard = document.createElement('div');
-                gameCard.className = 'game-card p-2 rounded-lg cursor-pointer border-2 border-transparent hover:border-gold-400 transition-all glass';
-                gameCard.onclick = (event) => selectGame(game.id, game.name, event.currentTarget);
-                gameCard.innerHTML = `<img src="${game.img}" alt="${game.name}" class="w-full h-auto rounded-md object-cover aspect-[3/4]"><p class="text-center text-sm font-semibold mt-2">${game.name}</p>`;
-                gameListContainer.appendChild(gameCard);
-            });
+            const downloadButtonContainer = document.getElementById('download-button-container');
 
-            window.selectGame = function (gameId, gameName, selectedCard) {
-                gameListContainer.querySelectorAll('.game-card').forEach(card => card.classList.remove('border-gold-400', 'bg-white/10'));
+            async function loadGames() {
+                if (gameListContainer) {
+                    gameListContainer.innerHTML = '<p class="text-center text-white/70 col-span-full">Loading games...</p>';
+                }
+
+                try {
+                    const response = await fetch('/api/offline-games/');
+                    if (!response.ok) {
+                        throw new Error(`API error! status: ${response.status}`);
+                    }
+                    const games = await response.json();
+
+                    if (gameListContainer) {
+                        gameListContainer.innerHTML = ''; // Clear loading message
+                        if (games.length === 0) {
+                            gameListContainer.innerHTML = '<p class="text-center text-white/70 col-span-full">No games available right now.</p>';
+                            return;
+                        }
+
+                        games.forEach(game => {
+                            const gameCard = document.createElement('div');
+                            gameCard.className = 'game-card p-2 rounded-lg cursor-pointer border-2 border-transparent hover:border-gold-400 transition-all glass';
+                            // The API provides 'image' and 'video' (for the file URL)
+                            gameCard.onclick = (event) => selectGame(game.video, game.name, event.currentTarget);
+                            gameCard.innerHTML = `
+                                <img src="${game.image || 'https://placehold.co/300x400/101014/FFF?text=No+Image'}" alt="${game.name}" class="w-full h-auto rounded-md object-cover aspect-[3/4]">
+                                <p class="text-center text-sm font-semibold mt-2">${game.name}</p>`;
+                            gameListContainer.appendChild(gameCard);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to load games:", error);
+                    if (gameListContainer) {
+                        gameListContainer.innerHTML = '<p class="text-center text-danger-500 col-span-full">Could not load games. Please try again later.</p>';
+                    }
+                }
+            }
+
+            window.selectGame = function (downloadUrl, gameName, selectedCard) {
+                if (gameListContainer) {
+                    gameListContainer.querySelectorAll('.game-card').forEach(card => card.classList.remove('border-gold-400', 'bg-white/10'));
+                }
                 selectedCard.classList.add('border-gold-400', 'bg-white/10');
 
-                const downloadButtonContainer = document.getElementById('download-button-container');
-                downloadButtonContainer.innerHTML = `<a href="/download/${gameId}" class="inline-block text-center w-full py-3 px-6 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">Download Files for ${gameName}</a>`;
+                if (downloadButtonContainer) {
+                    if (downloadUrl) {
+                        downloadButtonContainer.innerHTML = `<a href="${downloadUrl}" download class="inline-block text-center w-full py-3 px-6 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">Download Files for ${gameName}</a>`;
+                    } else {
+                        downloadButtonContainer.innerHTML = `<p class="text-center text-white/70 mt-4">No download file is available for ${gameName}.</p>`;
+                    }
+                }
             }
+
+            // Load the games from the API when the page is ready
+            loadGames();
+
 
             // --- Footer year ---
             document.getElementById('year').textContent = new Date().getFullYear();

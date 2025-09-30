@@ -1331,7 +1331,7 @@ def _serialize_game(game: OfflineGames) -> dict:
         # Get the URL of the image, or an empty string if it doesn't exist
         "image": game.image.url if game.image else "",
         # Get the URL of the video, or an empty string if it doesn't exist
-        "video": game.video.url if game.video else "",
+        "video": game.file.url if game.file else "",
     }
 
 
