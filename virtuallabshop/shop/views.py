@@ -17,7 +17,7 @@ from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
-from .models import Order, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
+from .models import Order, OfflineGames, Ticket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -69,6 +69,8 @@ def _serialize_me(u: User) -> dict:
         "postal_code": getattr(u, "postal_code", "") or "",
         "member_since": u.date_joined,  # ISO string in DRF response
         "is_cod_approved": u.is_cod_approved or False,
+        "steam_username": getattr(u, "steam_username", "") or "",
+        "steam_email": getattr(u, "steam_email", "") or "",
     }
 
 
@@ -102,6 +104,8 @@ def api_me_update(request):
     address_line2 = (data.get("address_line2") or "").strip()
     city = (data.get("city") or "").strip()
     postal_code = (data.get("postal_code") or "").strip()
+    steam_username = (data.get("steam_username") or "").strip()
+    steam_email = (data.get("steam_email") or "").strip()
 
     # Validate uniqueness when changing email/phone
     if email and email.lower() != (u.email or "").lower():
@@ -151,6 +155,13 @@ def api_me_update(request):
         if postal_code != (u.postal_code or ""):
             u.postal_code = postal_code
             changed.append("postal_code")
+
+        if steam_username != (u.steam_username or ""):
+            u.steam_username = steam_username
+            changed.append("steam_username")
+        if steam_email != (u.steam_email or ""):
+            u.steam_email = steam_email
+            changed.append("steam_email")
 
         if changed:
             u.save(update_fields=list(set(changed)))  # dedupe for safety
@@ -1308,6 +1319,35 @@ def api_orders_me(request):
         "page": page_obj.number,
         "per_page": per_page,
     })
+
+
+def _serialize_game(game: OfflineGames) -> dict:
+    """
+    Helper function to serialize an OfflineGames object into a dictionary.
+    """
+    return {
+        "id": game.id,
+        "name": game.name,
+        # Get the URL of the image, or an empty string if it doesn't exist
+        "image": game.image.url if game.image else "",
+        # Get the URL of the video, or an empty string if it doesn't exist
+        "video": game.video.url if game.video else "",
+    }
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+def offline_games_list(request):
+    """
+    API view to list all offline games.
+
+    This view provides a read-only endpoint that returns a list of all
+    the OfflineGames instances from the database.
+    """
+    all_games = OfflineGames.objects.all()
+    # Use a list comprehension to serialize each game object
+    serialized_data = [_serialize_game(game) for game in all_games]
+    return Response(serialized_data)
 
 
 @api_view(["POST"])

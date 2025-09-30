@@ -56,6 +56,12 @@ class User(AbstractUser):
     customer_id = models.CharField(
         _("Genie customer id"), max_length=64, blank=True, default="", db_index=True)
 
+    steam_username = models.CharField(
+        _("steam username"), max_length=20, blank=True, default="")
+
+    steam_email = models.CharField(
+        _("steam email"), max_length=20, blank=True, default="")
+
     # username + password remain from AbstractUser
     # username is the USERNAME_FIELD by default
     REQUIRED_FIELDS = ["email", "phone_number"]
@@ -632,6 +638,22 @@ class StorageDevice(models.Model):
 
     def __str__(self):
         return f"{self.name} • {self.get_category_display()}"
+
+
+class OfflineGames(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField(
+        upload_to="offline_games/",
+        help_text="9:16 landscape image recommended."
+    )
+    file = models.FileField(
+        upload_to="offline_files/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(
+            allowed_extensions=["rar", "zip"])],
+        help_text=_("Upload a single video file (rar, zip"),
+    )
 
 
 # --- BLOG --------------------------------------------------------------------

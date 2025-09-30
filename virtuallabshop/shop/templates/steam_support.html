@@ -3,10 +3,10 @@
 
 <head>
     {% load static %}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Installation Guide — Virtual Lab Games</title>
-    <meta name="description" content="A step-by-step guide to installing your patched games using Steam Tools." />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile — Virtual Lab Games</title>
+    <meta name="description" content="View and update your account details. Quickly jump to your cart or orders." />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,12 +16,11 @@
                 extend: {
                     colors: {
                         brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
-                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' },
-                        danger: { 500: '#EF4444' }
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'gradient': 'gradient 8s ease infinite',
                     },
                     keyframes: {
@@ -44,6 +43,7 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
+        /* Language helpers */
         .lang-si {
             display: none;
         }
@@ -56,39 +56,55 @@
             display: inline;
         }
 
-        .step-counter {
-            background: linear-gradient(to right, #2D86FF, #FCD34D);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .block-lang.lang-si {
+            display: none;
         }
 
-        /* Fixed Toggle switch styles */
-        .toggle-bg:after {
-            content: '';
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4, 0, .2, 1), box-shadow .25s;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
+        }
+
+        /* Skeletons for loading state */
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .skeleton::after {
+            content: "";
             position: absolute;
-            top: 2px;
-            left: 2px;
-            background-color: white;
-            border-radius: 9999px;
-            height: 1.25rem;
-            width: 1.25rem;
-            transition: transform 0.2s ease-in-out;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+            animation: shimmer 1.6s infinite;
         }
 
-        input:checked+.toggle-bg:after {
-            transform: translateX(0.9rem);
-        }
-
-        input:checked+.toggle-bg {
-            background-color: #2D86FF;
-            border-color: #2D86FF;
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
         }
     </style>
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header -->
+    <!-- =================================================================
+    HEADER - UPDATED WITH NEW MOBILE MENU
+    ================================================================== -->
     <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
@@ -102,15 +118,15 @@
                     </div>
                 </a>
 
-                <!-- Desktop Navigation -->
+                <!-- Desktop Navigation (links point to Home sections) -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
                     <a href="{% url 'home-page' %}"
                         class="text-sm font-semibold transition-colors hover:text-gold-400"><span
-                            class="lang-en">Home</span><span class="lang-si">මුල් පිටුව</span></a>
-                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400">
+                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
+                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors text-gold-400">
                         <span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
                     <a href="{% url 'tickets-page' %}"
-                        class="text-sm font-semibold transition-colors text-gold-400"><span
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Support</span><span class="lang-si">සහය</span></a>
                 </nav>
 
@@ -118,326 +134,624 @@
                 <div class="flex items-center gap-2 sm:gap-3">
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
+
+                    <a href="{% url 'cart_page' %}"
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                        </svg>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">Cart</span></span>
+                    </a>
+
                     <a href="{% url 'shop-page' %}"
                         class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
                         aria-label="Shop">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4
- 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         <span class="hidden sm:inline">
                             <span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span>
                         </span>
                     </a>
+
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
+
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="py-10 sm:py-14 lg:py-16">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-
-            <div class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-black leading-tight tracking-tight"><span class="lang-en">Game
-                        Installation Guide</span><span class="lang-si">Game Installation මාර්ගෝපදේශය</span></h1>
-                <p class="mt-2 text-lg text-white/70 max-w-2xl mx-auto"><span class="lang-en">Follow these steps
-                        carefully to set up your game correctly.</span><span class="lang-si">ඔබේ game එක නිවැරදිව
-                        install කිරීමට මෙම පියවර අනුගමනය කරන්න.</span></p>
-            </div>
-
-            <!-- Installation Type Toggle -->
-            <div class="flex items-center justify-center gap-4 my-8">
-                <span class="font-semibold text-white/80"><span class="lang-en">First Time Installation</span><span
-                        class="lang-si">පළමු වර Install කිරීම</span></span>
-                <label for="installToggle" class="flex items-center cursor-pointer">
-                    <div class="relative">
-                        <input type="checkbox" id="installToggle" class="sr-only">
-                        <div class="toggle-bg block bg-white/10 w-11 h-6 rounded-full border border-white/20"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <!-- Title / Quick actions -->
+            <div class="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs sm:text-sm font-semibold">
+                        <span class="relative flex h-2 w-2"><span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span
+                                class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
+                        <span class="lang-en">Account • Profile</span><span class="lang-si">ගිණුම • පැතිකඩ</span>
                     </div>
-                </label>
-                <span class="font-semibold text-white/80"><span class="lang-en">Previously Installed</span><span
-                        class="lang-si">කලින් Install කර ඇත</span></span>
-            </div>
-
-
-            <!-- Section 1: Steam Account Safety -->
-            <section id="step1" class="mb-12 transition-opacity duration-300">
-                <div class="flex items-start gap-4">
-                    <div class="step-counter font-black text-6xl">1</div>
-                    <div>
-                        <h2 class="text-2xl font-bold"><span class="lang-en">Prepare Your System</span><span
-                                class="lang-si">ඔබේ පරිගණකය සූදානම් කරන්න</span></h2>
-                        <p class="text-white/70 mt-1"><span class="lang-en">These are the most important steps for your
-                                account's safety and a successful installation.</span><span class="lang-si">ඔබගේ ගිණුමේ
-                                ආරක්ෂාව සහ සාර්ථක installation එකක් සඳහා මෙම පියවර වැදගත් වේ.</span></p>
-                    </div>
+                    <h1 class="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black">
+                        <span class="block block-lang lang-en">My Profile</span>
+                        <span class="block block-lang lang-si">මගේ පැතිකඩ</span>
+                    </h1>
+                    <p class="mt-2 text-white/70"><span class="lang-en">Manage your account info. You can jump to your
+                            cart or orders anytime.</span><span class="lang-si">ඔබගේ ගිණුම් තොරතුරු කළමනාකරණය කරන්න.
+                            කරත්තයට හෝ ඇණවුම් වෙත දැනටමත් යන්න.</span></p>
                 </div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'tickets-page' %}"
+                        class="shine inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="lang-en">My Tickets</span><span class="lang-si">මගේ ගැටලු</span>
+                    </a>
+                    <a href="{% url 'orders-page' %}"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 font-semibold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7h18M3 12h18M3 17h18" />
+                        </svg>
+                        <span class="lang-en">My Orders</span><span class="lang-si">මගේ ඇණවුම්</span>
+                    </a>
+                </div>
+            </div>
 
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
-                    <!-- Sub-section 1.1: The Warning -->
-                    <div class="rounded-2xl glass border border-danger-500/50 p-6">
+            <!-- Layout: left profile card, right details form -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                <!-- Left: identity card -->
+                <aside class="lg:col-span-4">
+                    <div class="glass rounded-2xl p-5">
                         <div class="flex items-center gap-4">
                             <div
-                                class="w-12 h-12 rounded-full bg-danger-500/20 flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6 text-danger-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                                    </path>
-                                </svg>
+                                class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500/30 to-gold-400/30 ring-1 ring-white/10 grid place-items-center font-black text-xl uppercase">
+                                {{ user_initial|default:'U' }}</div>
+                            <div class="min-w-0">
+                                <div id="nameDisp" class="font-semibold truncate skeleton h-5 w-40"></div>
+                                <div id="emailDisp" class="text-white/70 text-sm truncate mt-0.5 skeleton h-4 w-52">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-2 gap-2">
+                            <a href="{% url 'cart_page' %}"
+                                class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold text-center"><span
+                                    class="lang-en">Open Cart</span><span class="lang-si">කරත්තය</span></a>
+                            <a href="{% url 'orders-page' %}"
+                                class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold text-center"><span
+                                    class="lang-en">View Orders</span><span class="lang-si">ඇණවුම්</span></a>
+                        </div>
+
+                        <div class="mt-4 p-3 rounded-xl bg-white/5 border border-white/10">
+                            <div class="text-xs text-white/60 mb-1"><span class="lang-en">Member since</span><span
+                                    class="lang-si">සාමාජිකත්වය සිට</span></div>
+                            <div id="memberSince" class="text-sm skeleton h-4 w-24"></div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Right: details & settings -->
+                <section class="lg:col-span-8 space-y-6">
+                    <!-- Contact Info -->
+                    <form id="profileForm" class="glass rounded-2xl p-5">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold"><span class="lang-en">Contact information</span><span
+                                    class="lang-si">සම්බන්ධතා තොරතුරු</span></h2>
+                            <div class="flex items-center gap-2">
+                                <button id="editBtn" type="button"
+                                    class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold"><span
+                                        class="lang-en">Edit</span><span class="lang-si">සංස්කරණය</span></button>
+                                <button id="saveBtn" type="submit"
+                                    class="hidden shine px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-gold-400 text-sm font-bold"><span
+                                        class="lang-en">Save</span><span class="lang-si">සුරකින්න</span></button>
+                                <button id="cancelBtn" type="button"
+                                    class="hidden px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold"><span
+                                        class="lang-en">Cancel</span><span class="lang-si">අවලංගු</span></button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">Full
+                                        name</span><span class="lang-si">සම්පූර්ණ නම</span></label>
+                                <input id="name" name="name" type="text"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="John Doe" />
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg"><span class="lang-en">CRITICAL WARNING: Protect Your Main
-                                        Steam Account</span><span class="lang-si">වැදගත් අනතුරු ඇඟවීම: ඔබේ ප්‍රධාන Steam
-                                        ගිණුම ආරක්ෂා කරන්න</span></h3>
-                                <p class="text-sm text-white/80 mt-1">
-                                    <span class="lang-en">The games you receive from us use a patch. If something goes
-                                        wrong, you could lose access to games you have purchased on Steam.</span>
-                                    <span class="lang-si">අපෙන් ඔබට ලැබෙන games patch එකක් භාවිතා කරයි. යම් දෙයක්
-                                        වැරදුනහොත්, ඔබ Steam මත මිලදී ගත් games ඔබට අහිමි විය හැක.</span>
-                                </p>
-                                <ul class="mt-3 text-sm text-white/70 list-disc list-inside space-y-1">
-                                    <li><span class="lang-en"><b>We will always replace games you bought from us for
-                                                free.</b></span><span class="lang-si"><b>ඔබ අපෙන් මිලදී ගත් games අපි
-                                                සැමවිටම නොමිලේ ලබා දෙන්නෙමු.</b></span></li>
-                                    <li><span class="lang-en"><b>We CANNOT replace games you bought from the official
-                                                Steam store.</b></span><span class="lang-si"><b>Steam store එකෙන් මිලදී
-                                                ගත් games අපට replace කල නොහැක.</b></span></li>
-                                </ul>
+                                <label class="block text-sm text-white/70 mb-1">Email</label>
+                                <input id="email" name="email" type="email"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="you@example.com" />
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Sub-section 1.2: How to Create a New Account -->
-                    <div>
-                        <h3 class="text-xl font-semibold"><span class="lang-en">How to Create a New Steam
-                                Account</span><span class="lang-si">අලුත් Steam ගිණුමක් හදන හැටි</span></h3>
-                        <ol class="mt-4 space-y-3 text-white/80 list-decimal list-inside">
-                            <li><span class="lang-en">Go to the official Steam website:</span><span
-                                    class="lang-si">Steam වෙබ් අඩවියට යන්න:</span> <a
-                                    href="https://store.steampowered.com/join" target="_blank"
-                                    class="text-gold-400 hover:underline">store.steampowered.com/join</a></li>
-                            <li><span class="lang-en">Enter your email and complete the form.</span><span
-                                    class="lang-si">ඔබගේ email එක ඇතුලත් කර form එක පුරවන්න.</span></li>
-                            <li><span class="lang-en">Verify your email address.</span><span class="lang-si">ඔබගේ email
-                                    ලිපිනය verify කරන්න.</span></li>
-                            <li><span class="lang-en">Choose an account name and password.</span><span
-                                    class="lang-si">Account name සහ password එකක් තෝරන්න.</span></li>
-                            <li><span class="lang-en">Log out of your main account and log in with the new
-                                    one.</span><span class="lang-si">ප්‍රධාන ගිණුමෙන් log out වී අලුත් එකෙන් log in
-                                    වන්න.</span></li>
-                        </ol>
-                    </div>
-
-                    <!-- Sub-section 1.3: Turn off Real-time Protection -->
-                    <div>
-                        <h3 class="text-xl font-semibold"><span class="lang-en">Temporarily Disable Real-Time
-                                Protection</span><span class="lang-si">තාවකාලිකව Real-Time Protection Disable
-                                කරන්න</span></h3>
-                        <p class="mt-2 text-white/80">
-                            <span class="lang-en">We need to do this to make sure Windows Defender doesn't accidentally
-                                delete any files. This is temporary and will turn back on automatically.</span>
-                            <span class="lang-si">Windows Defender මගින් කිසිදු file එකක් delete නොවන බවට වග බලා ගැනීමට
-                                අප මෙය කළ යුතුය. මෙය තාවකාලික වන අතර ස්වයංක්‍රීයව නැවත ක්‍රියාත්මක වේ.</span>
-                        </p>
-
-                        <div class="mt-4 rounded-2xl glass p-6">
-                            <h4 class="font-bold">For Windows 11</h4>
-                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <img src="{% static 'images/win11-step1.png' %}" alt="Windows 11 Security Settings"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
-                                <img src="{% static 'images/win11-step2.png' %}"
-                                    alt="Virus & threat protection settings"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
-                                <img src="{% static 'images/win11-step3.png' %}" alt="Real-time protection toggle off"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">Phone
+                                        number</span><span class="lang-si">දුරකථනය</span></label>
+                                <input id="phone" name="phone" type="tel"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="07X-XXXXXXX" />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">Address line
+                                        1</span><span class="lang-si">ලිපිනය 1</span></label>
+                                <input id="addr1" name="address_line1" type="text"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="123 High St" />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">Address line
+                                        2</span><span class="lang-si">ලිපිනය 2</span></label>
+                                <input id="addr2" name="address_line2" type="text"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="Apartment, suite, etc." />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">City</span><span
+                                        class="lang-si">නගරය</span></label>
+                                <input id="city" name="city" type="text"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="Colombo" />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-white/70 mb-1"><span class="lang-en">Postal
+                                        code</span><span class="lang-si">අංකය</span></label>
+                                <input id="postal" name="postal_code" type="text"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10" disabled
+                                    placeholder="00100" />
                             </div>
                         </div>
 
-                        <div class="mt-4 rounded-2xl glass p-6">
-                            <h4 class="font-bold">For Windows 10</h4>
-                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <img src="{% static 'images/win10-step1.png' %}" alt="Windows 10 Security Settings"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
-                                <img src="{% static 'images/win10-step2.png' %}"
-                                    alt="Virus & threat protection settings"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
-                                <img src="{% static 'images/win10-step3.png' %}" alt="Real-time protection toggle off"
-                                    class="aspect-square w-full h-auto object-cover rounded-lg bg-white/5" />
+                        <p id="saveNote" class="hidden mt-4 text-xs text-white/60"><span class="lang-en">We’ll save
+                                changes to your account.</span><span class="lang-si">වෙනස්කම් ඔබගේ ගිණුමට
+                                සුරකිමු.</span></p>
+                    </form>
+
+                    <!-- START: Steam Account Info -->
+                    <div id="steamSection" class="glass rounded-2xl p-5 transition-opacity duration-300">
+                        <h2 class="text-lg font-bold"><span class="lang-en">Create a New Steam Account</span><span
+                                class="lang-si">නව Steam ගිණුමක් සාදන්න</span></h2>
+                        <p class="text-sm text-white/70 mt-1"><span class="lang-en">Save your Steam username and email
+                                so you don't forget them. This is required for game support.</span><span
+                                class="lang-si">ඔබගේ Steam පරිශීලක නාමය සහ විද්‍යුත් තැපෑල සුරකින්න, එවිට ඔබට ඒවා අමතක
+                                නොවේ. ක්‍රීඩා සහාය සඳහා මෙය අවශ්‍ය වේ.</span></p>
+
+                        <!-- Display state (when data exists) -->
+                        <div id="steamDisplay" class="hidden mt-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60 mb-1">Steam Username</div>
+                                    <div id="steamUsernameDisp" class="text-sm truncate"></div>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-xs text-white/60 mb-1">Steam Email</div>
+                                    <div id="steamEmailDisp" class="text-sm truncate"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form state (when data does not exist) -->
+                        <form id="steamForm" class="hidden mt-4">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="steam_username" class="block text-sm text-white/70 mb-1">Steam
+                                        Username</label>
+                                    <input id="steam_username" name="steam_username" type="text"
+                                        class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                        required placeholder="YourSteamUsername">
+                                </div>
+                                <div>
+                                    <label for="steam_email" class="block text-sm text-white/70 mb-1">Steam
+                                        Email</label>
+                                    <input id="steam_email" name="steam_email" type="email"
+                                        class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400"
+                                        required placeholder="steam@example.com">
+                                </div>
+                            </div>
+                            <button id="steamSubmitBtn" type="submit"
+                                class="shine mt-4 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="lang-en">Submit Details</span>
+                                <span class="lang-si">විස්තර ඉදිරිපත් කරන්න</span>
+                            </button>
+                        </form>
+                    </div>
+                    <!-- END: Steam Account Info -->
+
+
+                    <!-- Security -->
+                    <div class="glass rounded-2xl p-5">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold"><span class="lang-en">Security</span><span
+                                    class="lang-si">ආරක්ෂාව</span></h2>
+                            <a href="#"
+                                class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold"><span
+                                    class="lang-en">Update password</span><span class="lang-si">මුරපදය
+                                    යාවත්කාල</span></a>
+                        </div>
+                        <div class="mt-3 grid sm:grid-cols-2 gap-4">
+                            <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60 mb-1">Email</div>
+                                <div id="secEmail" class="text-sm skeleton h-4 w-40"></div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                                <div class="text-xs text-white/60 mb-1"><span class="lang-en">Password</span><span
+                                        class="lang-si">මුරපදය</span></div>
+                                <div class="text-sm">••••••••</div>
                             </div>
                         </div>
                     </div>
-
-                </div>
-            </section>
-
-            <!-- Section 2: Install Steam Tools -->
-            <section id="step2" class="mb-12 transition-opacity duration-300">
-                <div class="flex items-start gap-4">
-                    <div class="step-counter font-black text-6xl">2</div>
-                    <div>
-                        <h2 class="text-2xl font-bold"><span class="lang-en">Install Steam Tools</span><span
-                                class="lang-si">Steam Tools Install කරන්න</span></h2>
-                    </div>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6">
-                        <ol class="space-y-4">
-                            <li><span class="font-bold"><span class="lang-en">Locate the file:</span><span
-                                        class="lang-si">File එක සොයාගන්න:</span></span> <span class="lang-en">Find the
-                                    `SteamTools.exe` file on DVD 1 provided with your order.</span><span
-                                    class="lang-si">ඔබගේ ඇණවුම සමඟ සපයා ඇති DVD 1 හි `SteamTools.exe` file එක සොයා
-                                    ගන්න.</span></li>
-                            <li><span class="font-bold"><span class="lang-en">Run Setup:</span><span class="lang-si">Run
-                                        කරන්න:</span></span> <span class="lang-en">Double-click on `SteamTools.exe` to
-                                    run it. Follow the on-screen instructions.</span><span
-                                    class="lang-si">`SteamTools.exe` මත double-click කර එය run කරන්න. තිරයේ ඇති උපදෙස්
-                                    අනුගමනය කරන්න.</span></li>
-                        </ol>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 3: Add Patch Files -->
-            <section id="step3" class="mb-12 transition-opacity duration-300">
-                <div class="flex items-start gap-4">
-                    <div class="step-counter font-black text-6xl">3</div>
-                    <div>
-                        <h2 class="text-2xl font-bold"><span class="lang-en">Add Patch Files</span><span
-                                class="lang-si">Patch Files එක් කරන්න</span></h2>
-                    </div>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6">
-                        <ol class="space-y-4">
-                            <li><span class="font-bold lang-en">Open the tool:</span><span
-                                    class="font-bold lang-si">Tool එක open කරන්න:</span> <span class="lang-en">Search
-                                    "steamtools" in the windows search bar and click on it.</span><span
-                                    class="lang-si">Windows search bar එකේ "steamtools" ලෙස search කර එය click
-                                    කරන්න.</span></li>
-                            <li><span class="font-bold lang-en">Locate Patch files:</span><span
-                                    class="font-bold lang-si">Patch files සොයාගන්න:</span> <span class="lang-en">On DVD
-                                    1, find the `Patch` folder.</span><span class="lang-si">DVD 1 හි, `Patch` folder එක
-                                    සොයා ගන්න.</span></li>
-                            <li><span class="font-bold lang-en">Drag and Drop:</span><span
-                                    class="font-bold lang-si">Drag and Drop කරන්න:</span> <span class="lang-en">Select
-                                    all the files inside the `Patch` folder. Drag them and drop them onto the Steam icon
-                                    on your desktop.</span><span class="lang-si">`Patch` ෆෝල්ඩරය තුළ ඇති සියලුම files
-                                    තෝරන්න. ඒවා ඔබේ desktop එකේ ඇති Steam icon එක මතට drag and drop කරන්න.</span></li>
-                        </ol>
-                        <div
-                            class="mt-4 aspect-video bg-white/5 rounded-lg flex items-center justify-center text-sm text-white/50 overflow-hidden">
-                            <img src="{% static 'images/drag-drop-patch.gif' %}"
-                                alt="Dragging patch files to Steam icon" class="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 4: Copy Game Files -->
-            <section id="step4" class="mb-12 transition-opacity duration-300">
-                <div class="flex items-start gap-4">
-                    <div class="step-counter font-black text-6xl">4</div>
-                    <div>
-                        <h2 class="text-2xl font-bold"><span class="lang-en">Copy Game Files</span><span
-                                class="lang-si">Game Files Copy කරන්න</span></h2>
-                    </div>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6">
-                        <ol class="space-y-4">
-                            <li><span class="font-bold lang-en">Open DVDs:</span><span class="font-bold lang-si">DVDs
-                                    open කරන්න:</span> <span class="lang-en">Insert the game DVD(s) from your order. You
-                                    will see a folder with the game's name.</span><span class="lang-si">ඔබේ ඇණවුමෙන්
-                                    ලැබුණු game DVD(s) ඇතුල් කරන්න.</span></li>
-                            <li><span class="font-bold lang-en">Navigate to `common`:</span><span
-                                    class="font-bold lang-si">`common` වෙත යන්න:</span> <span class="lang-en">Go to your
-                                    `steamapps` folder (e.g., `C:\Program Files (x86)\Steam\steamapps`). Inside, open
-                                    the `common` folder.</span><span class="lang-si">ඔබගේ `steamapps` ෆෝල්ඩරය වෙත යන්න
-                                    (උදා: `C:\Program Files (x86)\Steam\steamapps`). එහි ඇති `common` ෆෝල්ඩරය open
-                                    කරන්න.</span></li>
-                            <li><span class="font-bold lang-en">Copy Game Folder:</span><span
-                                    class="font-bold lang-si">Game Folder එක Copy කරන්න:</span> <span
-                                    class="lang-en">Copy the entire game folder from the DVD and paste it inside the
-                                    `common` folder.</span><span class="lang-si">DVD එකෙන් සම්පූර්ණ game ෆෝල්ඩරය copy කර
-                                    `common` ෆෝල්ඩරය තුළ paste කරන්න.</span></li>
-                        </ol>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 5: Enjoy! -->
-            <section id="step5" class="transition-opacity duration-300">
-                <div class="flex items-start gap-4">
-                    <div class="step-counter font-black text-6xl">5</div>
-                    <div>
-                        <h2 class="text-2xl font-bold"><span class="lang-en">Enjoy Your Game!</span><span
-                                class="lang-si">සෙල්ලම් කර විනෝද වන්න!</span></h2>
-                    </div>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6 bg-gradient-to-r from-brand-500/20 to-gold-400/20">
-                        <p class="font-semibold"><span class="lang-en">Restart Steam completely. Once it relaunches, you
-                                will see the game in your library, ready to be launched. If you run into any issues,
-                                please open a support ticket.</span><span class="lang-si">Steam සම්පූර්ණයෙන්ම restart
-                                කරන්න. එය නැවත চালু වූ පසු, ඔබේ library එකේ game එක දකිනු ඇත. කිසියම් ගැටළුවක් ඇති
-                                වුවහොත්, support ticket එකක් open කරන්න.</span></p>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </main>
 
-    <footer class="border-t border-white/10 mt-16">
+    <footer class="border-t border-white/10">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
+
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
+    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
+        <div id="mobileMenuOverlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
+        </div>
+        <div id="mobileMenu"
+            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-8 w-auto object-contain" />
+                    <span class="font-bold text-lg">Menu</span>
+                </div>
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <div
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
+                        {{ user_initial }}</div>
+                    <div class="text-sm text-white/90"><span class="lang-en">Hello</span><span
+                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
+                </a>
+                {% else %}
+                <a href="{% url 'login-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    <span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු වන්න</span></span>
+                </a>
+                {% endif %}
+
+                <hr class="border-white/10 my-4">
+
+                <a href="{% url 'home-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+                </a>
+                <a href="{% url 'shop-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+                </a>
+
+                <a href="{% url 'blog_page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span>
+                </a>
+
+                <a href="{% url 'tickets-page' %}"
+                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+                        </path>
+                    </svg>
+                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+                </a>
+            </nav>
+
+            <div class="p-4 mt-auto border-t border-white/10">
+                <button id="langToggleBtnMobile"
+                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                    </svg>
+                    <span class="lang-en">Switch to සිංහල</span>
+                    <span class="lang-si">Switch to English</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Set current year in footer ---
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // --- Mobile Menu Logic ---
+            const navToggle = document.getElementById('navToggle');
+            const closeNav = document.getElementById('closeNav');
+            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+            const openMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuContainer.classList.remove('pointer-events-none');
+                mobileMenuOverlay.classList.remove('opacity-0');
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            };
+            const closeMenu = () => {
+                if (!mobileMenuContainer) return;
+                mobileMenuOverlay.classList.add('opacity-0');
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
+            };
+
+            navToggle?.addEventListener('click', openMenu);
+            closeNav?.addEventListener('click', closeMenu);
+            mobileMenuOverlay?.addEventListener('click', closeMenu);
+            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
+                    closeMenu();
+                }
+            });
+
+            // --- API and Form Logic ---
+            const API_ME = '/api/me';
+            const API_UPDATE = '/api/me/update';
+
+            // START: Steam section elements
+            const steamSection = document.getElementById('steamSection');
+            const steamDisplay = document.getElementById('steamDisplay');
+            const steamUsernameDisp = document.getElementById('steamUsernameDisp');
+            const steamEmailDisp = document.getElementById('steamEmailDisp');
+            const steamForm = document.getElementById('steamForm');
+            const steamSubmitBtn = document.getElementById('steamSubmitBtn');
+            const steamUsernameInput = document.getElementById('steam_username');
+            const steamEmailInput = document.getElementById('steam_email');
+            // END: Steam section elements
+
+            function getCookie(name) {
+                const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
+                return match ? decodeURIComponent(match[2]) : null;
+            }
+
+            async function fetchJSON(url, opts = {}) {
+                const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+                const merged = { credentials: 'same-origin', ...opts, headers };
+                const res = await fetch(url, merged);
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error((data && (data.detail || data.error)) || `Request failed (${res.status})`);
+                return data;
+            }
+
+            function formatDateSafe(d) {
+                try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
+            }
+
+            function fillDisplay(u) {
+                ['nameDisp', 'emailDisp', 'memberSince', 'secEmail'].forEach(id => document.getElementById(id)?.classList.remove('skeleton'));
+                document.getElementById('nameDisp').textContent = u.name || '—';
+                document.getElementById('emailDisp').textContent = u.email || '—';
+                document.getElementById('secEmail').textContent = u.email || '—';
+                document.getElementById('memberSince').textContent = formatDateSafe(u.member_since) || '—';
+            }
+
+            function fillForm(u) {
+                document.getElementById('name').value = u.name || '';
+                document.getElementById('email').value = u.email || '';
+                document.getElementById('phone').value = u.phone || '';
+                document.getElementById('addr1').value = u.address_line1 || '';
+                document.getElementById('addr2').value = u.address_line2 || '';
+                document.getElementById('city').value = u.city || '';
+                document.getElementById('postal').value = u.postal_code || '';
+            }
+
+            function setEditing(enabled) {
+                ['name', 'email', 'phone', 'addr1', 'addr2', 'city', 'postal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.disabled = !enabled;
+                    el.classList.toggle('focus:outline-none', enabled);
+                    el.classList.toggle('focus:border-brand-400', enabled);
+                });
+                document.getElementById('editBtn').classList.toggle('hidden', enabled);
+                document.getElementById('saveBtn').classList.toggle('hidden', !enabled);
+                document.getElementById('cancelBtn').classList.toggle('hidden', !enabled);
+                document.getElementById('saveNote').classList.toggle('hidden', !enabled);
+            }
+
+            // START: New function to update the Steam section UI
+            function updateSteamSection(user) {
+                if (user && user.steam_username && user.steam_email) {
+                    // User is logged in and has Steam details -> Show display, fade section
+                    steamUsernameDisp.textContent = user.steam_username;
+                    steamEmailDisp.textContent = user.steam_email;
+                    steamDisplay.classList.remove('hidden');
+                    steamForm.classList.add('hidden');
+                    steamSection.classList.add('opacity-50');
+                } else if (user) {
+                    // User is logged in but no Steam details -> Show form
+                    steamDisplay.classList.add('hidden');
+                    steamForm.classList.remove('hidden');
+                    steamSection.classList.remove('opacity-50');
+                    steamSubmitBtn.disabled = false;
+                    steamSubmitBtn.querySelector('.lang-en').textContent = 'Submit Details';
+                    steamSubmitBtn.querySelector('.lang-si').textContent = 'විස්තර ඉදිරිපත් කරන්න';
+                    steamUsernameInput.disabled = false;
+                    steamEmailInput.disabled = false;
+                } else {
+                    // User is not logged in -> Show form but disable it
+                    steamDisplay.classList.add('hidden');
+                    steamForm.classList.remove('hidden');
+                    steamSection.classList.remove('opacity-50');
+                    steamSubmitBtn.disabled = true;
+                    steamSubmitBtn.querySelector('.lang-en').textContent = 'Please log in first';
+                    steamSubmitBtn.querySelector('.lang-si').textContent = 'කරුණාකර පළමුව ලොග් වන්න';
+                    steamUsernameInput.disabled = true;
+                    steamEmailInput.disabled = true;
+                }
+            }
+            // END: New function
+
+            async function loadProfile() {
+                try {
+                    const data = await fetchJSON(API_ME);
+                    fillDisplay(data);
+                    fillForm(data);
+                    updateSteamSection(data); // <-- UPDATE: Call the new function
+                    setEditing(false);
+                    return data;
+                } catch (err) {
+                    showToast('Please log in to view your profile.', 'error');
+                    updateSteamSection(null); // <-- UPDATE: Handle logged-out state
+                    // No need to throw error, just show disabled state
+                }
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bg = type === 'success' ? 'bg-emerald-500/90' : 'bg-red-500/90';
+                toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl ${bg} text-white font-semibold text-sm z-[70] shadow-xl transform transition-all`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2200);
+            }
+
+            document.getElementById('editBtn').addEventListener('click', () => setEditing(true));
+            document.getElementById('cancelBtn').addEventListener('click', async () => { const u = await loadProfile(); fillForm(u); setEditing(false); });
+
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const body = Object.fromEntries(new FormData(e.target).entries());
+                try {
+                    const updated = await fetchJSON(API_UPDATE, { method: 'PATCH', headers: { 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify(body) });
+                    fillDisplay(updated);
+                    fillForm(updated);
+                    setEditing(false);
+                    showToast('Profile updated');
+                } catch (err) {
+                    showToast(err.message || 'Update failed', 'error');
+                }
+            });
+
+            // START: New event listener for the Steam form
+            steamForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const body = {
+                    steam_username: steamUsernameInput.value,
+                    steam_email: steamEmailInput.value,
+                };
+
+                if (!body.steam_username || !body.steam_email) {
+                    showToast('Please fill out both Steam fields.', 'error');
+                    return;
+                }
+
+                try {
+                    const updated = await fetchJSON(API_UPDATE, {
+                        method: 'PATCH',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        body: JSON.stringify(body)
+                    });
+                    updateSteamSection(updated); // Update the section to show the new data
+                    showToast('Steam details saved successfully');
+                } catch (err) {
+                    showToast(err.message || 'Failed to save Steam details', 'error');
+                }
+            });
+            // END: New event listener
+
             // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
+            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
             const body = document.body;
+            const metaDescription = document.querySelector('meta[name="description"]');
 
             const setLanguage = (lang) => {
                 const isSi = lang === 'si';
                 body.classList.toggle('sinhala-mode', isSi);
+                body.classList.toggle('font-sinhala', isSi);
                 if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
+
+                document.title = isSi ? 'මගේ පැතිකඩ — Virtual Lab Games' : 'My Profile — Virtual Lab Games';
+                const newDesc = isSi
+                    ? 'ඔබගේ ගිණුම් විස්තර බලන්න හා යාවත්කාල කරන්න. කරත්තය හෝ ඇණවුම් වෙත ඉක්මණින් යන්න.'
+                    : 'View and update your account details. Quickly jump to your cart or orders.';
+                metaDescription?.setAttribute('content', newDesc);
                 localStorage.setItem('language', lang);
             };
 
             const toggleLanguage = () => {
-                const currentLang = localStorage.getItem('language') || 'en';
-                setLanguage(currentLang === 'en' ? 'si' : 'en');
+                const newLang = (localStorage.getItem('language') || 'en') === 'en' ? 'si' : 'en';
+                setLanguage(newLang);
             };
 
             langToggleBtn?.addEventListener('click', toggleLanguage);
+            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
+
             setLanguage(localStorage.getItem('language') || 'en');
-
-            // --- Installation type toggle logic ---
-            const installToggle = document.getElementById('installToggle');
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-
-            const updateStepsVisibility = (isPreviouslyInstalled) => {
-                if (isPreviouslyInstalled) {
-                    step1.classList.add('opacity-40', 'pointer-events-none');
-                    step2.classList.add('opacity-40', 'pointer-events-none');
-                } else {
-                    step1.classList.remove('opacity-40', 'pointer-events-none');
-                    step2.classList.remove('opacity-40', 'pointer-events-none');
-                }
-            };
-
-            installToggle.addEventListener('change', (e) => {
-                updateStepsVisibility(e.target.checked);
-            });
-
-            // Set initial state
-            updateStepsVisibility(installToggle.checked);
-
-            // --- Footer year ---
-            document.getElementById('year').textContent = new Date().getFullYear();
+            loadProfile();
         });
     </script>
 </body>
