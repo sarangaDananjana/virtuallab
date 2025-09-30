@@ -16,6 +16,7 @@ from .models import (
     GameRequest,
     DLC,
     StorageDevice,
+    OfflineGames,
     OrderStorageItem, Blog, BlogPhoto
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -376,6 +377,11 @@ class ReservedSlotAdmin(admin.ModelAdmin):
         ("Reservation", {"fields": ("date", "slot", "notes")}),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
+
+
+@admin.register(OfflineGames)
+class OfflineGamesAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "image", "file")
 
 
 @admin.register(GameRequest)
