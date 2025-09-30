@@ -79,6 +79,15 @@
             pointer-events: none;
         }
 
+        /* CHANGE 1: Header glass effect style */
+        .header-blend {
+            background-color: rgba(16, 16, 20, 0.7);
+            /* Match the .noise bg color with transparency */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         /* Glassmorphism effect for cards */
         .glass {
             background: rgba(255, 255, 255, 0.05);
@@ -99,67 +108,38 @@
             opacity: 0.5;
         }
 
-        /* This targets the checkmark button inside a completed section to make it stand out */
         .section-done>div:first-of-type>button {
             opacity: 1;
-            /* Counteract the parent's opacity */
             background-color: #22c55e;
-            /* A nice, vibrant green (Tailwind's green-500) */
         }
 
         .section-done>div:first-of-type>button svg {
             color: #ffffff;
-            /* Make the checkmark inside white for contrast */
         }
 
-
-        /* GIF container styles */
+        /* CHANGE 2: GIF container styles updated for vertical step-by-step layout */
         .gif-container {
             display: none;
         }
 
         .gif-container.active {
-            display: flex;
-            overflow-x: auto;
-            gap: 1rem;
-            padding-bottom: 1rem;
-            scrollbar-width: thin;
-            scrollbar-color: #5EA1FF #1a1a1a;
+            display: block;
+            /* Changed from flex */
         }
 
-        .gif-container.active::-webkit-scrollbar {
-            height: 8px;
+        /* CHANGE 4: Styles for scrollable game list */
+        .game-list-container::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .gif-container.active::-webkit-scrollbar-track {
+        .game-list-container::-webkit-scrollbar-track {
             background: #1a1a1a;
             border-radius: 4px;
         }
 
-        .gif-container.active::-webkit-scrollbar-thumb {
+        .game-list-container::-webkit-scrollbar-thumb {
             background-color: #5EA1FF;
             border-radius: 4px;
-        }
-
-        .gif-container img {
-            max-width: none;
-            width: 90%;
-            height: auto;
-            border-radius: 0.5rem;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
-
-        @media (min-width: 640px) {
-            .gif-container img {
-                width: 60%;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .gif-container img {
-                width: 45%;
-            }
         }
     </style>
 </head>
@@ -224,8 +204,6 @@
                 </p>
             </div>
 
-            <!-- All sections are now part of a scrolling guide -->
-
             <!-- Step 1: Create Steam Account -->
             <section id="steam-account-section" class="mb-12 transition-opacity duration-500">
                 <div class="flex items-start justify-between gap-4">
@@ -234,9 +212,9 @@
                         <div>
                             <h2 class="text-2xl font-bold"><span class="lang-en">Create a New Steam Account</span><span
                                     class="lang-si">අලුත් Steam Account එකක් හදන්න</span></h2>
-                            <p class="text-white/70 mt-1"><span class="lang-en">Create a new account and enter the
-                                    details below.</span><span class="lang-si">අලුත් ගිණුමක් සාදා විස්තර පහතින් ඇතුලත්
-                                    කරන්න.</span></p>
+                            <p class="text-white/70 mt-1"><span class="lang-en">Create a new account or view your saved
+                                    details.</span><span class="lang-si">අලුත් ගිණුමක් සාදන්න හෝ ඔබගේ විස්තර
+                                    බලන්න.</span></p>
                         </div>
                     </div>
                     <button onclick="markSectionAsDone(this)"
@@ -249,31 +227,58 @@
                         </svg>
                     </button>
                 </div>
+                <!-- CHANGE 3: Conditional container for Steam details -->
                 <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <form id="steamAccountForm" class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">First, go to <a
-                                    href="https://store.steampowered.com/join/" target="_blank"
-                                    class="text-gold-400 hover:underline">store.steampowered.com/join/</a> and create a
-                                new Steam Account. Enter the E-mail and Username you used for that here. Save your
-                                password in the web browser or remember it well.</span><span class="lang-si">මුලින්ම <a
-                                    href="https://store.steampowered.com/join/" target="_blank"
-                                    class="text-gold-400 hover:underline">https://store.steampowered.com/join/</a> වෙත
-                                ගොස් අලුත් Steam ගිණුමක් සාදන්න. ඒ සඳහා භාවිත කල E-mail සහ Username එක මෙහි ඇතුලත්
-                                කරන්න. ඔබගේ මුරපදය වෙබ් බ්‍රවුසරයේ සේව් කරන්න හෝ හොඳින් මතක තබා ගන්න.</span></p>
-                        <input type="email" id="steam_email" placeholder="Steam E-mail"
-                            class="w-full mt-4 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
-                            disabled>
-                        <input type="text" id="steam_username" placeholder="Steam Username"
-                            class="w-full mt-2 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
-                            disabled>
-                        <div id="steam-form-action-container" class="mt-4">
-                            <button id="submitSteamDetailsBtn" type="submit"
-                                class="w-full p-3 rounded-lg bg-gold-500 text-white font-bold hover:bg-gold-600 transition-all shadow-lg hover:shadow-xl">
-                                <span class="lang-en">Submit Details</span>
-                                <span class="lang-si">විස්තර ඉදිරිපත් කරන්න</span>
-                            </button>
+                    <!-- This block is shown if user HAS details -->
+                    <div id="steam-details-display" class="hidden rounded-2xl glass p-6">
+                        <h3 class="text-lg font-semibold text-gold-400"><span class="lang-en">Your Steam Account
+                                Details</span><span class="lang-si">ඔබගේ Steam ගිණුමේ විස්තර</span></h3>
+                        <div class="mt-4 space-y-2 text-white/90">
+                            <div>
+                                <span class="font-semibold lang-en">Email:</span><span
+                                    class="font-semibold lang-si">ඊමේල්:</span>
+                                <span id="display_steam_email" class="ml-2 bg-white/10 px-3 py-1 rounded"></span>
+                            </div>
+                            <div>
+                                <span class="font-semibold lang-en">Username:</span><span
+                                    class="font-semibold lang-si">පරිශීලක නාමය:</span>
+                                <span id="display_steam_username" class="ml-2 bg-white/10 px-3 py-1 rounded"></span>
+                            </div>
                         </div>
-                    </form>
+                        <p class="mt-4 text-sm text-white/60"><span class="lang-en">No changes needed. You can proceed
+                                to the next step.</span><span class="lang-si">වෙනස්කම් අවශ්‍ය නොවේ. ඔබට ඊළඟ පියවරට යා
+                                හැක.</span></p>
+                    </div>
+
+                    <!-- This block is shown if user DOES NOT have details -->
+                    <div id="steam-details-form-container">
+                        <form id="steamAccountForm" class="rounded-2xl glass p-6">
+                            <p class="text-white/80"><span class="lang-en">First, go to <a
+                                        href="https://store.steampowered.com/join/" target="_blank"
+                                        class="text-gold-400 hover:underline">store.steampowered.com/join/</a> and
+                                    create a
+                                    new Steam Account. Enter the E-mail and Username you used for that here. Save your
+                                    password in the web browser or remember it well.</span><span class="lang-si">මුලින්ම
+                                    <a href="https://store.steampowered.com/join/" target="_blank"
+                                        class="text-gold-400 hover:underline">https://store.steampowered.com/join/</a>
+                                    වෙත
+                                    ගොස් අලුත් Steam ගිණුමක් සාදන්න. ඒ සඳහා භාවිත කල E-mail සහ Username එක මෙහි ඇතුලත්
+                                    කරන්න. ඔබගේ මුරපදය වෙබ් බ්‍රවුසරයේ සේව් කරන්න හෝ හොඳින් මතක තබා ගන්න.</span></p>
+                            <input type="email" id="steam_email" placeholder="Steam E-mail"
+                                class="w-full mt-4 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
+                                disabled>
+                            <input type="text" id="steam_username" placeholder="Steam Username"
+                                class="w-full mt-2 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
+                                disabled>
+                            <div id="steam-form-action-container" class="mt-4">
+                                <button id="submitSteamDetailsBtn" type="submit"
+                                    class="w-full p-3 rounded-lg bg-gold-500 text-white font-bold hover:bg-gold-600 transition-all shadow-lg hover:shadow-xl">
+                                    <span class="lang-en">Submit Details</span>
+                                    <span class="lang-si">විස්තර ඉදිරිපත් කරන්න</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -362,18 +367,85 @@
                                 class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
                                 onclick="showGifs('win11', event)">Windows 11</button>
                         </div>
-                        <div id="win10-gifs" class="gif-container active mt-4"><img
-                                src="{% static 'images/support/win10/1.gif' %}" alt="Windows 10 Step 1"><img
-                                src="{% static 'images/support/win10/2.gif' %}" alt="Windows 10 Step 2"><img
-                                src="{% static 'images/support/win10/3.gif' %}" alt="Windows 10 Step 3"><img
-                                src="{% static 'images/support/win10/4.gif' %}" alt="Windows 10 Step 4"><img
-                                src="{% static 'images/support/win10/5.gif' %}" alt="Windows 10 Step 5"></div>
-                        <div id="win11-gifs" class="gif-container mt-4"><img src="{% static 'images/win11_1.gif' %}"
-                                alt="Windows 11 Step 1"><img src="{% static 'images/win11_2.gif' %}"
-                                alt="Windows 11 Step 2"><img src="{% static 'images/win11_3.gif' %}"
-                                alt="Windows 11 Step 3"><img src="{% static 'images/win11_4.gif' %}"
-                                alt="Windows 11 Step 4"><img src="{% static 'images/win11_5.gif' %}"
-                                alt="Windows 11 Step 5"></div>
+                        <!-- CHANGE 2: Updated GIF containers for step-by-step guide -->
+                        <div id="win10-gifs" class="gif-container active mt-6">
+                            <div class="space-y-8">
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">1</span>
+                                        <span>Open Windows Security</span></p>
+                                    <img src="{% static 'images/support/win10/1.gif' %}" alt="Windows 10 Step 1"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">2</span>
+                                        <span>Go to Virus & threat protection</span></p>
+                                    <img src="{% static 'images/support/win10/2.gif' %}" alt="Windows 10 Step 2"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">3</span>
+                                        <span>Click Manage settings</span></p>
+                                    <img src="{% static 'images/support/win10/3.gif' %}" alt="Windows 10 Step 3"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">4</span>
+                                        <span>Turn off Real-time protection</span></p>
+                                    <img src="{% static 'images/support/win10/4.gif' %}" alt="Windows 10 Step 4"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">5</span>
+                                        <span>Confirm the action</span></p>
+                                    <img src="{% static 'images/support/win10/5.gif' %}" alt="Windows 10 Step 5"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="win11-gifs" class="gif-container mt-6">
+                            <div class="space-y-8">
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">1</span>
+                                        <span>Open Windows Security</span></p>
+                                    <img src="{% static 'images/win11_1.gif' %}" alt="Windows 11 Step 1"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">2</span>
+                                        <span>Go to Virus & threat protection</span></p>
+                                    <img src="{% static 'images/win11_2.gif' %}" alt="Windows 11 Step 2"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">3</span>
+                                        <span>Click Manage settings</span></p>
+                                    <img src="{% static 'images/win11_3.gif' %}" alt="Windows 11 Step 3"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">4</span>
+                                        <span>Turn off Real-time protection</span></p>
+                                    <img src="{% static 'images/win11_4.gif' %}" alt="Windows 11 Step 4"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                                <div>
+                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
+                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">5</span>
+                                        <span>Confirm the action</span></p>
+                                    <img src="{% static 'images/win11_5.gif' %}" alt="Windows 11 Step 5"
+                                        class="w-full rounded-lg border border-white/10">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="rounded-2xl glass p-6">
                         <p class="text-white/80"><span class="lang-en">If you have installed another anti-virus software
@@ -488,7 +560,10 @@
                         <h3 class="text-lg font-semibold"><span class="lang-en">Which computer game do you want to
                                 install?</span><span class="lang-si">ඔබ ඉන්ස්ටෝල් කිරීමට අවශ්‍ය පරිඝණක ක්‍රීඩාව මෙතනින්
                                 කුමක්ද?</span></h3>
-                        <div id="game-list" class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                        <!-- CHANGE 4: Added scrollable container for game list -->
+                        <div class="game-list-container max-h-[32rem] overflow-y-auto pr-2 mt-4">
+                            <div id="game-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                        </div>
                         <div id="download-button-container" class="mt-6"></div>
                     </div>
                     <div class="rounded-2xl glass p-6">
@@ -618,6 +693,12 @@
             const steamFormActionContainer = document.getElementById('steam-form-action-container');
             const submitSteamDetailsBtn = document.getElementById('submitSteamDetailsBtn');
 
+            // CHANGE 3: New element references for conditional display
+            const steamDetailsDisplay = document.getElementById('steam-details-display');
+            const steamDetailsFormContainer = document.getElementById('steam-details-form-container');
+            const displaySteamEmail = document.getElementById('display_steam_email');
+            const displaySteamUsername = document.getElementById('display_steam_username');
+
             function getCookie(name) {
                 const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
                 return match ? decodeURIComponent(match[2]) : null;
@@ -635,25 +716,32 @@
                 return data;
             }
 
+            // CHANGE 3: Updated function to handle conditional visibility
             async function loadAndSetupSteamSection() {
                 try {
                     const user = await fetchJSON('/api/me');
                     if (user.steam_username && user.steam_email) {
-                        steamUsernameInput.value = user.steam_username;
-                        steamEmailInput.value = user.steam_email;
-                        steamUsernameInput.disabled = true;
-                        steamEmailInput.disabled = true;
+                        // User has details, show the display block
+                        displaySteamEmail.textContent = user.steam_email;
+                        displaySteamUsername.textContent = user.steam_username;
+                        steamDetailsDisplay.classList.remove('hidden');
+                        steamDetailsFormContainer.style.display = 'none';
                         steamAccountSection.classList.add('section-done');
-                        if (submitSteamDetailsBtn) submitSteamDetailsBtn.style.display = 'none';
                     } else {
+                        // User does not have details, show the form
+                        steamDetailsDisplay.classList.add('hidden');
+                        steamDetailsFormContainer.style.display = 'block';
                         steamUsernameInput.disabled = false;
                         steamEmailInput.disabled = false;
                     }
                 } catch (error) {
+                    // Not logged in, show the form (but disabled) and a login message
+                    steamDetailsDisplay.classList.add('hidden');
+                    steamDetailsFormContainer.style.display = 'block';
                     steamFormActionContainer.innerHTML = `
                         <div class="w-full text-center p-3 rounded-lg bg-white/10 text-white/70 font-semibold">
                             <span class="lang-en">Please <a href="/login" class="font-bold text-gold-400 hover:underline">log in</a> to save your details.</span>
-                            <span class="lang-si">කරුණාකර మీ వివరాలను సేవ్ చేయడానికి <a href="/login" class="font-bold text-gold-400 hover:underline">లాగిన్ అవ్వండి</a>.</span>
+                            <span class="lang-si">කරුණාකර ඔබගේ විස්තර සුරැකීමට <a href="/login" class="font-bold text-gold-400 hover:underline">පිවිසෙන්න</a>.</span>
                         </div>
                     `;
                     steamUsernameInput.disabled = true;
@@ -661,6 +749,7 @@
                 }
             }
 
+            // CHANGE 3: Updated form submission logic
             if (steamAccountForm) {
                 steamAccountForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -672,18 +761,26 @@
                         alert('Please fill in both Steam Username and E-mail fields.');
                         return;
                     }
+                    submitSteamDetailsBtn.disabled = true;
+                    submitSteamDetailsBtn.textContent = 'Saving...';
                     try {
                         await fetchJSON('/api/me/update', {
                             method: 'PATCH',
                             headers: { 'X-CSRFToken': getCookie('csrftoken') },
                             body: JSON.stringify(payload)
                         });
-                        steamUsernameInput.disabled = true;
-                        steamEmailInput.disabled = true;
+
+                        // On success, hide form and show the display block with new data
+                        displaySteamEmail.textContent = payload.steam_email;
+                        displaySteamUsername.textContent = payload.steam_username;
+                        steamDetailsDisplay.classList.remove('hidden');
+                        steamDetailsFormContainer.style.display = 'none';
                         steamAccountSection.classList.add('section-done');
-                        if (submitSteamDetailsBtn) submitSteamDetailsBtn.style.display = 'none';
+
                     } catch (error) {
                         alert('Failed to save details: ' + error.message);
+                        submitSteamDetailsBtn.disabled = false;
+                        submitSteamDetailsBtn.textContent = 'Submit Details';
                     }
                 });
             }
@@ -774,7 +871,6 @@
                         games.forEach(game => {
                             const gameCard = document.createElement('div');
                             gameCard.className = 'game-card p-2 rounded-lg cursor-pointer border-2 border-transparent hover:border-gold-400 transition-all glass';
-                            // The API provides 'image' and 'video' (for the file URL)
                             gameCard.onclick = (event) => selectGame(game.video, game.name, event.currentTarget);
                             gameCard.innerHTML = `
                                 <img src="${game.image || 'https://placehold.co/300x400/101014/FFF?text=No+Image'}" alt="${game.name}" class="w-full h-auto rounded-md object-cover aspect-[3/4]">
@@ -805,7 +901,6 @@
                 }
             }
 
-            // Load the games from the API when the page is ready
             loadGames();
 
 
