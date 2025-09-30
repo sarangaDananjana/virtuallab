@@ -177,7 +177,7 @@
                 </div>
 
                 <!-- Filters/Search -->
-                <form id="filterForm" class="w-full sm:w-auto" onsubmit="event.preventDefault(); loadGames(1)">
+                <form id="filterForm" class="w-full sm:w-auto">
                     <div class="glass rounded-2xl p-2 flex flex-col sm:flex-row items-center gap-2">
                         <input type="search" id="q" placeholder="Search games..."
                             class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
@@ -502,6 +502,23 @@
             langToggleBtnMobile?.addEventListener('click', toggleLanguage);
 
             setLanguage(localStorage.getItem('language') || 'en');
+
+            // --- ADD THIS NEW SECTION FOR EVENT LISTENERS ---
+            const filterForm = document.getElementById('filterForm');
+            const genreSelect = document.getElementById('genre');
+
+            // Trigger search when the form is submitted (Search button or Enter key)
+            filterForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Stop the page from reloading
+                loadGames(1); // Load the first page of search results
+            });
+
+            // Trigger search immediately when a new genre is selected
+            genreSelect.addEventListener('change', () => {
+                loadGames(1); // Load the first page of results for that genre
+            });
+            // --- END OF NEW SECTION ---
+
 
             // Initial load
             const initialPage = Number(new URLSearchParams(location.search).get('page') || '1');
