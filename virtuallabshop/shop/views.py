@@ -1350,35 +1350,6 @@ def offline_games_list(request):
     return Response(serialized_data)
 
 
-def _serialize_file(file: Files) -> dict:
-    """
-    Helper function to serialize an OfflineGames object into a dictionary.
-    """
-    return {
-        "id": file.id,
-        "name": file.name,
-        # Get the URL of the image, or an empty string if it doesn't exist
-        "image": file.image.url if file.image else "",
-        # Get the URL of the video, or an empty string if it doesn't exist
-        "file": file.file.url if file.file else "",
-    }
-
-
-@api_view(["GET"])
-@renderer_classes([JSONRenderer])
-def files_list(request):
-    """
-    API view to list all offline games.
-
-    This view provides a read-only endpoint that returns a list of all
-    the OfflineGames instances from the database.
-    """
-    all_file = Files.objects.all()
-    # Use a list comprehension to serialize each game object
-    serialized_data = [_serialize_file(file) for file in all_file]
-    return Response(serialized_data)
-
-
 @api_view(["POST"])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
