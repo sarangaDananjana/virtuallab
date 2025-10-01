@@ -227,6 +227,17 @@
                             <div id="storageEmpty" class="space-y-3">
                                 <h3 class="font-semibold"><span class="lang-en">Use a storage device</span><span
                                         class="lang-si">ගබඩා උපාංගයක් භාවිතා කරන්න</span></h3>
+                                <!-- START: ADDED ACTIVATION FEE NOTICE -->
+                                <div id="activationFeeNoticeEmpty"
+                                    class="hidden text-xs text-center text-gold-400 bg-gold-500/10 p-2 rounded-lg">
+                                    <p>
+                                        <strong class="font-semibold"><span class="lang-en">Additional
+                                                Charge</span><span class="lang-si">අමතර ගාස්තුව</span>:</strong>
+                                        <span class="lang-en">Rs 1,500 activation fee.</span><span class="lang-si">රු
+                                            1,500 සක්‍රීය කිරීමේ ගාස්තුව.</span>
+                                    </p>
+                                </div>
+                                <!-- END: ADDED ACTIVATION FEE NOTICE -->
                                 <p id="storageHint" class="text-sm text-white/70"></p>
                                 <a href="{% url 'pick_storage' %}" id="btnChooseStorage"
                                     class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15">
@@ -240,6 +251,17 @@
                                             class="lang-si">ඔබගේ ගබඩා උපාංගය</span></h3>
                                     <span id="storageName" class="text-xs px-2 py-1 rounded-lg bg-white/10"></span>
                                 </div>
+                                <!-- START: ADDED ACTIVATION FEE NOTICE -->
+                                <div id="activationFeeNoticeSelected"
+                                    class="hidden mt-3 text-xs text-center text-gold-400 bg-gold-500/10 p-2 rounded-lg">
+                                    <p>
+                                        <strong class="font-semibold"><span class="lang-en">Additional
+                                                Charge</span><span class="lang-si">අමතර ගාස්තුව</span>:</strong>
+                                        <span class="lang-en">Rs 1,500 activation fee.</span><span class="lang-si">රු
+                                            1,500 සක්‍රීය කිරීමේ ගාස්තුව.</span>
+                                    </p>
+                                </div>
+                                <!-- END: ADDED ACTIVATION FEE NOTICE -->
                                 <div class="mt-3">
                                     <div class="flex items-center justify-between text-xs text-white/70">
                                         <span id="capacityLabel"></span>
@@ -579,6 +601,15 @@
                 if (installationSection && p.is_cracked === false) {
                     installationSection.classList.remove('hidden');
                 }
+
+                // START: MODIFIED SCRIPT TO SHOW ACTIVATION FEE
+                if (p.is_cracked === false) {
+                    const noticeEmpty = document.getElementById('activationFeeNoticeEmpty');
+                    const noticeSelected = document.getElementById('activationFeeNoticeSelected');
+                    if (noticeEmpty) noticeEmpty.classList.remove('hidden');
+                    if (noticeSelected) noticeSelected.classList.remove('hidden');
+                }
+                // END: MODIFIED SCRIPT
 
                 setText('title', p.title);
                 setText('edition', p.edition);
