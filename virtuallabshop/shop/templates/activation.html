@@ -473,7 +473,7 @@
                 errorEl.classList.add('hidden');
 
                 try {
-                    await apiCall("{% url 'api_buy_with_slip' %}", {
+                    await apiCall("{% url 'activation_upload_slip_api' %}", {
                         method: 'POST',
                         body: formData
                     });
