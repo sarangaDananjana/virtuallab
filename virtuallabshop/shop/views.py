@@ -1836,6 +1836,122 @@ def activation_page(request):
     }, template_name="activation.html")
 
 
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_verify_activation_code(request):
+    """
+    Verifies an activation code for the logged-in user.
+
+    Expects JSON body: { "code": "XXXX-XXXX-XXXX-XXXX" }
+
+    - Finds a ticket matching the code with a status of 'PAYMENT_PENDING' or 'COD_PAYMENT_PENDING'.
+    - If not found, returns 404.
+    - If found but belongs to another user, returns 401.
+    - On success, updates the ticket status to 'ACTIVATED' and returns 200.
+    """
+    user = request.user
+    code = request.data.get("code")
+
+    if not code:
+        return Response(
+            {"detail": "Activation code is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        # Find the ticket by code, but only if its status is one of the valid pending types.
+        ticket = ActivationTicket.objects.get(
+            activation_code__iexact=code,
+            status__in=[
+                ActivationTicket.TicketStatus.PAYMENT_PENDING,
+                ActivationTicket.TicketStatus.COD_PAYMENT_PENDING
+            ]
+        )
+    except ActivationTicket.DoesNotExist:
+        # If no ticket matches the code AND the status filter, it's considered not found.
+        return Response(
+            {"detail": "Activation code not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Check if the found ticket belongs to the user making the request.
+    if ticket.user != user:
+        return Response(
+            {"detail": "Unauthorized. This activation code does not belong to you."},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    # If all checks pass, activate the ticket.
+    with transaction.atomic():
+        ticket.status = ActivationTicket.TicketStatus.ACTIVATED
+        ticket.activation_date = timezone.now()
+        ticket.save(update_fields=['status', 'activation_date'])
+
+    return Response(
+        {"detail": "Code activated successfully."},
+        status=status.HTTP_200_OK
+    )
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])  # Important for file uploads
+def activation_upload_slip_api(request):
+    """
+    Creates an ActivationTicket by uploading a payment slip.
+
+    Expects multipart/form-data with:
+    - 'game_id': The ID of the OfflineGames instance being purchased.
+    - 'slip_image': The image file of the payment slip.
+    """
+    user = request.user
+    game_id = request.data.get("game_id")
+    slip_image = request.FILES.get("slip_image")
+
+    if not game_id:
+        return Response(
+            {"detail": "Game ID is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    if not slip_image:
+        return Response(
+            {"detail": "Payment slip image is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Get the OfflineGames instance the user wants to buy
+    offline_game = get_object_or_404(OfflineGames, id=game_id)
+
+    # Create the new ActivationTicket
+    try:
+        with transaction.atomic():
+            ticket = ActivationTicket.objects.create(
+                user=user,
+                offline_game=offline_game,
+                payment_slip=slip_image,
+                status=ActivationTicket.TicketStatus.PAYMENT_PENDING
+            )
+    except Exception as e:
+        # Handle potential database errors
+        return Response(
+            {"detail": f"An error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    return Response(
+        {
+            "detail": "Slip submitted successfully. Please wait for verification.",
+            "ticket": {
+                "id": ticket.id,
+                "status": ticket.status
+            }
+        },
+        status=status.HTTP_201_CREATED
+    )
+
+
 def _excerpt(text: str, n: int = 220) -> str:
     text = (text or "").strip()
     if len(text) <= n:

@@ -748,6 +748,14 @@ class ActivationTicket(TimestampedModel):
         choices=TicketStatus.choices,
         default=TicketStatus.PAYMENT_PENDING
     )
+
+    payment_slip = models.ImageField(
+        upload_to="payment_slips/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text=_("Bank slip uploaded by the user as proof of payment.")
+    )
+
     remaining_attempts = models.PositiveSmallIntegerField(default=2)
     activation_date = models.DateTimeField(null=True, blank=True)
 

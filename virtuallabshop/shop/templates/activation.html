@@ -183,7 +183,7 @@
                         <p class="font-semibold text-sky-400"><span class="lang-en">Payment Verifying</span><span
                                 class="lang-si">ගෙවීම් සත්‍යාපනය</span></p>
                         {% else %}
-                        <p class="font-mono font-bold text-lg">Rs 1500.00</p>
+                        <p class="font-mono font-bold text-lg">Rs 1500</p>
                         {% endif %}
                     </div>
 
@@ -332,7 +332,7 @@
                             <label for="payment_slip" class="block text-sm font-medium mb-2"><span
                                     class="lang-en">Payment Slip (Image)</span><span class="lang-si">ගෙවීම් රිසිට්පත
                                     (රූපය)</span></label>
-                            <input required type="file" id="payment_slip" name="payment_slip"
+                            <input required type="file" id="payment_slip" name="slip_image"
                                 accept="image/png, image/jpeg, image/jpg"
                                 class="w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-500 file:text-white hover:file:bg-brand-600">
                         </div>
@@ -366,7 +366,6 @@
                     method: 'GET',
                     headers: { 'X-CSRFToken': csrftoken },
                 };
-                // If body is FormData, don't set Content-Type, browser will do it
                 if (!(options.body instanceof FormData)) {
                     defaultOptions.headers['Content-Type'] = 'application/json';
                 }
@@ -374,8 +373,7 @@
                 const res = await fetch(url, { ...defaultOptions, ...options });
                 if (!res.ok) {
                     const err = await res.json().catch(() => ({ detail: `Request failed with status ${res.status}` }));
-                    // Use a more specific error for unauthorized
-                    if (res.status === 401) throw new Error("Unauthorized or invalid code.");
+                    if (res.status === 401) throw new Error("Unauthorized. This activation code does not belong to you.");
                     if (res.status === 404) throw new Error("The activation code was not found.");
                     throw new Error(err.detail || 'An unknown error occurred');
                 }
@@ -384,45 +382,18 @@
             }
 
             // --- Modal Management ---
-            const modals = {
-                cod: document.getElementById('codModal'),
-                paymentInfo: document.getElementById('paymentInfoModal'),
-                buyNow: document.getElementById('buyNowModal'),
-            };
-
-            function openModal(modalId) {
-                if (modals[modalId]) {
-                    modals[modalId].classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-
-            function closeModal(modalId) {
-                if (modals[modalId]) {
-                    modals[modalId].classList.add('hidden');
-                    document.body.style.overflow = '';
-                }
-            }
-
-            // --- Global Event Listeners for Modals ---
-            document.querySelectorAll('.modal-close-btn, .modal-backdrop').forEach(el => {
-                el.addEventListener('click', () => {
-                    Object.keys(modals).forEach(closeModal);
-                });
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape") Object.keys(modals).forEach(closeModal);
-            });
+            const modals = { cod: document.getElementById('codModal'), paymentInfo: document.getElementById('paymentInfoModal'), buyNow: document.getElementById('buyNowModal'), };
+            function openModal(modalId) { if (modals[modalId]) { modals[modalId].classList.remove('hidden'); document.body.style.overflow = 'hidden'; } }
+            function closeModal(modalId) { if (modals[modalId]) { modals[modalId].classList.add('hidden'); document.body.style.overflow = ''; } }
+            document.querySelectorAll('.modal-close-btn, .modal-backdrop').forEach(el => el.addEventListener('click', () => Object.keys(modals).forEach(closeModal)));
+            document.addEventListener('keydown', (e) => { if (e.key === "Escape") Object.keys(modals).forEach(closeModal); });
 
             // --- Main Click Handler ---
             document.body.addEventListener('click', function (e) {
                 const button = e.target.closest('button[data-action]');
                 if (!button) return;
-
                 const action = button.dataset.action;
                 const gameId = button.dataset.gameId;
-
                 switch (action) {
                     case 'show-cod-modal':
                         document.getElementById('cod_game_id').value = gameId;
@@ -452,25 +423,22 @@
             });
 
             // --- Form Submission Handlers ---
-            // COD Form
             const codForm = document.getElementById('codForm');
             codForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const submitBtn = codForm.querySelector('button[type="submit"]');
                 const errorEl = document.getElementById('codError');
                 const successEl = document.getElementById('codSuccess');
-                const formData = new FormData(codForm);
-                const data = Object.fromEntries(formData.entries());
+                const code = document.getElementById('activation_code').value;
 
                 submitBtn.disabled = true;
                 errorEl.classList.add('hidden');
                 successEl.classList.add('hidden');
 
                 try {
-                    // NOTE: Replace '/api/activation/verify-cod' with your actual API endpoint
-                    await apiCall('/api/activation/verify-cod', {
+                    await apiCall("{% url 'api_verify_activation_code' %}", {
                         method: 'POST',
-                        body: JSON.stringify({ game_id: data.game_id, code: data.activation_code })
+                        body: JSON.stringify({ code: code })
                     });
                     successEl.textContent = 'Code successfully confirmed! The page will now reload.';
                     successEl.classList.remove('hidden');
@@ -483,28 +451,32 @@
                 }
             });
 
-            // Buy Now Form (Slip Upload)
             const buyNowForm = document.getElementById('buyNowForm');
             buyNowForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const submitBtn = buyNowForm.querySelector('button[type="submit"]');
                 const errorEl = document.getElementById('buyNowError');
                 const gameId = document.getElementById('buy_now_game_id').value;
+                const slipInput = document.getElementById('payment_slip');
+
+                if (slipInput.files.length === 0) {
+                    errorEl.textContent = 'Please select a payment slip image to upload.';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
 
                 const formData = new FormData();
                 formData.append('game_id', gameId);
-                formData.append('slip_image', document.getElementById('payment_slip').files[0]);
+                formData.append('slip_image', slipInput.files[0]);
 
                 submitBtn.disabled = true;
                 errorEl.classList.add('hidden');
 
                 try {
-                    // NOTE: Replace '/api/activation/buy-with-slip' with your actual API endpoint
-                    await apiCall('/api/activation/buy-with-slip', {
+                    await apiCall("{% url 'api_buy_with_slip' %}", {
                         method: 'POST',
-                        body: formData // Send as FormData for file upload
+                        body: formData
                     });
-                    // On success, you might want to show a success message and reload
                     alert('Slip submitted successfully! We will verify it shortly.');
                     window.location.reload();
                 } catch (err) {
@@ -529,16 +501,6 @@
 
             // --- Initialization ---
             document.getElementById('year').textContent = new Date().getFullYear();
-        });
-
-        // --- Language Toggle Logic ---
-        document.addEventListener('DOMContentLoaded', function () {
-            // ... [The full language toggle JS from cart.html goes here] ...
-        });
-
-        // --- Mobile Menu Logic ---
-        document.addEventListener('DOMContentLoaded', function () {
-            // ... [The full mobile menu JS from cart.html goes here] ...
         });
     </script>
 </body>

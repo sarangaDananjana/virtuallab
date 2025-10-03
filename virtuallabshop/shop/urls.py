@@ -61,6 +61,10 @@ urlpatterns = [
          name="api-orders-finalize"),
     path("api/orders/cod-finalize", views.api_finalize_cod_order_for_user,
          name="api-cod-orders-finalize"),
+    path('api/activation/verify-code/', views.api_verify_activation_code,
+         name='api_verify_activation_code'),
+    path('api/activation/upload-slip/', views.activation_upload_slip_api,
+         name='activation_upload_slip_api'),
     path("api/blog/home/", views.api_blog_home, name="api-blog-home"),
     path("api/blog/<slug:slug>/", views.api_blog_detail, name="api_blog_detail"),
 
