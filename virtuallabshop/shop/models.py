@@ -718,6 +718,7 @@ class ActivationTicket(TimestampedModel):
         PAYMENT_PENDING = "PAYMENT_PENDING", _("Payment Pending")
         COD_PAYMENT_PENDING = "COD_PAYMENT_PENDING", _("COD Payment Pending")
         ACTIVATED = "ACTIVATED", _("Activated")
+        EXPIRED = "EXPIRED", _("Expired")
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

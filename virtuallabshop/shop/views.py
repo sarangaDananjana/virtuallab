@@ -1773,13 +1773,19 @@ def activation_page(request):
     user_initial = name[0].upper() if name else None
 
     # Get all of this user's relevant activation tickets in one query
+    # Get all of this user's NON-EXPIRED activation tickets, ordered by oldest first for each game
     user_tickets = ActivationTicket.objects.filter(
         user=user,
         offline_game__product__is_active=True
-    ).select_related('offline_game')
+    ).exclude(
+        status=ActivationTicket.TicketStatus.EXPIRED
+    ).select_related('offline_game').order_by('offline_game_id', 'created_at')
 
-    # Create a lookup map of {game_id: ticket_object} for fast access
-    user_ticket_map = {t.offline_game_id: t for t in user_tickets}
+    # Create a lookup map that only keeps the FIRST (oldest) ticket for each game
+    user_ticket_map = {}
+    for t in user_tickets:
+        if t.offline_game_id not in user_ticket_map:
+            user_ticket_map[t.offline_game_id] = t
 
     # Get all active offline games
     all_games = OfflineGames.objects.filter(
