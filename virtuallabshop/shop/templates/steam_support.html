@@ -1,14 +1,13 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 
 <head>
-    <meta charset="utf-t" />
+    {% load static %}
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Support Guide — Virtual Lab Games</title>
-    <meta name="description" content="A step-by-step guide to installing your patched games using Steam Tools." />
+    <title>Game Activation — Virtual Lab Games</title>
+    <meta name="description" content="Activate your purchased offline games and manage your activation attempts." />
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -16,32 +15,34 @@
                 extend: {
                     colors: {
                         brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
-                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' },
-                        danger: { 500: '#EF4444' }
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
                         'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
                     },
                     keyframes: {
                         float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
                 }
             }
         }
     </script>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
 
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
     <style>
-        /* Language styles */
+        /* Language helpers */
         .lang-si {
             display: none;
         }
@@ -54,103 +55,30 @@
             display: inline;
         }
 
-        /* Gradient text for step counters */
-        .step-counter {
-            background: linear-gradient(to right, #2D86FF, #FCD34D);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Dark background with noise texture */
-        .noise {
-            position: relative;
-            background-color: #101014;
-        }
-
-        .noise::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTt-bCeOMAS80aTVkiWCiVPAQDgr3mezzAte8T2YEoKWNHWoC9GJAomJqZcr齋AccoBxIlEQ9xfDU2KxBCzFGDCCuFAB6YDQC9Bv7R+/uDOd6/vJpe5jOwbfVxE/KaqG9eEzS.png');
-            opacity: 0.05;
-            pointer-events: none;
-        }
-
-        /* CHANGE 1: Header glass effect style */
-        .header-blend {
-            background-color: rgba(16, 16, 20, 0.7);
-            /* Match the .noise bg color with transparency */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Glassmorphism effect for cards */
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Custom radio button styles */
-        .radio-button.selected {
-            background-color: #2D86FF;
-            color: white;
-            border-color: #2D86FF;
-        }
-
-        /* Section done styling */
-        .section-done {
-            opacity: 0.5;
-        }
-
-        .section-done>div:first-of-type>button {
-            opacity: 1;
-            background-color: #22c55e;
-        }
-
-        .section-done>div:first-of-type>button svg {
-            color: #ffffff;
-        }
-
-        /* CHANGE 2: GIF container styles updated for vertical step-by-step layout */
-        .gif-container {
+        .block-lang.lang-si {
             display: none;
         }
 
-        .gif-container.active {
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
             display: block;
-            /* Changed from flex */
         }
 
-        /* CHANGE 4: Styles for scrollable game list */
-        .game-list-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .game-list-container::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 4px;
-        }
-
-        .game-list-container::-webkit-scrollbar-thumb {
-            background-color: #5EA1FF;
-            border-radius: 4px;
+        /* CSS for black and white image effect */
+        .grayscale {
+            filter: grayscale(100%);
         }
     </style>
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- Header -->
     <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo -->
-                <a href="#" class="flex items-center gap-2 sm:gap-3">
+                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
                     <div class="flex flex-col">
@@ -159,765 +87,459 @@
                     </div>
                 </a>
 
-                <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
-                    <a href="#" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                    <a href="{% url 'home-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Home</span><span class="lang-si">මුල් පිටුව</span></a>
-                    <a href="#" class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                    <a href="{% url 'shop-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
+                            class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></a>
+                    <a href="{% url 'blog_page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
-                    <a href="#" class="text-sm font-semibold transition-colors text-gold-400"><span
+                    <a href="{% url 'tickets-page' %}"
+                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
                             class="lang-en">Support</span><span class="lang-si">සහය</span></a>
+                    <a href="{% url 'activation-page' %}"
+                        class="text-sm font-semibold transition-colors text-gold-400"><span
+                            class="lang-en">Activation</span><span class="lang-si">සක්‍රීය කිරීම</span></a>
                 </nav>
 
-                <!-- Action Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
-                    <a href="#"
-                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
-                        aria-label="Shop">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            aria-hidden="true">
+                    <a href="{% url 'cart_page' %}"
+                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
                         </svg>
-                        <span class="hidden sm:inline">
-                            <span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span>
-                        </span>
+                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
+                                class="lang-si">කරත්තය</span></span>
                     </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile-page' %}" aria-label="Account"
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{
+                        user_initial }}</a>
+                    {% else %}
+                    <a href="{% url 'login-page' %}"
+                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
+                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
+                    {% endif %}
+                    <button id="navToggle"
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="py-10 sm:py-14 lg:py-16">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-
-            <div class="text-center mb-12">
-                <h1 class="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
-                    <span class="lang-en">Support Guide</span>
-                    <span class="lang-si">සහය මාර්ගෝපදේශය</span>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div class="mb-6 sm:mb-8 text-center">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black">
+                    <span class="block-lang lang-en">Game Activation Center</span>
+                    <span class="block-lang lang-si">ගේම් සක්‍රීය කිරීමේ මධ්‍යස්ථානය</span>
                 </h1>
-                <p class="mt-2 text-lg text-white/70 max-w-2xl mx-auto">
-                    <span class="lang-en">Follow these steps carefully to set up your game correctly.</span>
-                    <span class="lang-si">ඔබේ game එක නිවැරදිව install කිරීමට මෙම පියවර අනුගමනය කරන්න.</span>
+                <p class="mt-2 max-w-2xl mx-auto text-white/70">
+                    <span class="lang-en">Here you can activate your purchased games or buy new ones.</span>
+                    <span class="lang-si">මෙතැනින් ඔබට මිලදී ගත් ගේම් සක්‍රීය කිරීමට හෝ නව ඒවා මිලදී ගැනීමට
+                        හැකිය.</span>
                 </p>
             </div>
 
-            <!-- Step 1: Create Steam Account -->
-            <section id="steam-account-section" class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">1</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Create a New Steam Account</span><span
-                                    class="lang-si">අලුත් Steam Account එකක් හදන්න</span></h2>
-                            <p class="text-white/70 mt-1"><span class="lang-en">Create a new account or view your saved
-                                    details.</span><span class="lang-si">අලුත් ගිණුමක් සාදන්න හෝ ඔබගේ විස්තර
-                                    බලන්න.</span></p>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <!-- CHANGE 3: Conditional container for Steam details -->
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <!-- This block is shown if user HAS details -->
-                    <div id="steam-details-display" class="hidden rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold text-gold-400"><span class="lang-en">Your Steam Account
-                                Details</span><span class="lang-si">ඔබගේ Steam ගිණුමේ විස්තර</span></h3>
-                        <div class="mt-4 space-y-2 text-white/90">
-                            <div>
-                                <span class="font-semibold lang-en">Email:</span><span
-                                    class="font-semibold lang-si">ඊමේල්:</span>
-                                <span id="display_steam_email" class="ml-2 bg-white/10 px-3 py-1 rounded"></span>
-                            </div>
-                            <div>
-                                <span class="font-semibold lang-en">Username:</span><span
-                                    class="font-semibold lang-si">පරිශීලක නාමය:</span>
-                                <span id="display_steam_username" class="ml-2 bg-white/10 px-3 py-1 rounded"></span>
-                            </div>
-                        </div>
-                        <p class="mt-4 text-sm text-white/60"><span class="lang-en">No changes needed. You can proceed
-                                to the next step.</span><span class="lang-si">වෙනස්කම් අවශ්‍ය නොවේ. ඔබට ඊළඟ පියවරට යා
-                                හැක.</span></p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+                {% for game_data in games_with_status %}
+                <div
+                    class="glass rounded-2xl p-4 flex flex-col text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div class="relative mb-3">
+                        <img src="{{ game_data.primary_image|default_if_none:'/static/images/cover-placeholder.jpg' }}"
+                            alt="{{ game_data.product.title }}"
+                            class="w-full aspect-[3/4] object-cover rounded-xl shadow-lg {% if game_data.user_status == 'not_owned' %}grayscale{% endif %}">
+
+                        {% if game_data.user_status == 'owned' %}
+                        <span
+                            class="absolute top-2 right-2 text-xs font-bold bg-emerald-500/80 backdrop-blur-sm text-white px-2 py-1 rounded-full">
+                            {{ game_data.ticket.remaining_attempts }} <span class="lang-en">attempts left</span><span
+                                class="lang-si">වරක් ඉතිරි</span>
+                        </span>
+                        {% endif %}
                     </div>
 
-                    <!-- This block is shown if user DOES NOT have details -->
-                    <div id="steam-details-form-container">
-                        <form id="steamAccountForm" class="rounded-2xl glass p-6">
-                            <p class="text-white/80"><span class="lang-en">First, go to <a
-                                        href="https://store.steampowered.com/join/" target="_blank"
-                                        class="text-gold-400 hover:underline">store.steampowered.com/join/</a> and
-                                    create a
-                                    new Steam Account. Enter the E-mail and Username you used for that here. Save your
-                                    password in the web browser or remember it well.</span><span class="lang-si">මුලින්ම
-                                    <a href="https://store.steampowered.com/join/" target="_blank"
-                                        class="text-gold-400 hover:underline">https://store.steampowered.com/join/</a>
-                                    වෙත
-                                    ගොස් අලුත් Steam ගිණුමක් සාදන්න. ඒ සඳහා භාවිත කල E-mail සහ Username එක මෙහි ඇතුලත්
-                                    කරන්න. ඔබගේ මුරපදය වෙබ් බ්‍රවුසරයේ සේව් කරන්න හෝ හොඳින් මතක තබා ගන්න.</span></p>
-                            <input type="email" id="steam_email" placeholder="Steam E-mail"
-                                class="w-full mt-4 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
-                                disabled>
-                            <input type="text" id="steam_username" placeholder="Steam Username"
-                                class="w-full mt-2 p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-brand-400 focus:border-brand-400 outline-none transition"
-                                disabled>
-                            <div id="steam-form-action-container" class="mt-4">
-                                <button id="submitSteamDetailsBtn" type="submit"
-                                    class="w-full p-3 rounded-lg bg-gold-500 text-white font-bold hover:bg-gold-600 transition-all shadow-lg hover:shadow-xl">
-                                    <span class="lang-en">Submit Details</span>
-                                    <span class="lang-si">විස්තර ඉදිරිපත් කරන්න</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
+                    <h3 class="font-bold text-lg leading-tight">{{ game_data.product.title }}</h3>
 
-            <!-- Step 2: Steam Software -->
-            <section class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">2</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Install Steam Software</span><span
-                                    class="lang-si">Steam මෘදුකාංගය Install කරන්න</span></h2>
-                        </div>
+                    <div class="mt-2 text-sm flex-grow">
+                        {% if game_data.user_status == 'owned' %}
+                        <p class="font-semibold text-emerald-400"><span class="lang-en">Owned</span><span
+                                class="lang-si">හිමිකාරීත්වය</span></p>
+                        {% elif game_data.user_status == 'cod_pending' %}
+                        <p class="font-semibold text-amber-400"><span class="lang-en">Cash on Delivery</span><span
+                                class="lang-si">භාණ්ඩ ලැබුණු පසු මුදල්</span></p>
+                        {% elif game_data.user_status == 'payment_pending' %}
+                        <p class="font-semibold text-sky-400"><span class="lang-en">Payment Verifying</span><span
+                                class="lang-si">ගෙවීම් සත්‍යාපනය</span></p>
+                        {% else %}
+                        <p class="font-mono font-bold text-lg">Rs 1500.00</p> {# Or use a custom text field from your
+                        model #}
+                        {% endif %}
                     </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold"><span class="lang-en">Do you have Steam Software on your
-                                computer?</span><span class="lang-si">ඔබගේ පරිගණකයේ Steam Software එක තිබේද?</span></h3>
-                        <div class="flex mt-4 gap-2">
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'steam-yes')"><span class="lang-en">Yes</span><span
-                                    class="lang-si">ඔව්</span></button>
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'steam-no')"><span class="lang-en">No</span><span
-                                    class="lang-si">නැත</span></button>
-                        </div>
-                        <p id="steam-yes" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">Log in with the username and password of the newly created Steam
-                                account.</span><span class="lang-si">ඔබ අලුතෙන් සෑදූ ස්ටීම් එකවුන්ට් එකෙ Username
-                                Password ඇතුලත් කර ලොග් වෙන්න.</span></p>
-                        <p id="steam-no" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">If not, go to <a href="https://store.steampowered.com/about/"
-                                    target="_blank" class="text-gold-400 hover:underline">this link</a> to download and
-                                log in with the username and password of the newly created Steam account.</span><span
-                                class="lang-si">නැති නම් <a href="https://store.steampowered.com/about/" target="_blank"
-                                    class="text-gold-400 hover:underline">මේ ලින්ක් එකෙන්</a> ගොස් ඩවුන්ලෝඩ් කර ඔබ
-                                අලුතෙන් සෑදූ ස්ටීම් එකවුන්ට් එකෙ Username, Password ඇතුලත් කර ලොග් වෙන්න.</span></p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Step 3: Disable Anti-Virus -->
-            <section class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">3</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Disable Anti-Virus</span><span
-                                    class="lang-si">Anti-Virus අක්‍රීය කරන්න</span></h2>
-                            <p class="text-white/70 mt-1"><span class="lang-en">Temporarily disable your Anti-Virus to
-                                    prevent file conflicts.</span><span class="lang-si">ගොනු ගැටුම් වැලැක්වීමට ඔබගේ
-                                    Anti-Virus තාවකාලිකව අක්‍රීය කරන්න.</span></p>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
-                    <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold"><span class="lang-en">To disable Windows Defender, select your
-                                computer's Windows version.</span><span class="lang-si">Windows Defender එක disable
-                                කිරීම සදහා ඔබගේ පරිගණකය වින්ඩෝස් එක තෝරන්න.</span></h3>
-                        <div class="flex mt-4 gap-2">
-                            <button
-                                class="radio-button selected flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="showGifs('win10', event)">Windows 10</button>
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="showGifs('win11', event)">Windows 11</button>
-                        </div>
-                        <!-- CHANGE 2: Updated GIF containers for step-by-step guide -->
-                        <div id="win10-gifs" class="gif-container active mt-6">
-                            <div class="space-y-8">
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">1</span>
-                                        <span>Open Windows Settings</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win10/1.gif' %}" alt="Windows 10 Step 1"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">2</span>
-                                        <span>Go to Update and Security</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win10/2.gif' %}" alt="Windows 10 Step 2"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">3</span>
-                                        <span>Click Windows Security THEN Open Windows Security</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win10/3.gif' %}" alt="Windows 10 Step 3"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">4</span>
-                                        <span>Click Manage settings</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win10/4.gif' %}" alt="Windows 10 Step 4"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">5</span>
-                                        <span>Turn off Real-time protection AND Confirm the action</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win10/5.gif' %}" alt="Windows 10 Step 5"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="win11-gifs" class="gif-container mt-6">
-                            <div class="space-y-8">
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">1</span>
-                                        <span>Open Windows Security</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win11/1.gif' %}" alt="Windows 11 Step 1"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">2</span>
-                                        <span>Go to Virus & threat protection</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win11/2.gif' %}" alt="Windows 11 Step 2"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">3</span>
-                                        <span>Click Manage settings</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win11/3.gif' %}" alt="Windows 11 Step 3"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">4</span>
-                                        <span>Turn off Real-time protection</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win11/4.gif' %}" alt="Windows 11 Step 4"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                                <div>
-                                    <p class="text-lg font-semibold mb-2 flex items-center gap-3"><span
-                                            class="flex-shrink-0 w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center font-bold">5</span>
-                                        <span>Confirm the action</span>
-                                    </p>
-                                    <img src="{% static 'images/support/win11/5.gif' %}" alt="Windows 11 Step 5"
-                                        class="w-full rounded-lg border border-white/10">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">If you have installed another anti-virus software
-                                other than Windows Defender (like McAfee or Kaspersky), search on YouTube for "how to
-                                turn off real-time protection in &lt;name of anti-virus software&gt;" and follow the
-                                instructions. Example: "how to turn off real-time protection in McAfee".</span><span
-                                class="lang-si">ඔබ වින්ඩෝස් ඩිෆෙන්ඩර් එකට අමතරව වෙනත් ඇන්ටි වයිරස් මෘදුකාංගයක් (මැකාෆි,
-                                කැස්පර්ස්කී වැනි) ඉන්ස්ටෝල් කර ඇත්නම් යූටියුබ් එකේ "how to turn off real time protection
-                                in &lt;ඇන්ටි වයිරස් මෘදුකාංගයේ නම&gt;" ලෙස සර්ච් කර ඒ අනුව උපදෙස් පිලිපදින්න. උදා: "how
-                                to turn off real time protection in makafee".</span></p>
+                    <div class="mt-4">
+                        {% if game_data.user_status == 'owned' %}
+                        <a href="#"
+                            class="w-full inline-block shine px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">
+                            <span class="lang-en">Proceed</span><span class="lang-si">ඉදිරියට යන්න</span>
+                        </a>
+                        {% elif game_data.user_status == 'cod_pending' %}
+                        <button data-action="show-cod-modal" data-game-id="{{ game_data.game.id }}"
+                            class="w-full shine px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">
+                            <span class="lang-en">Activate</span><span class="lang-si">සක්‍රීය කරන්න</span>
+                        </button>
+                        {% elif game_data.user_status == 'payment_pending' %}
+                        <button data-action="show-payment-info-modal"
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-sky-300 font-semibold transition-all">
+                            <span class="lang-en">See More</span><span class="lang-si">තවත් බලන්න</span>
+                        </button>
+                        {% else %}
+                        <button data-action="show-buy-now-modal" data-game-id="{{ game_data.game.id }}"
+                            class="w-full shine px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">
+                            <span class="lang-en">Buy Now</span><span class="lang-si">දැන් මිලදී ගන්න</span>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
-            </section>
-
-            <!-- Step 4 & 5: Required Software -->
-            <section class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">4</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Install Required Tools</span><span
-                                    class="lang-si">අවශ්‍ය Tools Install කරන්න</span></h2>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80 mb-4"><span class="lang-en">Temporarily stop your Windows updates with
-                                this software (until you finish playing this game).</span><span class="lang-si">මෙම
-                                මෘදුකාංගය මගින් ඔබගේ වින්ඩෝස් අප්ඩේට්ස් තාවකාලිකව නවත්වන්න(ඔබ මේ ගේම් එක ප්ලේ කර අවසන්
-                                වන තුරු).</span> <a href="https://www.virtuallabgames.com/media/files/Wub.zip"
-                                class="text-gold-400 font-semibold hover:underline">[Download Tool]</a></p>
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold"><span class="lang-en">Do you have Steam Tools software on your
-                                computer?</span><span class="lang-si">ඔබේ පරිඝණකයේ Steam Tools මෘදුකාංගය තිබේද?</span>
-                        </h3>
-                        <div class="flex mt-4 gap-2">
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'steam-tools-yes')"><span class="lang-en">Yes</span><span
-                                    class="lang-si">ඔව්</span></button>
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'steam-tools-no')"><span class="lang-en">No</span><span
-                                    class="lang-si">නැත</span></button>
-                        </div>
-                        <p id="steam-tools-yes" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">Great. Please open it for the next step.</span><span
-                                class="lang-si">හොඳයි. කරුණාකර ඊළඟ පියවර සඳහා එය විවෘත කරන්න.</span></p>
-                        <p id="steam-tools-no" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">Download and install the Steam Tools software from here and open
-                                it.</span><span class="lang-si">මෙම Steam Tools මෘදුකාංගය මෙතනින් ඩවුන්ලෝඩ් කර ඉන්ස්ටෝල්
-                                කර එය ඕපන් කරන්න.</span> <a
-                                href="https://www.virtuallabgames.com/media/files/steam_tool.exe"
-                                class="text-gold-400 font-semibold hover:underline">Download Steam Tools</a></p>
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold"><span class="lang-en">Do you have WinRAR software on your
-                                computer?</span><span class="lang-si">ඔබේ පරිඝණකයේ WinRAR මෘදුකාංගය තිබේද?</span></h3>
-                        <div class="flex mt-4 gap-2">
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'winrar-yes')"><span class="lang-en">Yes</span><span
-                                    class="lang-si">ඔව්</span></button>
-                            <button
-                                class="radio-button flex-1 text-center p-3 rounded-lg border border-white/20 transition hover:bg-white/10"
-                                onclick="toggleOption(this, 'winrar-no')"><span class="lang-en">No</span><span
-                                    class="lang-si">නැත</span></button>
-                        </div>
-                        <p id="winrar-yes" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">Excellent, you're all set for the file extraction step.</span><span
-                                class="lang-si">විශිෂ්ටයි, ඔබ ගොනු උපුටා ගැනීමේ පියවර සඳහා සූදානම්.</span></p>
-                        <p id="winrar-no" class="hidden mt-4 text-white/80 p-4 bg-white/5 rounded-lg"><span
-                                class="lang-en">Download and install WinRAR software from here.</span><span
-                                class="lang-si">WinRAR මෘදුකාංගය මෙතනින් ඩවුන්ලෝඩ් කර ඉන්ස්ටෝල් කරන්න.</span> <a
-                                href="https://www.virtuallabgames.com/media/files/winrar.exe"
-                                class="text-gold-400 font-semibold hover:underline">Download WinRAR</a></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Step 5: Select Game & Patch -->
-            <section class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">5</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Select & Patch Your Game</span><span
-                                    class="lang-si">ඔබේ Game එක තෝරා Patch කරන්න</span></h2>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
-                    <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-semibold"><span class="lang-en">Which computer game do you want to
-                                install?</span><span class="lang-si">ඔබ ඉන්ස්ටෝල් කිරීමට අවශ්‍ය පරිඝණක ක්‍රීඩාව මෙතනින්
-                                කුමක්ද?</span></h3>
-                        <!-- CHANGE 4: Added scrollable container for game list -->
-                        <div class="game-list-container max-h-[32rem] overflow-y-auto pr-2 mt-4">
-                            <div id="game-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-                        </div>
-                        <div id="download-button-container" class="mt-6"></div>
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">Click the download button above to download the
-                                relevant patch files. Now drag and drop those two files into the Steam Tools on your
-                                computer (as shown below). Then restart Steam Tools.</span><span class="lang-si">අදාල
-                                patch files ඩවුන්ලෝඩ් කිරීමට ඉහත ඩවුන්ලෝඩ් බොත්තම ක්ලික් කරන්න. දැන් ඒ ෆයිල්ස් දෙක ඔබගේ
-                                පරිඝණකයේ ඇති ස්ටීම් ටූල්ස් එකට ඇද දමන්න(පහත පරිදි). පසුව Steam Tools Restart
-                                කරන්න.</span></p>
-                        <img src="{% static 'images/support/steam/1.gif' %}" alt="Drag and Drop GIF"
-                            class="w-full h-auto rounded-lg mt-4 bg-white/5">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Step 6: Install & Verify -->
-            <section class="mb-12 transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">6</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Install & Verify Files</span><span
-                                    class="lang-si">ගොනු Install කර Verify කරන්න</span></h2>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10 space-y-8">
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">Now copy all the DVDs we sent you to one folder.
-                                Extract all of them with WinRAR.</span><span class="lang-si">දැන් අප ඔබට එවූ DVD සියල්ල
-                                එක ෆෝල්ඩර් එකකට කොපි කරන්න. දැන් ඒ සියල්ල winrar මගින් extract කර ගන්න.</span></p>
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">Now go to the Library of your Steam account. Your
-                                game will be there. Click Install. After about 10MB has downloaded, click Pause. Now
-                                find your game in the list on the left corner as follows, right-click on it and go to
-                                Manage --> Browse Local Files.</span><span class="lang-si">දැන් ඔබගේ Steam එකවුන්ට් එකේ
-                                Library එකට යන්න. ඔබගේ ගේම් එක එතන ඇති. එයට Install දෙන්න. 10MB පමණ ඩවුන්ලෝඩ් වූ පසු
-                                Pause දෙන්න. දැන් පහත පරිදි ඔබගේ ගේම් එක වම් කෙලවරේ ලිස්ට් එකෙන් සොයාගෙන එය මත රයිට්
-                                ක්ලික් කර Manage --> Browse Local Files දෙන්න.</span></p>
-                        <img src="{% static 'images/support/steam/2.gif' %}" alt="Browse Local Files GIF"
-                            class="w-full h-auto rounded-lg mt-4 bg-white/5">
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">Now copy the files you extracted to the folder
-                                that opened (in the pop-up that appears, select "copy and replace").</span><span
-                                class="lang-si">දැන් ඕපන් වූ ෆෝල්ඩර් එකට ඔබ extract කරගත් files ටික කොපි කරන්න (එහිදී එන
-                                pop-up එකේ copy and replace) දෙන්න.</span></p>
-                        <img src="{% static 'images/support/steam/3.gif' %}" alt="Copy and Replace GIF"
-                            class="w-full h-auto rounded-lg mt-4 bg-white/5">
-                    </div>
-                    <div class="rounded-2xl glass p-6">
-                        <p class="text-white/80"><span class="lang-en">Now again, find your game in the list on the left
-                                corner, right-click on it and go to Properties --> Installed Files --> Verify integrity
-                                of Game Files (this may take from 10 minutes to two hours).</span><span
-                                class="lang-si">දැන් නැවත ඔබගේ ගේම් එක වම් කෙලවරේ ලිස්ට් එකෙන් සොයාගෙන එය මත රයිට්
-                                ක්ලික් කර Properties --> Installed Files --> Verify integrity of Game Files දෙන්න(මෙයට
-                                විනාඩි 10 සිට පැය දෙකක් පමණ ගත විය හැක).</span></p>
-                        <img src="{% static 'images/support/steam/4.gif' %}" alt="Verify Integrity GIF"
-                            class="w-full h-auto rounded-lg mt-4 bg-white/5">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Step 7: Final Step -->
-            <section class="transition-opacity duration-500">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="step-counter font-black text-6xl">7</div>
-                        <div>
-                            <h2 class="text-2xl font-bold"><span class="lang-en">Request Activation</span><span
-                                    class="lang-si">සක්‍රිය කිරීම ඉල්ලන්න</span></h2>
-                        </div>
-                    </div>
-                    <button onclick="markSectionAsDone(this)"
-                        class="p-2 rounded-full bg-white/10 hover:bg-green-500/50 transition-colors group flex-shrink-0"
-                        aria-label="Mark as done">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-6 w-6 text-green-400 group-hover:text-white transition-colors" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-6 ml-4 pl-12 border-l-2 border-white/10">
-                    <div class="rounded-2xl glass p-6 bg-gradient-to-r from-brand-500/20 to-gold-400/20">
-                        <p class="text-white/90"><span class="lang-en">While that is happening, go to <a
-                                    href="https://www.virtuallabgames.com/my-tickets" target="_blank"
-                                    class="text-gold-400 font-bold hover:underline">our support page</a>, select your
-                                order correctly and submit a ticket. For the ticket title, mention the game name and
-                                "activation". For the description, mention a phone number we can contact. We will
-                                contact you at your desired time and activate your game within 5 minutes.</span><span
-                                class="lang-si">එය සිදුවන අතරතුර, <a href="https://www.virtuallabgames.com/my-tickets"
-                                    target="_blank" class="text-gold-400 font-bold hover:underline">අපගේ සහාය පිටුවට</a>
-                                ගොස්, ඔබගේ ඇණවුම නිවැරදිව තෝරා ටිකට් පතක් ඉදිරිපත් කරන්න. ටිකට් මාතෘකාව සඳහා, ක්‍රීඩාවේ
-                                නම සහ "සක්‍රිය කිරීම" සඳහන් කරන්න. විස්තරය සඳහා, අපට සම්බන්ධ කර ගත හැකි දුරකථන අංකයක්
-                                සඳහන් කරන්න. අපි ඔබ කැමති වේලාවට ඔබ හා සම්බන්ධ වී මිනිතුතු 5ක් ඇතුළත ඔබේ ක්‍රීඩාව
-                                සක්‍රිය කරන්නෙමු.</span></p>
-                    </div>
-                </div>
-            </section>
+                {% endfor %}
+            </div>
         </div>
     </main>
 
-    <footer class="border-t border-white/10 mt-16">
+    <footer class="mt-16 border-t border-white/10">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
+    <div id="codModal" class="fixed inset-0 z-[90] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm modal-backdrop"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl max-w-md w-full mx-auto">
+                <div class="p-6 sm:p-8 border-b border-white/10">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-2xl font-black"><span class="lang-en">Enter Activation Code</span><span
+                                    class="lang-si">සක්‍රීය කිරීමේ කේතය ඇතුළත් කරන්න</span></h3>
+                            <p class="text-sm text-white/60"><span class="lang-en">Enter the 16-character code you
+                                    received.</span><span class="lang-si">ඔබට ලැබුණු අක්ෂර 16 කේතය ඇතුළත් කරන්න.</span>
+                            </p>
+                        </div>
+                        <button
+                            class="modal-close-btn text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
+                    </div>
+                </div>
+                <form id="codForm" class="p-6 sm:p-8 space-y-4">
+                    <input type="hidden" name="game_id" id="cod_game_id">
+                    <div>
+                        <label for="activation_code" class="block text-sm font-medium mb-2"><span
+                                class="lang-en">Activation Code</span><span class="lang-si">සක්‍රීය කිරීමේ
+                                කේතය</span></label>
+                        <input required type="text" id="activation_code" name="activation_code" maxlength="19"
+                            placeholder="XXXX-XXXX-XXXX-XXXX"
+                            class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 placeholder-white/40 focus:outline-none focus:border-brand-400 focus:bg-white/10 transition-all font-mono tracking-widest text-center">
+                    </div>
+                    <button type="submit"
+                        class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
+                        <span class="lang-en">Submit Code</span><span class="lang-si">කේතය ඉදිරිපත් කරන්න</span>
+                    </button>
+                    <p id="codError" class="text-xs text-red-400 text-center mt-3 hidden"></p>
+                    <p id="codSuccess" class="text-xs text-emerald-400 text-center mt-3 hidden"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentInfoModal" class="fixed inset-0 z-[90] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm modal-backdrop"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl max-w-md w-full mx-auto text-center p-6 sm:p-8">
+                <h3 class="text-2xl font-black"><span class="lang-en">Payment Verification In Progress</span><span
+                        class="lang-si">ගෙවීම් සත්‍යාපනය වෙමින් පවතී</span></h3>
+                <p class="text-white/80 mt-2"><span class="lang-en">Thank you for your payment. Give us 3 to 4 hours,
+                        and we will confirm it. Your game will be available for activation shortly.</span><span
+                        class="lang-si">ඔබගේ ගෙවීමට ස්තූතියි. අපට පැය 3-4ක් දෙන්න, අපි එය තහවුරු කරන්නෙමු. ඔබේ ගේම් එක
+                        ඉක්මනින් සක්‍රීය කිරීමට හැකිවනු ඇත.</span></p>
+                <button
+                    class="modal-close-btn mt-6 shine px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 font-semibold transition-all">
+                    <span class="lang-en">OK</span><span class="lang-si">හරි</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="buyNowModal" class="fixed inset-0 z-[90] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm modal-backdrop"></div>
+        <div class="relative flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-3xl max-w-md w-full mx-auto">
+                <input type="hidden" name="game_id" id="buy_now_game_id">
+
+                <div id="buyNowStep1">
+                    <div class="p-6 sm:p-8 border-b border-white/10">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-2xl font-black"><span class="lang-en">Buy Now</span><span
+                                        class="lang-si">දැන් මිලදී ගන්න</span></h3>
+                                <p class="text-sm text-white/60"><span class="lang-en">Choose your payment
+                                        method.</span><span class="lang-si">ඔබගේ ගෙවීමේ ක්‍රමය තෝරන්න.</span></p>
+                            </div><button
+                                class="modal-close-btn text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
+                        </div>
+                    </div>
+                    <div class="p-6 sm:p-8 space-y-4">
+                        <button data-action="go-to-buy-step2"
+                            class="w-full text-left p-4 rounded-xl bg-white/10 hover:bg-white/20 transition-all flex items-center gap-4">
+                            <svg class="w-8 h-8 text-brand-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                            </svg>
+                            <div>
+                                <div class="font-bold"><span class="lang-en">Upload Bank Slip</span><span
+                                        class="lang-si">බැංකු රිසිට්පත උඩුගත කරන්න</span></div>
+                                <div class="text-sm text-white/70"><span class="lang-en">Pay via bank transfer and
+                                        upload the receipt.</span><span class="lang-si">බැංකු මාරුවක් හරහා ගෙවා රිසිට්පත
+                                        උඩුගත කරන්න.</span></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="buyNowStep2" class="hidden">
+                    <div class="p-6 sm:p-8 border-b border-white/10">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-2xl font-black"><span class="lang-en">Upload Slip</span><span
+                                        class="lang-si">රිසිට්පත උඩුගත කරන්න</span></h3>
+                                <p class="text-sm text-white/60"><span class="lang-en">Upload your payment confirmation
+                                        slip.</span><span class="lang-si">ඔබගේ ගෙවීම් තහවුරු කිරීමේ රිසිට්පත උඩුගත
+                                        කරන්න.</span></p>
+                            </div><button
+                                class="modal-close-btn text-white/60 hover:text-white transition-colors text-2xl -mt-2 -mr-2 p-2">×</button>
+                        </div>
+                    </div>
+                    <form id="buyNowForm" class="p-6 sm:p-8 space-y-4">
+                        <div>
+                            <label for="payment_slip" class="block text-sm font-medium mb-2"><span
+                                    class="lang-en">Payment Slip (Image)</span><span class="lang-si">ගෙවීම් රිසිට්පත
+                                    (රූපය)</span></label>
+                            <input required type="file" id="payment_slip" name="payment_slip"
+                                accept="image/png, image/jpeg, image/jpg"
+                                class="w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-500 file:text-white hover:file:bg-brand-600">
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button type="button" data-action="go-to-buy-step1"
+                                class="w-auto px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 font-semibold"><span
+                                    class="lang-en">Back</span><span class="lang-si">ආපසු</span></button>
+                            <button type="submit"
+                                class="w-full shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold hover:shadow-xl transition-all disabled:opacity-60">
+                                <span class="lang-en">Submit for Verification</span><span class="lang-si">සත්‍යාපනය සඳහා
+                                    ඉදිරිපත් කරන්න</span>
+                            </button>
+                        </div>
+                        <p id="buyNowError" class="text-xs text-red-400 text-center mt-3 hidden"></p>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Utility Functions ---
+            function getCookie(name) { const value = `; ${document.cookie}`.split(`; ${name}=`); if (value.length === 2) return value.pop().split(';').shift(); }
+            const csrftoken = getCookie('csrftoken');
 
-            // --- Steam Account Form Logic ---
-            const steamAccountSection = document.getElementById('steam-account-section');
-            const steamAccountForm = document.getElementById('steamAccountForm');
-            const steamUsernameInput = document.getElementById('steam_username');
-            const steamEmailInput = document.getElementById('steam_email');
-            const steamFormActionContainer = document.getElementById('steam-form-action-container');
-            const submitSteamDetailsBtn = document.getElementById('submitSteamDetailsBtn');
-
-            // CHANGE 3: New element references for conditional display
-            const steamDetailsDisplay = document.getElementById('steam-details-display');
-            const steamDetailsFormContainer = document.getElementById('steam-details-form-container');
-            const displaySteamEmail = document.getElementById('display_steam_email');
-            const displaySteamUsername = document.getElementById('display_steam_username');
-
-            function getCookie(name) {
-                const match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]*)'));
-                return match ? decodeURIComponent(match[2]) : null;
-            }
-
-            async function fetchJSON(url, opts = {}) {
-                const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-                const merged = { credentials: 'same-origin', ...opts, headers };
-                const res = await fetch(url, merged);
-                if (res.status === 401 || res.status === 403) {
-                    throw new Error('User not authenticated');
+            async function apiCall(url, options = {}) {
+                const defaultOptions = {
+                    method: 'GET',
+                    headers: { 'X-CSRFToken': csrftoken },
+                };
+                // If body is FormData, don't set Content-Type, browser will do it
+                if (!(options.body instanceof FormData)) {
+                    defaultOptions.headers['Content-Type'] = 'application/json';
                 }
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error((data && (data.detail || data.error)) || `Request failed (${res.status})`);
-                return data;
-            }
 
-            // CHANGE 3: Updated function to handle conditional visibility
-            async function loadAndSetupSteamSection() {
-                try {
-                    const user = await fetchJSON('/api/me');
-                    if (user.steam_username && user.steam_email) {
-                        // User has details, show the display block
-                        displaySteamEmail.textContent = user.steam_email;
-                        displaySteamUsername.textContent = user.steam_username;
-                        steamDetailsDisplay.classList.remove('hidden');
-                        steamDetailsFormContainer.style.display = 'none';
-                        steamAccountSection.classList.add('section-done');
-                    } else {
-                        // User does not have details, show the form
-                        steamDetailsDisplay.classList.add('hidden');
-                        steamDetailsFormContainer.style.display = 'block';
-                        steamUsernameInput.disabled = false;
-                        steamEmailInput.disabled = false;
-                    }
-                } catch (error) {
-                    // Not logged in, show the form (but disabled) and a login message
-                    steamDetailsDisplay.classList.add('hidden');
-                    steamDetailsFormContainer.style.display = 'block';
-                    steamFormActionContainer.innerHTML = `
-                        <div class="w-full text-center p-3 rounded-lg bg-white/10 text-white/70 font-semibold">
-                            <span class="lang-en">Please <a href="/login" class="font-bold text-gold-400 hover:underline">log in</a> to save your details.</span>
-                            <span class="lang-si">කරුණාකර ඔබගේ විස්තර සුරැකීමට <a href="/login" class="font-bold text-gold-400 hover:underline">පිවිසෙන්න</a>.</span>
-                        </div>
-                    `;
-                    steamUsernameInput.disabled = true;
-                    steamEmailInput.disabled = true;
+                const res = await fetch(url, { ...defaultOptions, ...options });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ detail: `Request failed with status ${res.status}` }));
+                    // Use a more specific error for unauthorized
+                    if (res.status === 401) throw new Error("Unauthorized or invalid code.");
+                    if (res.status === 404) throw new Error("The activation code was not found.");
+                    throw new Error(err.detail || 'An unknown error occurred');
                 }
+                const contentType = res.headers.get("content-type");
+                return (contentType && contentType.includes("application/json")) ? res.json() : {};
             }
 
-            // CHANGE 3: Updated form submission logic
-            if (steamAccountForm) {
-                steamAccountForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const payload = {
-                        steam_username: steamUsernameInput.value,
-                        steam_email: steamEmailInput.value
-                    };
-                    if (!payload.steam_username || !payload.steam_email) {
-                        alert('Please fill in both Steam Username and E-mail fields.');
-                        return;
-                    }
-                    submitSteamDetailsBtn.disabled = true;
-                    submitSteamDetailsBtn.textContent = 'Saving...';
-                    try {
-                        await fetchJSON('/api/me/update', {
-                            method: 'PATCH',
-                            headers: { 'X-CSRFToken': getCookie('csrftoken') },
-                            body: JSON.stringify(payload)
-                        });
-
-                        // On success, hide form and show the display block with new data
-                        displaySteamEmail.textContent = payload.steam_email;
-                        displaySteamUsername.textContent = payload.steam_username;
-                        steamDetailsDisplay.classList.remove('hidden');
-                        steamDetailsFormContainer.style.display = 'none';
-                        steamAccountSection.classList.add('section-done');
-
-                    } catch (error) {
-                        alert('Failed to save details: ' + error.message);
-                        submitSteamDetailsBtn.disabled = false;
-                        submitSteamDetailsBtn.textContent = 'Submit Details';
-                    }
-                });
-            }
-
-            loadAndSetupSteamSection();
-
-
-            // --- Language toggle logic ---
-            const langToggleBtn = document.getElementById('langToggleBtn');
-            const body = document.body;
-
-            const setLanguage = (lang) => {
-                const isSi = lang === 'si';
-                body.classList.toggle('sinhala-mode', isSi);
-                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'SI' : 'EN';
-                localStorage.setItem('language', lang);
+            // --- Modal Management ---
+            const modals = {
+                cod: document.getElementById('codModal'),
+                paymentInfo: document.getElementById('paymentInfoModal'),
+                buyNow: document.getElementById('buyNowModal'),
             };
 
-            const toggleLanguage = () => {
-                const currentLang = localStorage.getItem('language') || 'en';
-                setLanguage(currentLang === 'en' ? 'si' : 'en');
-            };
-
-            langToggleBtn?.addEventListener('click', toggleLanguage);
-            setLanguage(localStorage.getItem('language') || 'en');
-
-            // --- Mark section as done ---
-            window.markSectionAsDone = function (button) {
-                const section = button.closest('section');
-                if (section) {
-                    section.classList.toggle('section-done');
+            function openModal(modalId) {
+                if (modals[modalId]) {
+                    modals[modalId].classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
                 }
             }
 
-            // --- Interactive Option Toggle ---
-            window.toggleOption = function (button, idToShow) {
-                const parent = button.parentElement;
-                parent.querySelectorAll('.radio-button').forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
+            function closeModal(modalId) {
+                if (modals[modalId]) {
+                    modals[modalId].classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            }
 
-                const relatedIds = ['steam-yes', 'steam-no', 'steam-tools-yes', 'steam-tools-no', 'winrar-yes', 'winrar-no'];
-                relatedIds.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && el.parentElement === parent.parentElement) {
-                        el.classList.add('hidden');
-                    }
+            // --- Global Event Listeners for Modals ---
+            document.querySelectorAll('.modal-close-btn, .modal-backdrop').forEach(el => {
+                el.addEventListener('click', () => {
+                    Object.keys(modals).forEach(closeModal);
                 });
+            });
 
-                const elementToShow = document.getElementById(idToShow);
-                if (elementToShow) elementToShow.classList.remove('hidden');
-            }
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape") Object.keys(modals).forEach(closeModal);
+            });
 
-            // --- GIF Viewer Logic ---
-            window.showGifs = function (version, event) {
-                const button = event.currentTarget;
-                const parent = button.parentElement;
-                parent.querySelectorAll('.radio-button').forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
+            // --- Main Click Handler ---
+            document.body.addEventListener('click', function (e) {
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
 
-                document.getElementById('win10-gifs').classList.remove('active');
-                document.getElementById('win11-gifs').classList.remove('active');
-                document.getElementById(version + '-gifs').classList.add('active');
-            }
+                const action = button.dataset.action;
+                const gameId = button.dataset.gameId;
 
-            // --- Game Selection Logic ---
-            const gameListContainer = document.getElementById('game-list');
-            const downloadButtonContainer = document.getElementById('download-button-container');
-
-            async function loadGames() {
-                if (gameListContainer) {
-                    gameListContainer.innerHTML = '<p class="text-center text-white/70 col-span-full">Loading games...</p>';
+                switch (action) {
+                    case 'show-cod-modal':
+                        document.getElementById('cod_game_id').value = gameId;
+                        document.getElementById('codError').classList.add('hidden');
+                        document.getElementById('codSuccess').classList.add('hidden');
+                        document.getElementById('activation_code').value = '';
+                        openModal('cod');
+                        break;
+                    case 'show-payment-info-modal':
+                        openModal('paymentInfo');
+                        break;
+                    case 'show-buy-now-modal':
+                        document.getElementById('buy_now_game_id').value = gameId;
+                        document.getElementById('buyNowStep1').classList.remove('hidden');
+                        document.getElementById('buyNowStep2').classList.add('hidden');
+                        openModal('buyNow');
+                        break;
+                    case 'go-to-buy-step1':
+                        document.getElementById('buyNowStep1').classList.remove('hidden');
+                        document.getElementById('buyNowStep2').classList.add('hidden');
+                        break;
+                    case 'go-to-buy-step2':
+                        document.getElementById('buyNowStep1').classList.add('hidden');
+                        document.getElementById('buyNowStep2').classList.remove('hidden');
+                        break;
                 }
+            });
+
+            // --- Form Submission Handlers ---
+            // COD Form
+            const codForm = document.getElementById('codForm');
+            codForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const submitBtn = codForm.querySelector('button[type="submit"]');
+                const errorEl = document.getElementById('codError');
+                const successEl = document.getElementById('codSuccess');
+                const formData = new FormData(codForm);
+                const data = Object.fromEntries(formData.entries());
+
+                submitBtn.disabled = true;
+                errorEl.classList.add('hidden');
+                successEl.classList.add('hidden');
 
                 try {
-                    const response = await fetch('/api/offline-games/');
-                    if (!response.ok) {
-                        throw new Error(`API error! status: ${response.status}`);
-                    }
-                    const games = await response.json();
-
-                    if (gameListContainer) {
-                        gameListContainer.innerHTML = ''; // Clear loading message
-                        if (games.length === 0) {
-                            gameListContainer.innerHTML = '<p class="text-center text-white/70 col-span-full">No games available right now.</p>';
-                            return;
-                        }
-
-                        games.forEach(game => {
-                            const gameCard = document.createElement('div');
-                            gameCard.className = 'game-card p-2 rounded-lg cursor-pointer border-2 border-transparent hover:border-gold-400 transition-all glass';
-                            gameCard.onclick = (event) => selectGame(game.video, game.name, event.currentTarget);
-                            gameCard.innerHTML = `
-                                <img src="${game.image || 'https://placehold.co/300x400/101014/FFF?text=No+Image'}" alt="${game.name}" class="w-full h-auto rounded-md object-cover aspect-[3/4]">
-                                <p class="text-center text-sm font-semibold mt-2">${game.name}</p>`;
-                            gameListContainer.appendChild(gameCard);
-                        });
-                    }
-                } catch (error) {
-                    console.error("Failed to load games:", error);
-                    if (gameListContainer) {
-                        gameListContainer.innerHTML = '<p class="text-center text-danger-500 col-span-full">Could not load games. Please try again later.</p>';
-                    }
+                    // NOTE: Replace '/api/activation/verify-cod' with your actual API endpoint
+                    await apiCall('/api/activation/verify-cod', {
+                        method: 'POST',
+                        body: JSON.stringify({ game_id: data.game_id, code: data.activation_code })
+                    });
+                    successEl.textContent = 'Code successfully confirmed! The page will now reload.';
+                    successEl.classList.remove('hidden');
+                    setTimeout(() => window.location.reload(), 2000);
+                } catch (err) {
+                    errorEl.textContent = err.message;
+                    errorEl.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
                 }
-            }
+            });
 
-            window.selectGame = function (downloadUrl, gameName, selectedCard) {
-                if (gameListContainer) {
-                    gameListContainer.querySelectorAll('.game-card').forEach(card => card.classList.remove('border-gold-400', 'bg-white/10'));
+            // Buy Now Form (Slip Upload)
+            const buyNowForm = document.getElementById('buyNowForm');
+            buyNowForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const submitBtn = buyNowForm.querySelector('button[type="submit"]');
+                const errorEl = document.getElementById('buyNowError');
+                const gameId = document.getElementById('buy_now_game_id').value;
+
+                const formData = new FormData();
+                formData.append('game_id', gameId);
+                formData.append('slip_image', document.getElementById('payment_slip').files[0]);
+
+                submitBtn.disabled = true;
+                errorEl.classList.add('hidden');
+
+                try {
+                    // NOTE: Replace '/api/activation/buy-with-slip' with your actual API endpoint
+                    await apiCall('/api/activation/buy-with-slip', {
+                        method: 'POST',
+                        body: formData // Send as FormData for file upload
+                    });
+                    // On success, you might want to show a success message and reload
+                    alert('Slip submitted successfully! We will verify it shortly.');
+                    window.location.reload();
+                } catch (err) {
+                    errorEl.textContent = err.message;
+                    errorEl.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
                 }
-                selectedCard.classList.add('border-gold-400', 'bg-white/10');
+            });
 
-                if (downloadButtonContainer) {
-                    if (downloadUrl) {
-                        downloadButtonContainer.innerHTML = `<a href="${downloadUrl}" download class="inline-block text-center w-full py-3 px-6 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold shadow-lg hover:shadow-xl transition-all">Download Files for ${gameName}</a>`;
-                    } else {
-                        downloadButtonContainer.innerHTML = `<p class="text-center text-white/70 mt-4">No download file is available for ${gameName}.</p>`;
-                    }
+            // --- Auto-formatting for activation code input ---
+            const codeInput = document.getElementById('activation_code');
+            codeInput.addEventListener('input', function (e) {
+                let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                let formatted = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) formatted += '-';
+                    formatted += value[i];
                 }
-            }
+                e.target.value = formatted;
+            });
 
-            loadGames();
-
-
-            // --- Footer year ---
+            // --- Initialization ---
             document.getElementById('year').textContent = new Date().getFullYear();
+        });
+
+        // --- Language Toggle Logic ---
+        document.addEventListener('DOMContentLoaded', function () {
+            // ... [The full language toggle JS from cart.html goes here] ...
+        });
+
+        // --- Mobile Menu Logic ---
+        document.addEventListener('DOMContentLoaded', function () {
+            // ... [The full mobile menu JS from cart.html goes here] ...
         });
     </script>
 </body>

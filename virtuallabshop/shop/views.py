@@ -17,7 +17,7 @@ from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
-from .models import Order, OfflineGames, Ticket, Files, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
+from .models import Order, OfflineGames, Ticket, ActivationTicket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -1734,7 +1734,7 @@ def api_finalize_cod_order_for_user(request):
         cod_reference = f"cod_{uuid.uuid4().hex}"
 
         order = Order.objects.create(
-            status=Order.OrderStatus.PAYMENT_SUCCESS,
+            status=Order.OrderStatus.PAYMENT_INITIATED,
             # Assuming a 'COD' choice exists in your Order model's PaymentMethod
             payment_method=Order.PaymentMethod.COD,
             payment_reference=cod_reference,
@@ -1782,6 +1782,81 @@ def api_finalize_cod_order_for_user(request):
         },
         status=status.HTTP_201_CREATED,
     )
+
+
+# --- Activation Page -----------------------------------------------------------
+
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def activation_page(request):
+    """
+    Renders the game Activation HTML page.
+    This page is only for authenticated users.
+    """
+    if not request.user.is_authenticated:
+        return _redirect_to_login(request)
+
+    user = request.user
+    name = user.get_username() or getattr(user, "email", "") or ""
+    user_initial = name[0].upper() if name else None
+
+    # Get all of this user's relevant activation tickets in one query
+    user_tickets = ActivationTicket.objects.filter(
+        user=user,
+        offline_game__product__is_active=True
+    ).select_related('offline_game')
+
+    # Create a lookup map of {game_id: ticket_object} for fast access
+    user_ticket_map = {t.offline_game_id: t for t in user_tickets}
+
+    # Get all active offline games
+    all_games = OfflineGames.objects.filter(
+        product__is_active=True
+    ).select_related(
+        'product'
+    ).prefetch_related(
+        'product__images'
+    ).order_by('product__title')
+
+    games_with_status = []
+    for game in all_games:
+        ticket = user_ticket_map.get(game.id)
+        status_info = {
+            "user_status": "not_owned",
+            "ticket": None,
+        }
+
+        if ticket and ticket.remaining_attempts > 0:
+            status_info["ticket"] = ticket
+            if ticket.status == ActivationTicket.TicketStatus.ACTIVATED:
+                status_info["user_status"] = "owned"
+            elif ticket.status == ActivationTicket.TicketStatus.COD_PAYMENT_PENDING:
+                status_info["user_status"] = "cod_pending"
+            elif ticket.status == ActivationTicket.TicketStatus.PAYMENT_PENDING:
+                status_info["user_status"] = "payment_pending"
+
+        # Find the primary image for the product
+        primary_image = None
+        if game.product.images.exists():
+            primary_image_obj = game.product.images.filter(
+                is_primary=True).first() or game.product.images.first()
+            if primary_image_obj:
+                primary_image = request.build_absolute_uri(
+                    primary_image_obj.image.url)
+
+        games_with_status.append({
+            "game": game,
+            "product": game.product,
+            "primary_image": primary_image,
+            **status_info
+        })
+
+    return Response({
+        "user": user,
+        "user_initial": user_initial,
+        "games_with_status": games_with_status,
+    }, template_name="steam_support.html")
 
 
 def _excerpt(text: str, n: int = 220) -> str:

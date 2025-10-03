@@ -9,6 +9,11 @@ from django.conf import settings
 from decimal import Decimal
 import uuid
 import os
+import secrets
+import string
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # SKU generator (callable is required because Django can't serialize lambdas in migrations)
 
@@ -19,6 +24,14 @@ def generate_sku():
 
 def generate_ticket_ref():
     return "TCK-" + uuid.uuid4().hex[:8].upper()
+
+
+def generate_activation_code():
+    alphabet = string.ascii_uppercase + string.digits
+    while True:
+        code = ''.join(secrets.choice(alphabet) for _ in range(16))
+        # Optional: break into chunks for readability, e.g., XXXX-XXXX-XXXX-XXXX
+        return '-'.join(code[i:i+4] for i in range(0, len(code), 4))
 
 
 # --- Existing custom user ----------------------------------------------------
@@ -640,36 +653,146 @@ class StorageDevice(models.Model):
         return f"{self.name} • {self.get_category_display()}"
 
 
-class OfflineGames(models.Model):
-    name = models.CharField(max_length=255)
-    image = models.ImageField(
-        upload_to="offline_games/",
-        help_text="9:16 landscape image recommended."
+class OfflineGames(TimestampedModel):
+    """
+    Configuration for a product that requires a special offline activation.
+    Inherits created_at/updated_at timestamps.
+    """
+    product = models.OneToOneField(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="offline_game_config"
     )
-    file = models.FileField(
-        upload_to="offline_files/",
-        blank=True,
-        null=True,
-        validators=[FileExtensionValidator(
-            allowed_extensions=["rar", "zip"])],
-        help_text=_("Upload a single video file (rar, zip"),
+    remaining_tickets = models.PositiveIntegerField(
+        default=1,
+        help_text=_("How many activation tickets can be generated for this.")
     )
 
+    def __str__(self):
+        # This correctly gets the title from the linked Product
+        return f"Offline Activation for {self.product.title}"
 
-class Files(models.Model):
-    name = models.CharField(max_length=255)
-    image = models.ImageField(
-        upload_to="files/",
-        help_text="9:16 landscape image recommended."
+    class Meta:
+        verbose_name = "Offline Game"
+        verbose_name_plural = "Offline Games"
+
+
+class ActivationStep(TimestampedModel):
+    """
+    A single instructional step for activating an OfflineGame.
+    """
+    offline_game = models.ForeignKey(
+        OfflineGames,
+        on_delete=models.CASCADE,
+        related_name="activation_steps"
     )
+    step_number = models.PositiveSmallIntegerField()
+
+    topic_en = models.CharField(_("Topic (English)"), max_length=255)
+    description_en = models.TextField(_("Description (English)"))
+    topic_si = models.CharField(
+        _("Topic (Sinhala)"), max_length=255, blank=True)
+    description_si = models.TextField(
+        _("Description (Sinhala)"), blank=True)
+
+    is_updated = models.BooleanField(default=False)
     file = models.FileField(
-        upload_to="files/",
-        blank=True,
-        null=True,
-        validators=[FileExtensionValidator(
-            allowed_extensions=["exe", "zip", "rar"])],
-        help_text=_("Upload a single video file (rar, zip"),
+        upload_to="activation_steps/files/", blank=True, null=True)
+    video = models.FileField(upload_to="activation_steps/videos/", blank=True, null=True,
+                             validators=[FileExtensionValidator(allowed_extensions=['mp4', 'mov', 'm4v', 'webm'])])
+
+    class Meta:
+        ordering = ["offline_game", "step_number"]
+        unique_together = ("offline_game", "step_number")
+
+    def __str__(self):
+        return f"Step {self.step_number}: {self.topic_en} for {self.offline_game.product.title}"
+
+
+class ActivationTicket(TimestampedModel):
+    """
+    A user's ticket to activate one OfflineGame, generated after a successful order.
+    """
+    class TicketStatus(models.TextChoices):
+        PAYMENT_PENDING = "PAYMENT_PENDING", _("Payment Pending")
+        COD_PAYMENT_PENDING = "COD_PAYMENT_PENDING", _("COD Payment Pending")
+        ACTIVATED = "ACTIVATED", _("Activated")
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="activation_tickets"
     )
+    offline_game = models.ForeignKey(
+        OfflineGames,
+        on_delete=models.PROTECT,
+        related_name="activation_tickets"
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.SET_NULL,  # Keep ticket even if order is deleted
+        related_name="activation_tickets",
+        null=True,
+        blank=True
+    )
+    activation_code = models.CharField(
+        max_length=19,  # 16 chars + 3 hyphens
+        unique=True,
+        default=generate_activation_code,
+        editable=False
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=TicketStatus.choices,
+        default=TicketStatus.PAYMENT_PENDING
+    )
+    remaining_attempts = models.PositiveSmallIntegerField(default=2)
+    activation_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        unique_together = ("user", "offline_game", "order")
+
+    def __str__(self):
+        return f"Ticket {self.activation_code} for {self.user.username}"
+
+
+@receiver(post_save, sender=Order)
+def create_activation_ticket_on_payment(sender, instance, created, **kwargs):
+    """
+    Signal to create ActivationTicket when an order's payment is successful.
+    """
+    # Trigger only when status is PAYMENT_SUCCESS
+    if instance.status == Order.OrderStatus.PAYMENT_SUCCESS:
+        user = instance.users.first()
+        if not user:
+            return  # Cannot create tickets for guest orders without a user
+
+        # Iterate through direct order items (not storage items)
+        for item in instance.orderitem_set.all():
+            # Check if the product has an offline game configuration
+            if hasattr(item.product, 'offline_game_config'):
+                offline_game = item.product.offline_game_config
+
+                # Check if a ticket for this order/user/game already exists to prevent duplicates
+                ticket_exists = ActivationTicket.objects.filter(
+                    order=instance,
+                    user=user,
+                    offline_game=offline_game
+                ).exists()
+
+                if not ticket_exists:
+                    # Create a ticket for each quantity of the product purchased
+                    for _ in range(item.quantity):
+                        ActivationTicket.objects.create(
+                            user=user,
+                            offline_game=offline_game,
+                            order=instance,
+                            # If payment method is COD, set status accordingly
+                            status=ActivationTicket.TicketStatus.COD_PAYMENT_PENDING
+                            if instance.payment_method == Order.PaymentMethod.COD
+                            else ActivationTicket.TicketStatus.PAYMENT_PENDING,
+                        )
 
 
 # --- BLOG --------------------------------------------------------------------

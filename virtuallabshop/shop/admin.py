@@ -17,7 +17,7 @@ from .models import (
     DLC,
     StorageDevice,
     OfflineGames,
-    OrderStorageItem, Blog, BlogPhoto, Files
+    OrderStorageItem, Blog, BlogPhoto, OfflineGames, ActivationStep, ActivationTicket
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -379,14 +379,50 @@ class ReservedSlotAdmin(admin.ModelAdmin):
     )
 
 
+class ActivationStepInline(admin.TabularInline):
+    model = ActivationStep
+    extra = 1
+    ordering = ("step_number",)
+    fieldsets = (
+        (None, {
+            "fields": (
+                ("step_number", "is_updated"),
+                ("topic_en", "topic_si"),
+                ("description_en", "description_si"),
+                ("file", "video"),
+            ),
+        }),
+    )
+
+
 @admin.register(OfflineGames)
 class OfflineGamesAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "image", "file")
+    inlines = [ActivationStepInline]
+    list_display = ("product", "remaining_tickets", "created_at")
+    search_fields = ("product__title",)
+    autocomplete_fields = ("product",)
+    list_select_related = ("product",)
 
 
-@admin.register(Files)
-class FilesAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "image", "file")
+@admin.register(ActivationTicket)
+class ActivationTicketAdmin(admin.ModelAdmin):
+    list_display = (
+        "activation_code", "user", "offline_game", "order", "status",
+        "remaining_attempts", "created_at"
+    )
+    list_filter = ("status", "created_at")
+    search_fields = (
+        "activation_code",
+        "user__username",
+        "user__email",
+        "offline_game__product__title",
+        "order__id",
+    )
+    autocomplete_fields = ("user", "offline_game", "order")
+    readonly_fields = (
+        "activation_code", "created_at", "updated_at", "activation_date"
+    )
+    list_select_related = ("user", "offline_game", "order")
 
 
 @admin.register(GameRequest)

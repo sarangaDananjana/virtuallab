@@ -59,7 +59,6 @@ urlpatterns = [
     path("api/orders/me", views.api_orders_me, name="api-orders-me"),
     path("api/orders/finalize/", views.api_finalize_order_from_customer,
          name="api-orders-finalize"),
-    path('api/offline-games/', views.offline_games_list, name='offline-games-list'),
     path("api/orders/cod-finalize", views.api_finalize_cod_order_for_user,
          name="api-cod-orders-finalize"),
     path("api/blog/home/", views.api_blog_home, name="api-blog-home"),
