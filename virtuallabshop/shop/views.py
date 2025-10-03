@@ -1705,7 +1705,7 @@ def api_finalize_cod_order_for_user(request):
         cod_reference = f"cod_{uuid.uuid4().hex}"
 
         order = Order.objects.create(
-            status=Order.OrderStatus.PAYMENT_INITIATED,
+            status=Order.OrderStatus.PAYMENT_SUCCESS,
             # Assuming a 'COD' choice exists in your Order model's PaymentMethod
             payment_method=Order.PaymentMethod.COD,
             payment_reference=cod_reference,
