@@ -119,8 +119,8 @@
                     </a>
                     {% if user.is_authenticated %}
                     <a href="{% url 'profile-page' %}" aria-label="Account"
-                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">{{
-                        user_initial }}</a>
+                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
+                        {{user_initial }}</a>
                     {% else %}
                     <a href="{% url 'login-page' %}"
                         class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
@@ -183,8 +183,7 @@
                         <p class="font-semibold text-sky-400"><span class="lang-en">Payment Verifying</span><span
                                 class="lang-si">ගෙවීම් සත්‍යාපනය</span></p>
                         {% else %}
-                        <p class="font-mono font-bold text-lg">Rs 1500.00</p> {# Or use a custom text field from your
-                        model #}
+                        <p class="font-mono font-bold text-lg">Rs 1500.00</p>
                         {% endif %}
                     </div>
 

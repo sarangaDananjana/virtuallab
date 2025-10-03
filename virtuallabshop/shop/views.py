@@ -1827,7 +1827,7 @@ def activation_page(request):
         "user": user,
         "user_initial": user_initial,
         "games_with_status": games_with_status,
-    }, template_name="steam_support.html")
+    }, template_name="activation.html")
 
 
 def _excerpt(text: str, n: int = 220) -> str:
