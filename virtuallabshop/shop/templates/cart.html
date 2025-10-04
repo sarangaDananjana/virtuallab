@@ -9,22 +9,40 @@
     <meta name="description"
         content="Review your selections, storage device, and checkout with fast islandwide delivery and install support." />
 
-    <!-- Optimization: Preconnect to font origins -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Optimization: Non-render-blocking font loading -->
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap">
-    <link rel="stylesheet"
+    <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
-        media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap">
-    </noscript>
+        rel="stylesheet">
 
-    <!-- Shared site styles -->
+    <!-- Shared site styles for aurora bg, glass, header blend, noise, Sinhala helpers -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
@@ -89,8 +107,7 @@
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <!-- Accessibility: Added aria-label -->
-                    <a href="{% url 'cart_page' %}" aria-label="View Cart"
+                    <a href="{% url 'cart_page' %}"
                         class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -123,10 +140,8 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <!-- Accessibility: Added aria-label for screen readers -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open navigation menu">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -256,12 +271,10 @@
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <div class="flex items-center gap-2">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-8 w-auto object-contain" width="32" height="32" decoding="async" />
+                        class="h-8 w-auto object-contain" />
                     <span class="font-bold text-lg">Menu</span>
                 </div>
-                <!-- Accessibility: Added aria-label -->
-                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors"
-                    aria-label="Close navigation menu">
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -350,7 +363,9 @@
         </div>
     </div>
 
-    <!-- CHECKOUT MODAL -->
+    <!-- =================================================================
+    CHECKOUT MODAL - UPDATED FOR MULTI-STEP PAYMENT FLOW
+    ================================================================== -->
     <div id="checkoutModal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="checkoutModalBackdrop"></div>
         <div class="relative flex items-center justify-center min-h-screen p-4">
@@ -372,6 +387,7 @@
                         </div>
                     </div>
                     <form id="checkoutForm" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4">
+                        <!-- Form inputs remain the same -->
                         <div>
                             <label for="name" class="block text-sm font-medium mb-2"><span class="lang-en">Full
                                     Name</span><span class="lang-si">සම්පූර්ණ නම</span></label>
@@ -544,32 +560,9 @@
     </div>
 
 
-    <!-- Optimization: Moved scripts to end of body -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <script>
-        // NOTE: Keeping Tailwind config here as it's small and needed before paint
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
-                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
-                        'gradient': 'gradient 8s ease infinite',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                    },
-                    keyframes: {
-                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
-                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // --- Utility Functions ---
@@ -678,7 +671,7 @@
                     const removeBtn = `<button class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-red-500/30 text-red-200 text-sm" data-action="${type === 'left' ? 'remove-left' : 'remove-on-device'}" data-id="${item.id}">${t('remove')}</button>`;
                     return `
                         <article class="py-3 grid items-center gap-3" style="grid-template-columns: 64px 1fr auto ${type === 'left' ? 'auto' : ''};">
-                            <img class="w-16 h-16 rounded-xl object-cover" src="${img}" alt="${p.title}" loading="lazy" decoding="async" width="64" height="64">
+                            <img class="w-16 h-16 rounded-xl object-cover" src="${img}" alt="${p.title}">
                             <div>
                                 <div class="font-semibold">${p.title}</div>
                                 <div class="text-xs text-white/60">${type === 'left' ? `Qty: ${item.quantity}` : ''} ${size ? `• ${size}` : ''}</div>
@@ -689,7 +682,7 @@
                 };
                 document.getElementById('left-items').innerHTML = data.left_items?.length ? data.left_items.map(item => productRow(item, 'left')).join('') : `<p class="text-sm text-white/70">No direct purchases yet.</p>`;
                 document.getElementById('right-items').innerHTML = data.right_items?.length ? data.right_items.map(item => productRow(item, 'right')).join('') : `<p class="text-sm text-white/70">No games on device.</p>`;
-                document.getElementById('device-block').innerHTML = data.device ? `<div class="flex items-center gap-3"><img src="${data.device.image_url || ''}" class="w-16 h-20 object-cover rounded-xl" alt="${data.device.name}" width="64" height="80" loading="lazy" decoding="async"/><div class="font-semibold">${data.device.name}</div></div>` : `<p class="text-sm text-white/70">Select a device to add games for free.</p>`;
+                document.getElementById('device-block').innerHTML = data.device ? `<div class="flex items-center gap-3"><img src="${data.device.image_url || ''}" class="w-16 h-20 object-cover rounded-xl"/><div class="font-semibold">${data.device.name}</div></div>` : `<p class="text-sm text-white/70">Select a device to add games for free.</p>`;
             }
 
             // --- Checkout Modal Logic ---
