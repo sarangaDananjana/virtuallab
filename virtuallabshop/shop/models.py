@@ -155,6 +155,19 @@ class Product(TimestampedModel):
         max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal("0"))]
     )
 
+    is_addon_only = models.BooleanField(
+        default=False,
+        help_text="If true, this product will not appear on the main shop page and is only sold as an add-on."
+    )
+    addon_for = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="addons",
+        help_text="Links this product as an add-on to a main product (e.g., a game box for a game)."
+    )
+
     is_active = models.BooleanField(default=True)
     is_cracked = models.BooleanField(default=True)
 

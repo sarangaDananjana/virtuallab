@@ -86,13 +86,38 @@
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
+        /* Style for the new add-on section */
+        .addon-glow {
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow .3s ease;
+        }
+
+        .addon-glow:hover {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+            /* gold-500 */
+        }
+
+        .addon-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left .5s ease;
+        }
+
+        .addon-glow:hover::before {
+            left: 150%;
+        }
     </style>
 </head>
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- =================================================================
-    HEADER - UPDATED WITH NEW MOBILE MENU
-    ================================================================== -->
+    <!-- Header remains unchanged -->
     <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
@@ -227,17 +252,14 @@
                             <div id="storageEmpty" class="space-y-3">
                                 <h3 class="font-semibold"><span class="lang-en">Use a storage device</span><span
                                         class="lang-si">ගබඩා උපාංගයක් භාවිතා කරන්න</span></h3>
-                                <!-- START: ADDED ACTIVATION FEE NOTICE -->
                                 <div id="activationFeeNoticeEmpty"
                                     class="hidden text-xs text-center text-gold-400 bg-gold-500/10 p-2 rounded-lg">
-                                    <p>
-                                        <strong class="font-semibold"><span class="lang-en">Additional
+                                    <p><strong class="font-semibold"><span class="lang-en">Additional
                                                 Charge</span><span class="lang-si">අමතර ගාස්තුව</span>:</strong>
                                         <span class="lang-en">Rs 1,500 activation fee.</span><span class="lang-si">රු
                                             1,500 සක්‍රීය කිරීමේ ගාස්තුව.</span>
                                     </p>
                                 </div>
-                                <!-- END: ADDED ACTIVATION FEE NOTICE -->
                                 <p id="storageHint" class="text-sm text-white/70"></p>
                                 <a href="{% url 'pick_storage' %}" id="btnChooseStorage"
                                     class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15">
@@ -251,17 +273,14 @@
                                             class="lang-si">ඔබගේ ගබඩා උපාංගය</span></h3>
                                     <span id="storageName" class="text-xs px-2 py-1 rounded-lg bg-white/10"></span>
                                 </div>
-                                <!-- START: ADDED ACTIVATION FEE NOTICE -->
                                 <div id="activationFeeNoticeSelected"
                                     class="hidden mt-3 text-xs text-center text-gold-400 bg-gold-500/10 p-2 rounded-lg">
-                                    <p>
-                                        <strong class="font-semibold"><span class="lang-en">Additional
+                                    <p><strong class="font-semibold"><span class="lang-en">Additional
                                                 Charge</span><span class="lang-si">අමතර ගාස්තුව</span>:</strong>
                                         <span class="lang-en">Rs 1,500 activation fee.</span><span class="lang-si">රු
                                             1,500 සක්‍රීය කිරීමේ ගාස්තුව.</span>
                                     </p>
                                 </div>
-                                <!-- END: ADDED ACTIVATION FEE NOTICE -->
                                 <div class="mt-3">
                                     <div class="flex items-center justify-between text-xs text-white/70">
                                         <span id="capacityLabel"></span>
@@ -285,6 +304,48 @@
                     </section>
                 </div>
             </section>
+
+            <!-- START: NEW GAME BOX ADD-ON SECTION -->
+            <section id="gameBoxPane" class="mt-8 hidden">
+                <div class="rounded-2xl glass p-4 sm:p-5 addon-glow border border-gold-500/20">
+                    <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                        <!-- Image -->
+                        <div class="shrink-0">
+                            <div
+                                class="relative w-28 h-36 sm:w-32 sm:h-40 rounded-lg overflow-hidden bg-white/5 ring-1 ring-white/10">
+                                <img id="gameBoxImage" src="{% static 'images/cover-placeholder.jpg' %}" alt="Game Box"
+                                    class="absolute inset-0 w-full h-full object-cover">
+                            </div>
+                        </div>
+
+                        <!-- Details & Actions -->
+                        <div class="flex-grow text-center sm:text-left">
+                            <h3 id="gameBoxTitle" class="text-base sm:text-lg font-bold text-gold-300">
+                                <span class="lang-en">Collector's Edition Game Box</span>
+                                <span class="lang-si">එකතුකරන්නාගේ සංස්කරණ ක්‍රීඩා පෙට්ටිය</span>
+                            </h3>
+                            <p class="mt-1 text-sm text-white/70">
+                                <span class="lang-en">Upgrade your purchase with a high-quality physical game case.
+                                    Perfect for display!</span>
+                                <span class="lang-si">උසස් තත්ත්වයේ භෞතික ක්‍රීඩා පෙට්ටියකින් ඔබේ මිලදී ගැනීම වැඩි
+                                    දියුණු කරන්න.</span>
+                            </p>
+
+                            <div class="mt-4 flex flex-col sm:flex-row items-center gap-4">
+                                <span id="gameBoxPrice" class="text-xl font-bold"></span>
+                                <div class="w-full sm:w-auto">
+                                    <button id="btnAddToCartBox"
+                                        class="w-full px-5 py-2.5 rounded-xl bg-gold-500/10 border border-gold-500/30 hover:bg-gold-500/20 text-gold-200 font-semibold transition-colors"></button>
+                                    <button id="btnRemoveFromCartBox"
+                                        class="w-full px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/40 hover:bg-red-500/20 text-red-200 font-semibold transition-colors hidden"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- END: NEW GAME BOX ADD-ON SECTION -->
+
 
             <!-- Gallery -->
             <section class="mt-10">
@@ -350,14 +411,13 @@
         </div>
     </main>
 
+    <!-- Footer remains unchanged -->
     <footer class="border-t border-white/10">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
-    <!-- =================================================================
-    NEW MOBILE MENU CONTAINER
-    ================================================================== -->
+    <!-- Mobile menu remains unchanged -->
     <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
         <div id="mobileMenuOverlay"
             class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
@@ -459,9 +519,7 @@
         </div>
     </div>
 
-    <!-- =================================================================
-    UPDATED SCRIPT SECTION
-    ================================================================== -->
+    <!-- SCRIPT SECTION: Fully updated for Game Box feature -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // ---------- API endpoints ----------
@@ -483,8 +541,8 @@
 
             // ---------- i18n dictionary ----------
             const L = {
-                en: { add_cart: 'Add Game to Cart', remove_cart: 'Remove from Cart', adding: 'Adding…', removing: 'Removing…', add_storage: 'Add to storage', remove_storage: 'Remove from storage', your_storage: 'Your storage device', capacity: 'Capacity', available: 'Available', needs: 'Needs', not_enough: 'Not enough space', dev: 'Developer', pub: 'Publisher', genres: 'Genres' },
-                si: { add_cart: 'කර්ට්ටුවට එක් කරන්න', remove_cart: 'කරත්තයෙන් ඉවත් කරන්න', adding: 'එකතු කරමින්…', removing: 'ඉවත් කරමින්…', add_storage: 'ගබඩාවට එක් කරන්න', remove_storage: 'ගබඩාවෙන් ඉවත් කරන්න', your_storage: 'ඔබගේ ගබඩා උපාංගය', capacity: 'ධාරිතාව', available: 'ලබාගත හැකි', needs: 'අවශ්‍ය', not_enough: 'ප්‍රමාණවත් ඉඩ නැත', dev: 'සංවර්ධක', pub: 'ප්‍රකාශක', genres: 'ජානර්ස්' }
+                en: { add_cart: 'Add Game to Cart', remove_cart: 'Remove from Cart', adding: 'Adding…', removing: 'Removing…', add_storage: 'Add to storage', remove_storage: 'Remove from storage', your_storage: 'Your storage device', capacity: 'Capacity', available: 'Available', needs: 'Needs', not_enough: 'Not enough space', dev: 'Developer', pub: 'Publisher', genres: 'Genres', add_box: 'Add Box to Cart', remove_box: 'Remove Box from Cart' },
+                si: { add_cart: 'කර්ට්ටුවට එක් කරන්න', remove_cart: 'කරත්තයෙන් ඉවත් කරන්න', adding: 'එකතු කරමින්…', removing: 'ඉවත් කරමින්…', add_storage: 'ගබඩාවට එක් කරන්න', remove_storage: 'ගබඩාවෙන් ඉවත් කරන්න', your_storage: 'ඔබගේ ගබඩා උපාංගය', capacity: 'ධාරිතාව', available: 'ලබාගත හැකි', needs: 'අවශ්‍ය', not_enough: 'ප්‍රමාණවත් ඉඩ නැත', dev: 'සංවර්ධක', pub: 'ප්‍රකාශක', genres: 'ජානර්ස්', add_box: 'පෙට්ටිය එක් කරන්න', remove_box: 'පෙට්ටිය ඉවත් කරන්න' }
             };
             const getLang = () => (localStorage.getItem('language') === 'si' ? 'si' : 'en');
             const t = (k) => L[getLang()][k] || k;
@@ -494,10 +552,14 @@
                 const remLeft = document.getElementById('btnRemoveFromCart');
                 const addRight = document.getElementById('btnAddToStorageReady');
                 const remRight = document.getElementById('btnRemoveFromStorage');
+                const addBox = document.getElementById('btnAddToCartBox');
+                const remBox = document.getElementById('btnRemoveFromCartBox');
                 if (addLeft && !addLeft.disabled) addLeft.textContent = t('add_cart');
                 if (remLeft && !remLeft.disabled) remLeft.textContent = t('remove_cart');
                 if (addRight && !addRight.disabled) addRight.textContent = t('add_storage');
                 if (remRight && !remRight.disabled) remRight.textContent = t('remove_storage');
+                if (addBox && !addBox.disabled) addBox.textContent = t('add_box');
+                if (remBox && !remBox.disabled) remBox.textContent = t('remove_box');
                 const cap = document.getElementById('capacityLabel'); if (cap) cap.textContent = t('capacity');
             }
 
@@ -516,6 +578,7 @@
                 const slider = document.getElementById('slider');
                 const prev = document.getElementById('prevBtn');
                 const next = document.getElementById('nextBtn');
+                if (!slider) return;
                 const by = () => Math.max(280, Math.floor(slider.clientWidth * 0.9));
                 function scrollBy(delta) { slider.scrollBy({ left: delta, behavior: 'smooth' }); }
                 prev?.addEventListener('click', () => scrollBy(-by()));
@@ -553,7 +616,7 @@
                 const empty = document.getElementById('storageEmpty');
                 const filled = document.getElementById('storageSelected');
                 const hint = document.getElementById('storageHint');
-                if (hint && p.game_size_gb) { hint.textContent = `${t('choose_storage')} — ${t('needs')}: ${Number(p.game_size_gb || 0).toFixed(0)} GB`; }
+                if (hint && p.game_size_gb) { hint.innerHTML = `<span class="lang-en">Requires</span><span class="lang-si">අවශ්‍යයි</span>: ${Number(p.game_size_gb || 0).toFixed(0)} GB`; }
                 const priceBadge = document.getElementById('purchasePriceBadge');
                 if (priceBadge) { priceBadge.textContent = `${p.currency || 'LKR'} ${Number(p.price || 0).toFixed(2)}`; }
 
@@ -597,19 +660,19 @@
                 if (!res.ok) { console.error('Failed to load product', res.status); return; }
                 const p = await res.json();
 
+                window.PRODUCT_CACHE = p; // Cache the product data
+
                 const installationSection = document.getElementById('installationSupportSection');
                 if (installationSection && p.is_cracked === false) {
                     installationSection.classList.remove('hidden');
                 }
 
-                // START: MODIFIED SCRIPT TO SHOW ACTIVATION FEE
                 if (p.is_cracked === false) {
                     const noticeEmpty = document.getElementById('activationFeeNoticeEmpty');
                     const noticeSelected = document.getElementById('activationFeeNoticeSelected');
                     if (noticeEmpty) noticeEmpty.classList.remove('hidden');
                     if (noticeSelected) noticeSelected.classList.remove('hidden');
                 }
-                // END: MODIFIED SCRIPT
 
                 setText('title', p.title);
                 setText('edition', p.edition);
@@ -618,6 +681,7 @@
                 setText('price', price);
                 setText('size', size);
 
+                document.getElementById('meta').innerHTML = ''; // Clear previous meta
                 addMeta('dev', p.developer);
                 addMeta('pub', p.publisher);
                 if (p.genres && p.genres.length) addMeta('genres', p.genres.join(', '));
@@ -663,90 +727,97 @@
                     document.getElementById('sys').classList.remove('hidden');
                 }
 
+                // --- GAME BOX LOGIC ---
+                const gameBoxPane = document.getElementById('gameBoxPane');
+                if (p.game_box) {
+                    setText('gameBoxPrice', `${p.game_box.currency || 'LKR'} ${Number(p.game_box.price || 0).toFixed(2)}`);
+                    const boxImg = document.getElementById('gameBoxImage');
+                    if (boxImg) boxImg.src = p.game_box.cover_url || '{% static "images/cover-placeholder.jpg" %}';
+                    gameBoxPane.classList.remove('hidden');
+                } else {
+                    gameBoxPane.classList.add('hidden');
+                }
+
                 try {
                     const cr = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
                     window.SELECTED_STORAGE = (cr && cr.device) ? { name: cr.device.name, true_capacity_gb: parseFloat(cr.device_capacity_gb || '0'), used_gb: parseFloat(cr.device_used_gb || '0') } : null;
                 } catch (e) { console.warn('Cart fetch failed', e); window.SELECTED_STORAGE = null; }
                 renderStoragePane(p);
+                togglePurchaseUI(p); // Combined UI toggle function
                 setButtonLabels();
             }
 
-            // ---------- Toggle UI based on cart state ----------
-            async function togglePurchaseStorageUI(product) {
+            // ---------- Toggle UI based on cart state (Combined) ----------
+            async function togglePurchaseUI(product) {
                 const cart = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
-                window.SELECTED_STORAGE = (cart && cart.device) ? { name: cart.device.name, true_capacity_gb: parseFloat(cart.device_capacity_gb || '0'), used_gb: parseFloat(cart.device_used_gb || '0') } : null;
+                window.SELECTED_STORAGE = (cart && cr.device) ? { name: cr.device.name, true_capacity_gb: parseFloat(cr.device_capacity_gb || '0'), used_gb: parseFloat(cr.device_used_gb || '0') } : null;
                 renderStoragePane(product);
 
+                // Main game buttons
                 const leftItem = (cart.left_items || []).find(ci => ci.product.id === product.id);
-                const rightItem = (cart.right_items || []).find(si => si.product.id === product.id);
-
                 const addLeft = document.getElementById('btnAddToCart');
                 const remLeft = document.getElementById('btnRemoveFromCart');
+                addLeft.classList.toggle('hidden', !!leftItem);
+                remLeft.classList.toggle('hidden', !leftItem);
+
+                // On-storage game buttons
+                const rightItem = (cart.right_items || []).find(si => si.product.id === product.id);
                 const addRight = document.getElementById('btnAddToStorageReady');
                 const remRight = document.getElementById('btnRemoveFromStorage');
-                const storageEmpty = document.getElementById('storageEmpty');
-                const storageSelected = document.getElementById('storageSelected');
-
-                if (leftItem) { addLeft.classList.add('hidden'); remLeft.classList.remove('hidden'); remLeft.dataset.productId = product.id; }
-                else { remLeft.classList.add('hidden'); addLeft.classList.remove('hidden'); }
-
                 if (cart.device) {
-                    storageEmpty.classList.add('hidden');
-                    storageSelected.classList.remove('hidden');
-                    if (rightItem) { addRight.classList.add('hidden'); remRight.classList.remove('hidden'); remRight.dataset.productId = product.id; }
-                    else { remRight.classList.add('hidden'); addRight.classList.remove('hidden'); }
-                } else {
-                    storageSelected.classList.add('hidden');
-                    storageEmpty.classList.remove('hidden');
+                    addRight.classList.toggle('hidden', !!rightItem);
+                    remRight.classList.toggle('hidden', !rightItem);
                 }
+
+                // Game box buttons
+                if (product.game_box) {
+                    const boxItem = (cart.left_items || []).find(ci => ci.product.id === product.game_box.id);
+                    const addBox = document.getElementById('btnAddToCartBox');
+                    const remBox = document.getElementById('btnRemoveFromCartBox');
+                    addBox.classList.toggle('hidden', !!boxItem);
+                    remBox.classList.toggle('hidden', !boxItem);
+                }
+
                 setButtonLabels();
             }
 
             // ---------- Wire actions ----------
             (function wireActions() {
-                const addLeft = document.getElementById('btnAddToCart');
-                const remLeft = document.getElementById('btnRemoveFromCart');
-                const addRight = document.getElementById('btnAddToStorageReady');
-                const remRight = document.getElementById('btnRemoveFromStorage');
-                let PRODUCT_CACHE = null;
-                async function ensureProduct() { if (PRODUCT_CACHE) return PRODUCT_CACHE; const slug = `{{ slug|escapejs }}`; PRODUCT_CACHE = await fetch(API(slug)).then(r => r.json()); return PRODUCT_CACHE; }
+                async function ensureProduct() { return window.PRODUCT_CACHE; }
 
-                addLeft?.addEventListener('click', async () => {
-                    const p = await ensureProduct();
-                    addLeft.disabled = true; addLeft.textContent = t('adding');
-                    try { await postJSON(API_ADD_DIRECT, { product_id: p.id, quantity: 1 }); await togglePurchaseStorageUI(p); }
-                    catch (e) { alert(e.message || 'Could not add to cart'); }
-                    finally { addLeft.disabled = false; addLeft.textContent = t('add_cart'); }
-                });
+                async function handleAction(buttonId, loadingTextKey, actionApi, getBody, successMessage) {
+                    const btn = document.getElementById(buttonId);
+                    if (!btn) return;
+                    btn.addEventListener('click', async () => {
+                        const p = await ensureProduct();
+                        if (!p) return;
+                        btn.disabled = true;
+                        btn.textContent = t(loadingTextKey);
+                        try {
+                            const body = getBody(p);
+                            await postJSON(actionApi, body);
+                            await togglePurchaseUI(p);
+                        } catch (e) {
+                            alert(e.message || 'Action failed');
+                            setButtonLabels(); // Restore button text on failure
+                        } finally {
+                            btn.disabled = false;
+                        }
+                    });
+                }
 
-                remLeft?.addEventListener('click', async () => {
-                    const p = await ensureProduct();
-                    remLeft.disabled = true; remLeft.textContent = t('removing');
-                    try { await postJSON(API_REMOVE_LEFT, { product_id: p.id }); await togglePurchaseStorageUI(p); }
-                    catch (e) { alert(e.message || 'Could not remove from cart'); }
-                    finally { remLeft.disabled = false; remLeft.textContent = t('remove_cart'); }
-                });
+                handleAction('btnAddToCart', 'adding', API_ADD_DIRECT, p => ({ product_id: p.id, quantity: 1 }));
+                handleAction('btnRemoveFromCart', 'removing', API_REMOVE_LEFT, p => ({ product_id: p.id }));
+                handleAction('btnAddToStorageReady', 'adding', API_ADD_TO_DEVICE, p => ({ product_id: p.id, quantity: 1 }));
+                handleAction('btnRemoveFromStorage', 'removing', API_REMOVE_FROM_DEVICE, p => ({ product_id: p.id }));
 
-                addRight?.addEventListener('click', async () => {
-                    const p = await ensureProduct();
-                    addRight.disabled = true; addRight.textContent = t('adding');
-                    try { await postJSON(API_ADD_TO_DEVICE, { product_id: p.id, quantity: 1 }); await togglePurchaseStorageUI(p); }
-                    catch (e) { alert(e.message || 'Could not add to device (check capacity)'); }
-                    finally { addRight.disabled = false; addRight.textContent = t('add_storage'); }
-                });
+                // Game Box Actions (re-uses direct purchase API)
+                handleAction('btnAddToCartBox', 'adding', API_ADD_DIRECT, p => ({ product_id: p.game_box.id, quantity: 1 }));
+                handleAction('btnRemoveFromCartBox', 'removing', API_REMOVE_LEFT, p => ({ product_id: p.game_box.id }));
 
-                remRight?.addEventListener('click', async () => {
-                    const p = await ensureProduct();
-                    remRight.disabled = true; remRight.textContent = t('removing');
-                    try { await postJSON(API_REMOVE_FROM_DEVICE, { product_id: p.id }); await togglePurchaseStorageUI(p); }
-                    catch (e) { alert(e.message || 'Could not remove from storage'); }
-                    finally { remRight.disabled = false; remRight.textContent = t('remove_storage'); }
-                });
-
-                (async () => { const p = await ensureProduct(); await togglePurchaseStorageUI(p); })();
             })();
 
-            // --- Mobile Menu Logic ---
+            // --- Mobile Menu Logic (unchanged) ---
             const navToggle = document.getElementById('navToggle');
             const closeNav = document.getElementById('closeNav');
             const mobileMenuContainer = document.getElementById('mobileMenuContainer');
@@ -754,30 +825,14 @@
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
             const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
 
-            const openMenu = () => {
-                if (!mobileMenuContainer) return;
-                mobileMenuContainer.classList.remove('pointer-events-none');
-                mobileMenuOverlay.classList.remove('opacity-0');
-                mobileMenu.classList.remove('translate-x-full');
-                document.body.style.overflow = 'hidden';
-            };
-            const closeMenu = () => {
-                if (!mobileMenuContainer) return;
-                mobileMenuOverlay.classList.add('opacity-0');
-                mobileMenu.classList.add('translate-x-full');
-                document.body.style.overflow = '';
-                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
-            };
+            const openMenu = () => { if (!mobileMenuContainer) return; mobileMenuContainer.classList.remove('pointer-events-none'); mobileMenuOverlay.classList.remove('opacity-0'); mobileMenu.classList.remove('translate-x-full'); document.body.style.overflow = 'hidden'; };
+            const closeMenu = () => { if (!mobileMenuContainer) return; mobileMenuOverlay.classList.add('opacity-0'); mobileMenu.classList.add('translate-x-full'); document.body.style.overflow = ''; setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300); };
 
             navToggle?.addEventListener('click', openMenu);
             closeNav?.addEventListener('click', closeMenu);
             mobileMenuOverlay?.addEventListener('click', closeMenu);
             mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
-                    closeMenu();
-                }
-            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) { closeMenu(); } });
 
             // --- Language toggle logic ---
             const langToggleBtn = document.getElementById('langToggleBtn');
@@ -797,7 +852,7 @@
 
                 document.title = isSi ? siTitle : enTitle;
                 metaDescription?.setAttribute('content', isSi ? siDesc : enDesc);
-                localStorage.setItem('language', 'si');
+                localStorage.setItem('language', lang); // Correctly save 'en' or 'si'
                 setButtonLabels();
             };
             const toggleLanguage = () => { const currentLang = localStorage.getItem('language') || 'en'; setLanguage(currentLang === 'en' ? 'si' : 'en'); };

@@ -605,7 +605,7 @@ def api_products(request):
     PER_PAGE = 20
 
     # 1. ADDED .order_by() TO PRIORITIZE NON-CRACKED GAMES
-    qs = Product.objects.filter(is_active=True).prefetch_related(
+    qs = Product.objects.filter(is_active=True, is_addon_only=False).prefetch_related(
         "images").order_by('is_cracked')
 
     q = (request.query_params.get("q") or "").strip()
@@ -695,6 +695,17 @@ def serialize_product(p, request) -> dict:
         "is_primary": bool(getattr(img, "is_primary", False)),
     } for img in imgs_qs]
 
+    game_box_product = p.addons.filter(is_active=True).first()
+    game_box_data = None
+    if game_box_product:
+        game_box_data = {
+            "id": game_box_product.id,
+            "title": game_box_product.title,
+            "price": float(game_box_product.price),
+            "currency": game_box_product.currency,
+            "cover_url": _product_primary_image_url(game_box_product, request)
+        }
+
     data = {
         "id": p.id,
         "sku": getattr(p, "sku", None),
@@ -713,6 +724,7 @@ def serialize_product(p, request) -> dict:
         "images": images,
         "cover_url": images[0]["url"] if images else None,
         "url": f"/products/{p.slug}/",
+        "game_box": game_box_data,
     }
     data["dlcs"] = [serialize_dlc(d, request) for d in p.dlcs.all()]
 
