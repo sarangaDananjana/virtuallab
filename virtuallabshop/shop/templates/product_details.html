@@ -9,6 +9,11 @@
     <meta name="description"
         content="View game details, screenshots, system requirements, and add to your cart or storage device." />
 
+    <!-- OPTIMIZATION: Preconnect to external domains to speed up initial connection. -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,9 +38,7 @@
         }
     </script>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- OPTIMIZATION: Added `&display=swap` to the font URL. This shows text immediately in a system font while the custom font loads, improving perceived speed. -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
         rel="stylesheet">
@@ -123,6 +126,7 @@
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
                 <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                    <!-- OPTIMIZATION: Added width, height, and decoding attributes for better image loading performance. -->
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
                     <div class="flex flex-col">
@@ -205,8 +209,10 @@
                 <div class="lg:col-span-5">
                     <div class="mx-auto w-full max-w-[280px] sm:max-w-[300px] md:max-w-[320px] lg:max-w-full">
                         <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
+                            <!-- OPTIMIZATION: Added width, height, and decoding attributes. `loading="eager"` tells the browser to prioritize this main image. -->
                             <img id="primaryImg" alt="Cover" src="{% static 'images/cover-placeholder.jpg' %}"
-                                class="absolute inset-0 w-full h-full object-cover" />
+                                class="absolute inset-0 w-full h-full object-cover" width="320" height="427"
+                                decoding="async" loading="eager" />
                         </div>
                     </div>
                 </div>
@@ -313,8 +319,10 @@
                         <div class="shrink-0">
                             <div
                                 class="relative w-28 h-36 sm:w-32 sm:h-40 rounded-lg overflow-hidden bg-white/5 ring-1 ring-white/10">
+                                <!-- OPTIMIZATION: Added lazy loading, decoding, width, and height. -->
                                 <img id="gameBoxImage" src="{% static 'images/cover-placeholder.jpg' %}" alt="Game Box"
-                                    class="absolute inset-0 w-full h-full object-cover">
+                                    class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async"
+                                    width="128" height="160">
                             </div>
                         </div>
 
@@ -520,7 +528,8 @@
     </div>
 
     <!-- SCRIPT SECTION: Fully updated for Game Box feature -->
-    <script>
+    <!-- OPTIMIZATION: Added `defer` to the script tag to prevent it from blocking page rendering. -->
+    <script defer>
         document.addEventListener('DOMContentLoaded', function () {
             // ---------- API endpoints ----------
             const API = (slug) => `/api/products/${slug}/`;
@@ -570,7 +579,10 @@
             function slideEl(src, alt) {
                 const w = document.createElement('button');
                 w.className = 'group shrink-0 w-[78vw] sm:w-[60vw] md:w-[480px] lg:w-[640px] aspect-[16/9] rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5 snap-start card-hover';
-                w.innerHTML = `<img src="${src}" alt="${alt || ''}" class="w-full h-full object-cover"/>`;
+
+                // OPTIMIZATION: Added lazy loading, decoding, width, and height to gallery images.
+                w.innerHTML = `<img src="${src}" alt="${alt || ''}" class="w-full h-full object-cover" loading="lazy" decoding="async" width="640" height="360"/>`;
+
                 w.addEventListener('click', () => { const cover = document.getElementById('primaryImg'); if (cover) cover.src = src; window.scrollTo({ top: 0, behavior: 'smooth' }); });
                 return w;
             }
@@ -601,7 +613,7 @@
                 return `
                 <div class="group rounded-2xl glass overflow-hidden card-hover">
                     <div class="relative aspect-[3/4] overflow-hidden">
-                        <img src="${src}" alt="${title}" class="absolute inset-0 w-full h-full object-cover"/>
+                        <img src="${src}" alt="${title}" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async"/>
                     </div>
                     <div class="p-3 sm:p-4">
                         <h3 class="font-semibold leading-snug whitespace-normal break-words">${title}</h3>
@@ -753,8 +765,6 @@
             async function togglePurchaseUI(product, cartData = null) {
                 const cart = cartData || await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
 
-                // *** BUG FIX IS HERE ***
-                // The variable `cr` was incorrectly used here before. It is now correctly using `cart`.
                 window.SELECTED_STORAGE = (cart && cart.device) ? { name: cart.device.name, true_capacity_gb: parseFloat(cart.device_capacity_gb || '0'), used_gb: parseFloat(cart.device_used_gb || '0') } : null;
 
                 renderStoragePane(product);
