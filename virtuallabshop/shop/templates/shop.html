@@ -9,20 +9,42 @@
     <meta name="description"
         content="Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on multi-disc DVDs or pre-loaded Hard Disks with fast islandwide delivery and after-service support." />
 
-    <!-- Optimization: Preconnect to font origins -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559'
+                        },
+                        gold: {
+                            50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
+                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Optimization: Non-render-blocking font loading -->
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap">
-    <link rel="stylesheet"
+    <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
-        media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap">
-    </noscript>
+        rel="stylesheet">
 
     <!-- Shared site styles -->
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -57,14 +79,13 @@
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
     <!-- =================================================================
-    HEADER
+    HEADER - UPDATED WITH NEW MOBILE MENU
     ================================================================== -->
     <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
                 <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
-                    <!-- Optimization: Added async decoding -->
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
                     <div class="flex flex-col">
@@ -73,7 +94,7 @@
                     </div>
                 </a>
 
-                <!-- Desktop Navigation -->
+                <!-- Desktop Navigation (links point to Home sections) -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
                     <a href="{% url 'home-page' %}"
                         class="text-sm font-semibold transition-colors hover:text-gold-400"><span
@@ -123,10 +144,8 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <!-- Accessibility: Added aria-label for screen readers -->
                     <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
-                        aria-label="Open navigation menu">
+                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -162,8 +181,7 @@
                     <div class="glass rounded-2xl p-2 flex flex-col sm:flex-row items-center gap-2">
                         <input type="search" id="q" placeholder="Search games..."
                             class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
-                        <!-- Accessibility: Added aria-label for screen readers -->
-                        <select id="genre" aria-label="Filter by genre"
+                        <select id="genre"
                             class="w-full sm:w-auto px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
                             <option value="">All Genres</option>
                         </select>
@@ -190,7 +208,9 @@
                 id="year"></span> Virtual Lab Games.</div>
     </footer>
 
-    <!-- MOBILE MENU CONTAINER -->
+    <!-- =================================================================
+    NEW MOBILE MENU CONTAINER
+    ================================================================== -->
     <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
         <div id="mobileMenuOverlay"
             class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
@@ -199,14 +219,11 @@
             class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <div class="flex items-center gap-2">
-                    <!-- Optimization: Added width, height, and async decoding to prevent layout shift -->
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-8 w-auto object-contain" width="32" height="32" decoding="async" />
+                        class="h-8 w-auto object-contain" />
                     <span class="font-bold text-lg">Menu</span>
                 </div>
-                <!-- Accessibility: Added aria-label for screen readers -->
-                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors"
-                    aria-label="Close navigation menu">
+                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -294,36 +311,9 @@
         </div>
     </div>
 
-    <!-- Optimization: Moved scripts to the end of the body to prevent render-blocking -->
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559'
-                        },
-                        gold: {
-                            50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F'
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'gradient': 'gradient 8s ease infinite',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                    },
-                    keyframes: {
-                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } },
-                        slideUp: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- =================================================================
+    UPDATED SCRIPT SECTION
+    ================================================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const API_URL = '/api/products/';
@@ -342,6 +332,7 @@
                 const size = g.size_display || (g.game_size_gb ? `${g.game_size_gb} GB` : '');
                 const edition = g.edition || 'Standard Edition';
 
+                // --- START: Badge Logic ---
                 let badgeHTML = '';
                 if (g.is_cracked === false) {
                     badgeHTML = `
@@ -351,18 +342,17 @@
                         </div>
                     `;
                 }
+                // --- END: Badge Logic ---
 
                 return `
                 <a href="${detail}" class="group block rounded-3xl card-hover">
                     <div class="relative aspect-[3/4] rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5">
-                        <!-- Optimization: Added loading='lazy', decoding='async', and explicit width/height to improve LCP, reduce layout shift, and offload decoding from main thread. -->
-                        <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy" decoding="async" width="300" height="400" />
-                        ${badgeHTML}
+                        <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+                        ${badgeHTML} {/* <-- Badge is inserted here */}
                         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                     </div>
                     <div class="mt-3 p-3 sm:p-4">
-                        <!-- Accessibility: Changed h3 to h2 for correct heading order -->
-                        <h2 class="font-semibold leading-snug whitespace-normal break-words">${g.title}</h2>
+                        <h3 class="font-semibold leading-snug whitespace-normal break-words">${g.title}</h3>
                         <p class="mt-1 text-xs sm:text-sm text-white/70 whitespace-normal break-words">${edition}</p>
                         <div class="mt-3 flex items-center gap-2 flex-wrap">
                         <div class="font-bold text-sm sm:text-base text-gold-400">${price}</div>
@@ -373,6 +363,7 @@
                 </a>`;
             }
 
+            // Add this new function inside the DOMContentLoaded listener
             async function loadGenres() {
                 try {
                     const res = await fetch('/api/genres/');
@@ -512,17 +503,22 @@
 
             setLanguage(localStorage.getItem('language') || 'en');
 
+            // --- ADD THIS NEW SECTION FOR EVENT LISTENERS ---
             const filterForm = document.getElementById('filterForm');
             const genreSelect = document.getElementById('genre');
 
+            // Trigger search when the form is submitted (Search button or Enter key)
             filterForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                loadGames(1);
+                event.preventDefault(); // Stop the page from reloading
+                loadGames(1); // Load the first page of search results
             });
 
+            // Trigger search immediately when a new genre is selected
             genreSelect.addEventListener('change', () => {
-                loadGames(1);
+                loadGames(1); // Load the first page of results for that genre
             });
+            // --- END OF NEW SECTION ---
+
 
             // Initial load
             const initialPage = Number(new URLSearchParams(location.search).get('page') || '1');
