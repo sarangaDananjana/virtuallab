@@ -9,8 +9,14 @@
     <meta name="description"
         content="Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on multi-disc DVDs or pre-loaded Hard Disks with fast islandwide delivery and after-service support." />
 
+    <!-- OPTIMIZATION: Preconnect to external domains to speed up initial connection. -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- OPTIMIZATION: Added `defer` to the Tailwind script to prevent it from blocking page rendering. -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
     <script>
         tailwind.config = {
             theme: {
@@ -40,14 +46,23 @@
     </script>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
+    <!-- OPTIMIZATION: Asynchronously load CSS to prevent render-blocking. -->
+    <link rel="preload"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
-        rel="stylesheet">
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+            rel="stylesheet">
+    </noscript>
+
 
     <!-- Shared site styles -->
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <!-- OPTIMIZATION: Asynchronously load CSS to prevent render-blocking. -->
+    <link rel="preload" href="{% static 'css/home.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    </noscript>
 
     <style>
         /* Language visibility helpers */
@@ -79,7 +94,7 @@
 
 <body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
     <!-- =================================================================
-    HEADER - UPDATED WITH NEW MOBILE MENU
+    HEADER - UPDATED WITH NEW MOBILE MENU & ACCESSIBILITY LABELS
     ================================================================== -->
     <header class="header-blend sticky top-0 z-[80]">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,7 +126,8 @@
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <a href="{% url 'cart_page' %}"
+                    <!-- ACCESSIBILITY FIX: Added aria-label -->
+                    <a href="{% url 'cart_page' %}" aria-label="Open cart"
                         class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -144,7 +160,8 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <button id="navToggle"
+                    <!-- ACCESSIBILITY FIX: Added aria-label -->
+                    <button id="navToggle" aria-label="Open navigation menu"
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,7 +198,8 @@
                     <div class="glass rounded-2xl p-2 flex flex-col sm:flex-row items-center gap-2">
                         <input type="search" id="q" placeholder="Search games..."
                             class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400" />
-                        <select id="genre"
+                        <!-- ACCESSIBILITY FIX: Added aria-label -->
+                        <select id="genre" aria-label="Filter by genre"
                             class="w-full sm:w-auto px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:border-brand-400 text-sm">
                             <option value="">All Genres</option>
                         </select>
@@ -192,6 +210,8 @@
                 </form>
             </div>
 
+            <!-- ACCESSIBILITY FIX: Added a visually-hidden h2 for semantics -->
+            <h2 class="sr-only">Game List</h2>
             <!-- Games Grid -->
             <div id="gamesGrid"
                 class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5">
@@ -220,10 +240,12 @@
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <div class="flex items-center gap-2">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-8 w-auto object-contain" />
+                        class="h-8 w-auto object-contain" width="32" height="32" />
                     <span class="font-bold text-lg">Menu</span>
                 </div>
-                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                <!-- ACCESSIBILITY FIX: Added aria-label -->
+                <button id="closeNav" type="button" aria-label="Close navigation menu"
+                    class="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -347,12 +369,14 @@
                 return `
                 <a href="${detail}" class="group block rounded-3xl card-hover">
                     <div class="relative aspect-[3/4] rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5">
-                        <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+                        <!-- OPTIMIZATION: Added lazy-loading, async decoding, and dimensions -->
+                        <img src="${cover}" alt="${g.title} cover" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" loading="lazy" decoding="async" width="300" height="400" />
                         ${badgeHTML} {/* <-- Badge is inserted here */}
                         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                     </div>
                     <div class="mt-3 p-3 sm:p-4">
-                        <h3 class="font-semibold leading-snug whitespace-normal break-words">${g.title}</h3>
+                        <!-- ACCESSIBILITY FIX: Changed to h4 for correct heading order -->
+                        <h4 class="font-semibold leading-snug whitespace-normal break-words">${g.title}</h4>
                         <p class="mt-1 text-xs sm:text-sm text-white/70 whitespace-normal break-words">${edition}</p>
                         <div class="mt-3 flex items-center gap-2 flex-wrap">
                         <div class="font-bold text-sm sm:text-base text-gold-400">${price}</div>
