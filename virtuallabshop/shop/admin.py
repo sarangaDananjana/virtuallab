@@ -135,23 +135,51 @@ class ProductAdmin(admin.ModelAdmin):
         "edition",
         "sku",
         "price",
-        "currency",
+        # --- NEWLY ADDED ---
+        "is_addon_only",
+        "addon_for",
+        # --- END NEW ---
         "is_active",
         "is_cracked",
-        "developer",
-        "publisher",
         "game_size_gb",
-        "image_count",
         "created_at",
     )
-    list_filter = ("is_active", "is_cracked",
+    # --- NEWLY ADDED ---
+    list_filter = ("is_active", "is_cracked", "is_addon_only",
                    "developer", "publisher", "genres")
+    # --- END NEW ---
     search_fields = ("title", "sku", "description")
-    list_select_related = ("developer", "publisher")
+    list_select_related = ("developer", "publisher",
+                           "addon_for")  # Added addon_for
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["developer", "publisher", "genres"]
+    # --- NEWLY ADDED ---
+    autocomplete_fields = ["developer", "publisher", "genres", "addon_for"]
+    # --- END NEW ---
     readonly_fields = ("created_at", "updated_at")
     date_hierarchy = "created_at"
+
+    # --- NEW: Add fields to the product edit page ---
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'edition', 'slug', 'sku', 'price', 'currency', 'description')
+        }),
+        ('Categorization', {
+            'fields': ('genres', 'developer', 'publisher')
+        }),
+        # This new section groups our add-on fields together neatly
+        ('Add-on Configuration', {
+            'fields': ('is_addon_only', 'addon_for'),
+            'description': 'Use these fields to mark this product as an add-on (like a game box) for another main product.'
+        }),
+        ('Status & Specs', {
+            'fields': ('is_active', 'is_cracked', 'game_size_gb')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    # --- END NEW ---
 
     @admin.display(description="Images", ordering=None)
     def image_count(self, obj):
