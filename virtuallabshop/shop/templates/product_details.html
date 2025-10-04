@@ -38,13 +38,20 @@
         }
     </script>
 
-    <!-- OPTIMIZATION: Added `&display=swap` to the font URL. This shows text immediately in a system font while the custom font loads, improving perceived speed. -->
-    <link
+    <!-- OPTIMIZATION: Asynchronously load CSS to prevent render-blocking. -->
+    <link rel="preload"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
-        rel="stylesheet">
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap">
+    </noscript>
 
     <!-- Shared site styles -->
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preload" href="{% static 'css/home.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    </noscript>
 
     <style>
         /* Language helpers */
@@ -126,7 +133,6 @@
             <div class="flex items-center justify-between h-16 sm:h-18">
                 <!-- Logo -->
                 <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
-                    <!-- OPTIMIZATION: Added width, height, and decoding attributes for better image loading performance. -->
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
                         class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
                     <div class="flex flex-col">
@@ -152,7 +158,8 @@
                     <button id="langToggleBtn"
                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
 
-                    <a href="{% url 'cart_page' %}"
+                    <!-- ACCESSIBILITY FIX: Added aria-label for screen readers -->
+                    <a href="{% url 'cart_page' %}" aria-label="Open cart"
                         class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -185,7 +192,8 @@
                             class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
                     {% endif %}
 
-                    <button id="navToggle"
+                    <!-- ACCESSIBILITY FIX: Added aria-label for screen readers -->
+                    <button id="navToggle" aria-label="Open navigation menu"
                         class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -209,10 +217,10 @@
                 <div class="lg:col-span-5">
                     <div class="mx-auto w-full max-w-[280px] sm:max-w-[300px] md:max-w-[320px] lg:max-w-full">
                         <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
-                            <!-- OPTIMIZATION: Added width, height, and decoding attributes. `loading="eager"` tells the browser to prioritize this main image. -->
+                            <!-- OPTIMIZATION: Added `fetchpriority="high"` to hint to the browser that this is the most important image to load. -->
                             <img id="primaryImg" alt="Cover" src="{% static 'images/cover-placeholder.jpg' %}"
                                 class="absolute inset-0 w-full h-full object-cover" width="320" height="427"
-                                decoding="async" loading="eager" />
+                                decoding="async" loading="eager" fetchpriority="high" />
                         </div>
                     </div>
                 </div>
@@ -238,8 +246,9 @@
                         <!-- Direct purchase -->
                         <div class="rounded-2xl glass p-4">
                             <div class="flex items-center justify-between">
-                                <h3 class="font-semibold"><span class="lang-en">Direct purchase</span><span
-                                        class="lang-si">සෘජු මිලදී ගැනීම</span></h3>
+                                <!-- ACCESSIBILITY FIX: Changed h3 to h2 to fix heading order -->
+                                <h2 class="font-semibold"><span class="lang-en">Direct purchase</span><span
+                                        class="lang-si">සෘජු මිලදී ගැනීම</span></h2>
                                 <span id="purchasePriceBadge"
                                     class="px-2 py-1 rounded-lg bg-white/10 text-xs font-semibold"></span>
                             </div>
@@ -256,8 +265,9 @@
                         <!-- Storage device -->
                         <div class="rounded-2xl glass p-4" id="storagePane">
                             <div id="storageEmpty" class="space-y-3">
-                                <h3 class="font-semibold"><span class="lang-en">Use a storage device</span><span
-                                        class="lang-si">ගබඩා උපාංගයක් භාවිතා කරන්න</span></h3>
+                                <!-- ACCESSIBILITY FIX: Changed h3 to h2 to fix heading order -->
+                                <h2 class="font-semibold"><span class="lang-en">Use a storage device</span><span
+                                        class="lang-si">ගබඩා උපාංගයක් භාවිතා කරන්න</span></h2>
                                 <div id="activationFeeNoticeEmpty"
                                     class="hidden text-xs text-center text-gold-400 bg-gold-500/10 p-2 rounded-lg">
                                     <p><strong class="font-semibold"><span class="lang-en">Additional
@@ -275,8 +285,9 @@
                             </div>
                             <div id="storageSelected" class="hidden">
                                 <div class="flex items-center justify-between">
-                                    <h3 class="font-semibold"><span class="lang-en">Your storage device</span><span
-                                            class="lang-si">ඔබගේ ගබඩා උපාංගය</span></h3>
+                                    <!-- ACCESSIBILITY FIX: Changed h3 to h2 to fix heading order -->
+                                    <h2 class="font-semibold"><span class="lang-en">Your storage device</span><span
+                                            class="lang-si">ඔබගේ ගබඩා උපාංගය</span></h2>
                                     <span id="storageName" class="text-xs px-2 py-1 rounded-lg bg-white/10"></span>
                                 </div>
                                 <div id="activationFeeNoticeSelected"
@@ -319,7 +330,6 @@
                         <div class="shrink-0">
                             <div
                                 class="relative w-28 h-36 sm:w-32 sm:h-40 rounded-lg overflow-hidden bg-white/5 ring-1 ring-white/10">
-                                <!-- OPTIMIZATION: Added lazy loading, decoding, width, and height. -->
                                 <img id="gameBoxImage" src="{% static 'images/cover-placeholder.jpg' %}" alt="Game Box"
                                     class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async"
                                     width="128" height="160">
@@ -328,10 +338,11 @@
 
                         <!-- Details & Actions -->
                         <div class="flex-grow text-center sm:text-left">
-                            <h3 id="gameBoxTitle" class="text-base sm:text-lg font-bold text-gold-300">
+                            <!-- ACCESSIBILITY FIX: Changed h3 to h2 to fix heading order -->
+                            <h2 id="gameBoxTitle" class="text-base sm:text-lg font-bold text-gold-300">
                                 <span class="lang-en">Collector's Edition Game Box</span>
                                 <span class="lang-si">එකතුකරන්නාගේ සංස්කරණ ක්‍රීඩා පෙට්ටිය</span>
-                            </h3>
+                            </h2>
                             <p class="mt-1 text-sm text-white/70">
                                 <span class="lang-en">Upgrade your purchase with a high-quality physical game case.
                                     Perfect for display!</span>
@@ -375,7 +386,7 @@
                 <div
                     class="rounded-2xl glass p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h3 class="font-bold text-lg">Special Installation Required</h3>
+                        <h2 class="font-bold text-lg">Special Installation Required</h2>
                         <p class="text-sm text-white/70 mt-1">This isn't a typical install-and-play game. Please follow
                             our guide for the full installation and setup.</p>
                     </div>
@@ -435,10 +446,12 @@
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <div class="flex items-center gap-2">
                     <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-8 w-auto object-contain" />
+                        class="h-8 w-auto object-contain" width="32" height="32" />
                     <span class="font-bold text-lg">Menu</span>
                 </div>
-                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                <!-- ACCESSIBILITY FIX: Added aria-label for screen readers -->
+                <button id="closeNav" type="button" aria-label="Close navigation menu"
+                    class="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -527,7 +540,6 @@
         </div>
     </div>
 
-    <!-- SCRIPT SECTION: Fully updated for Game Box feature -->
     <!-- OPTIMIZATION: Added `defer` to the script tag to prevent it from blocking page rendering. -->
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
@@ -574,7 +586,19 @@
 
             // ---------- Meta helpers ----------
             function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val || ''; }
-            function addMeta(labelKey, value) { if (!value) return; const dl = document.getElementById('meta'); const dt = document.createElement('div'); const dd = document.createElement('div'); dt.className = 'text-white/60'; dd.className = 'font-medium'; dt.textContent = t(labelKey); dd.textContent = value; dl.appendChild(dt); dl.appendChild(dd); }
+            // ACCESSIBILITY FIX: Changed to create <dt> and <dd> for semantic list structure
+            function addMeta(labelKey, value) {
+                if (!value) return;
+                const dl = document.getElementById('meta');
+                const dt = document.createElement('dt');
+                const dd = document.createElement('dd');
+                dt.className = 'text-white/60';
+                dd.className = 'font-medium';
+                dt.textContent = t(labelKey);
+                dd.textContent = value;
+                dl.appendChild(dt);
+                dl.appendChild(dd);
+            }
             function li(text) { const li = document.createElement('li'); li.textContent = text; return li; }
             function slideEl(src, alt) {
                 const w = document.createElement('button');
@@ -613,9 +637,11 @@
                 return `
                 <div class="group rounded-2xl glass overflow-hidden card-hover">
                     <div class="relative aspect-[3/4] overflow-hidden">
-                        <img src="${src}" alt="${title}" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async"/>
+                        <!-- OPTIMIZATION: Added width and height to prevent layout shift -->
+                        <img src="${src}" alt="${title}" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" width="200" height="267"/>
                     </div>
                     <div class="p-3 sm:p-4">
+                        <!-- ACCESSIBILITY FIX: Changed to h3 for correct heading order -->
                         <h3 class="font-semibold leading-snug whitespace-normal break-words">${title}</h3>
                         ${desc ? `<p class=\"mt-1 text-xs sm:text-sm text-white/70\">${desc}</p>` : ''}
                     </div>
