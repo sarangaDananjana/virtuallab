@@ -738,19 +738,25 @@
                     gameBoxPane.classList.add('hidden');
                 }
 
+                let cartData = null;
                 try {
-                    const cr = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
-                    window.SELECTED_STORAGE = (cr && cr.device) ? { name: cr.device.name, true_capacity_gb: parseFloat(cr.device_capacity_gb || '0'), used_gb: parseFloat(cr.device_used_gb || '0') } : null;
+                    cartData = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
+                    window.SELECTED_STORAGE = (cartData && cartData.device) ? { name: cartData.device.name, true_capacity_gb: parseFloat(cartData.device_capacity_gb || '0'), used_gb: parseFloat(cartData.device_used_gb || '0') } : null;
                 } catch (e) { console.warn('Cart fetch failed', e); window.SELECTED_STORAGE = null; }
+
                 renderStoragePane(p);
-                togglePurchaseUI(p); // Combined UI toggle function
+                togglePurchaseUI(p, cartData); // Pass cart data to avoid re-fetching
                 setButtonLabels();
             }
 
             // ---------- Toggle UI based on cart state (Combined) ----------
-            async function togglePurchaseUI(product) {
-                const cart = await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
-                window.SELECTED_STORAGE = (cart && cr.device) ? { name: cr.device.name, true_capacity_gb: parseFloat(cr.device_capacity_gb || '0'), used_gb: parseFloat(cr.device_used_gb || '0') } : null;
+            async function togglePurchaseUI(product, cartData = null) {
+                const cart = cartData || await fetch(API_CART, { credentials: 'same-origin' }).then(r => r.json());
+
+                // *** BUG FIX IS HERE ***
+                // The variable `cr` was incorrectly used here before. It is now correctly using `cart`.
+                window.SELECTED_STORAGE = (cart && cart.device) ? { name: cart.device.name, true_capacity_gb: parseFloat(cart.device_capacity_gb || '0'), used_gb: parseFloat(cart.device_used_gb || '0') } : null;
+
                 renderStoragePane(product);
 
                 // Main game buttons
@@ -785,7 +791,7 @@
             (function wireActions() {
                 async function ensureProduct() { return window.PRODUCT_CACHE; }
 
-                async function handleAction(buttonId, loadingTextKey, actionApi, getBody, successMessage) {
+                async function handleAction(buttonId, loadingTextKey, actionApi, getBody) {
                     const btn = document.getElementById(buttonId);
                     if (!btn) return;
                     btn.addEventListener('click', async () => {
@@ -796,7 +802,7 @@
                         try {
                             const body = getBody(p);
                             await postJSON(actionApi, body);
-                            await togglePurchaseUI(p);
+                            await togglePurchaseUI(p); // This re-fetches cart to get the latest state
                         } catch (e) {
                             alert(e.message || 'Action failed');
                             setButtonLabels(); // Restore button text on failure
