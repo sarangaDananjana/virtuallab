@@ -15,8 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Tailwind CSS -->
-    <!-- OPTIMIZATION: Added `defer` to the Tailwind script to prevent it from blocking page rendering. This directly addresses a major finding in the Lighthouse report. -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -218,10 +217,8 @@
                 <div class="lg:col-span-5">
                     <div class="mx-auto w-full max-w-[280px] sm:max-w-[300px] md:max-w-[320px] lg:max-w-full">
                         <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
-                            <!-- OPTIMIZATION: Replaced 404ing placeholder with a transparent pixel data URI to avoid a failed network request. -->
-                            <!-- OPTIMIZATION: Added `fetchpriority="high"` and `decoding="async"` to hint to the browser about the image's importance and decoding strategy. -->
-                            <img id="primaryImg" alt="Cover"
-                                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                            <!-- OPTIMIZATION: Added `fetchpriority="high"` to hint to the browser that this is the most important image to load. -->
+                            <img id="primaryImg" alt="Cover" src="{% static 'images/cover-placeholder.jpg' %}"
                                 class="absolute inset-0 w-full h-full object-cover" width="320" height="427"
                                 decoding="async" loading="eager" fetchpriority="high" />
                         </div>
@@ -333,11 +330,9 @@
                         <div class="shrink-0">
                             <div
                                 class="relative w-28 h-36 sm:w-32 sm:h-40 rounded-lg overflow-hidden bg-white/5 ring-1 ring-white/10">
-                                <!-- OPTIMIZATION: Replaced 404ing placeholder with a transparent pixel data URI. -->
-                                <img id="gameBoxImage"
-                                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                                    alt="Game Box" class="absolute inset-0 w-full h-full object-cover" loading="lazy"
-                                    decoding="async" width="128" height="160">
+                                <img id="gameBoxImage" src="{% static 'images/cover-placeholder.jpg' %}" alt="Game Box"
+                                    class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async"
+                                    width="128" height="160">
                             </div>
                         </div>
 
@@ -545,7 +540,7 @@
         </div>
     </div>
 
-    <!-- OPTIMIZATION: The main script was already deferred, which is good practice. No changes needed here. -->
+    <!-- OPTIMIZATION: Added `defer` to the script tag to prevent it from blocking page rendering. -->
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
             // ---------- API endpoints ----------
@@ -775,7 +770,7 @@
                 if (p.game_box) {
                     setText('gameBoxPrice', `${p.game_box.currency || 'LKR'} ${Number(p.game_box.price || 0).toFixed(2)}`);
                     const boxImg = document.getElementById('gameBoxImage');
-                    if (boxImg) boxImg.src = p.game_box.cover_url || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                    if (boxImg) boxImg.src = p.game_box.cover_url || '{% static "images/cover-placeholder.jpg" %}';
                     gameBoxPane.classList.remove('hidden');
                 } else {
                     gameBoxPane.classList.add('hidden');
