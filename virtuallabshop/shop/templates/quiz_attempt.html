@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attempting Quiz — Virtual Lab Games</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
+                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%,100%': { 'background-position': '0% 50%' }, '50%': { 'background-position': '100% 50%' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    <style>
+        /* Language helpers (from your file) */
+        .lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .lang-si {
+            display: inline;
+        }
+
+        .block-lang.lang-si {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-en {
+            display: none;
+        }
+
+        body.sinhala-mode .block-lang.lang-si {
+            display: block;
+        }
+
+        /* Custom styles for quiz options */
+        .quiz-option {
+            transition: background .2s, border-color .2s;
+        }
+
+        .quiz-option:has(input:checked) {
+            background: rgba(45, 134, 255, .12);
+            border-color: rgba(94, 161, 255, .7);
+        }
+    </style>
+</head>
+
+<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
+    <header class="header-blend sticky top-0 z-[80]">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-18">
+                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
+                    <div class="flex flex-col">
+                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
+                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-10 sm:py-14 lg:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+
+            <div id="quizContainer" class="glass rounded-2xl sm:rounded-3xl p-5 sm:p-8">
+
+                <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                    <h1 class="text-2xl sm:text-3xl font-bold">{{ quiz.title }}</h1>
+                    <div id="timer" class="text-xl font-mono font-bold bg-white/10 px-4 py-2 rounded-lg text-gold-400">
+                        <span id="timerMinutes">--</span>:<span id="timerSeconds">--</span>
+                    </div>
+                </div>
+
+                <div id="questionsContainer" class="space-y-6">
+                    <div id="loadingState" class_="text-center py-10">
+                        <p class="text-lg font-semibold animate-pulse">Loading Quiz...</p>
+                    </div>
+                </div>
+
+                <div id="resultsContainer" class="hidden text-center py-10">
+                    <h2 class="text-3xl font-bold mb-4">Quiz Complete!</h2>
+                    <p class="text-xl mb-2">Your Score:</p>
+                    <p class="text-6xl font-black text-gold-400 mb-6">
+                        <span id="resultScore">0</span> / <span id="resultTotal">0</span>
+                    </p>
+                    <p class="text-2xl font-bold mb-8">
+                        (<span id="resultPercentage">0</span>%)
+                    </p>
+                    <a href="{% url 'quiz-dashboard' %}"
+                        class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
+                        <span class="lang-en">Back to Dashboard</span>
+                        <span class="lang-si">උපකරණ පුවරුව වෙත ආපසු</span>
+                    </a>
+                </div>
+
+                <div id="submitButtonContainer" class="mt-8 pt-6 border-t border-white/10 text-right hidden">
+                    <button id="submitQuizBtn"
+                        class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
+                        <span class="lang-en">Submit Answers</span>
+                        <span class="lang-si">පිළිතුරු යවන්න</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
+                id="year"></span> Virtual Lab Games.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            // --- Mobile Menu & Language JS (Copy from submit_ticket.html) ---
+            // ...
+
+            // --- Quiz Logic ---
+            const quizId = {{ quiz.id }
+        };
+        let attemptId = null;
+        let timerInterval = null;
+
+        const loadingEl = document.getElementById('loadingState');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const submitButtonContainer = document.getElementById('submitButtonContainer');
+        const submitQuizBtn = document.getElementById('submitQuizBtn');
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // 1. Start the Quiz
+        async function startQuiz() {
+            try {
+                const response = await fetch("{% url 'api-quiz-start' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ quiz_id: quizId })
+                });
+
+                if (!response.ok) throw new Error('Could not start quiz.');
+
+                const data = await response.json();
+                attemptId = data.attempt_id;
+                buildQuizUI(data.questions);
+                startTimer(data.time_limit_minutes);
+
+                loadingEl.classList.add('hidden');
+                submitButtonContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                questionsContainer.innerHTML = `<p class="text-red-400 text-center">${error.message}</p>`;
+            }
+        }
+
+        // 2. Build the HTML for questions
+        function buildQuizUI(questions) {
+            questionsContainer.innerHTML = ''; // Clear loading state
+            questions.forEach((q, index) => {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'question-block';
+                questionEl.dataset.questionId = q.id;
+
+                let choicesHTML = q.choices.map(c => `
+                        <label class="quiz-option block p-4 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10">
+                            <input type="radio" name="question_${q.id}" value="${c.id}" class="mr-3">
+                            ${c.choice_text}
+                        </label>
+                    `).join('');
+
+                questionEl.innerHTML = `
+                        <h3 class="text-lg font-semibold mb-4">Question ${index + 1}:</h3>
+                        <p class="mb-4">${q.question_text}</p>
+                        <div class="space-y-3">
+                            ${choicesHTML}
+                        </div>
+                    `;
+                questionsContainer.appendChild(questionEl);
+            });
+        }
+
+        // 3. Start the countdown timer
+        function startTimer(minutes) {
+            let totalSeconds = minutes * 60;
+            const minEl = document.getElementById('timerMinutes');
+            const secEl = document.getElementById('timerSeconds');
+
+            function updateTimer() {
+                const m = Math.floor(totalSeconds / 60);
+                const s = totalSeconds % 60;
+
+                minEl.textContent = String(m).padStart(2, '0');
+                secEl.textContent = String(s).padStart(2, '0');
+
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuizBtn.disabled = true;
+                    submitQuizBtn.textContent = 'Time\'s up!';
+                    submitQuiz(); // Auto-submit when time runs out
+                }
+                totalSeconds--;
+            }
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // 4. Submit the Quiz
+        async function submitQuiz() {
+            if (!attemptId) return;
+
+            clearInterval(timerInterval);
+            submitQuizBtn.disabled = true;
+
+            // Collect answers
+            const answers = {};
+            document.querySelectorAll('.question-block').forEach(qEl => {
+                const qId = qEl.dataset.questionId;
+                const selected = qEl.querySelector(`input[name="question_${qId}"]:checked`);
+                if (selected) {
+                    answers[qId] = selected.value;
+                }
+            });
+
+            try {
+                const response = await fetch("{% url 'api-quiz-submit' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        attempt_id: attemptId,
+                        answers: answers
+                    })
+                });
+
+                if (!response.ok) throw new Error('Could not submit answers.');
+
+                const results = await response.json();
+                showResults(results);
+
+            } catch (error) {
+                console.error(error);
+                alert('Error submitting quiz. Please try again.');
+                submitQuizBtn.disabled = false;
+            }
+        }
+
+        // 5. Show the results screen
+        function showResults(results) {
+            questionsContainer.classList.add('hidden');
+            submitButtonContainer.classList.add('hidden');
+            document.getElementById('timer').classList.add('hidden');
+
+            document.getElementById('resultScore').textContent = results.score;
+            document.getElementById('resultTotal').textContent = results.total_questions;
+            document.getElementById('resultPercentage').textContent = results.percentage;
+
+            resultsContainer.classList.remove('hidden');
+        }
+
+        // Add event listener to the submit button
+        submitQuizBtn.addEventListener('click', submitQuiz);
+
+        // Start the quiz on page load
+        startQuiz();
+        });
+    </script>
+</body>
+
+</html>

@@ -69,4 +69,14 @@ urlpatterns = [
     path("api/blog/<slug:slug>/", views.api_blog_detail, name="api_blog_detail"),
 
 
+
+
+    path('quiz/', views.quiz_dashboard_page, name='quiz-dashboard'),
+    path('quiz/<int:quiz_id>/attempt/',
+         views.quiz_attempt_page, name='quiz-attempt'),
+
+    # --- Quiz API URLs ---
+    path('api/quiz/start/', views.api_start_quiz_attempt, name='api-quiz-start'),
+    path('api/quiz/submit/', views.api_submit_quiz_attempt, name='api-quiz-submit'),
+
 ]

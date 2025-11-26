@@ -17,7 +17,17 @@ from django.urls import reverse, NoReverseMatch
 from urllib.parse import quote
 from django.db import models
 from django.db.models import Prefetch, Q
-from .models import Order, OfflineGames, Ticket, ActivationTicket, TicketPhoto, ReservedSlot, GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User, OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre
+
+from .models import (
+    Order, OfflineGames, Ticket, ActivationTicket, TicketPhoto, ReservedSlot,
+    GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User,
+    OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre,
+    Quiz, Question, Choice, QuizAttempt, UserAnswer  # <-- ADD THESE
+)
+
+# Also, make sure 'timezone' is imported near the top (it's used in the new views)
+from django.utils import timezone
+
 from django.contrib.auth import authenticate, login as dj_login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -2218,3 +2228,184 @@ def calculator_view(request):
     # Django automatically looks inside the 'templates' folder.
     # The path 'calculator_app/calculator.html' corresponds to the folder structure we created.
     return render(request, 'calculator.html')
+# --------------------------------------------------------------------------
+# --- 🧩 Quiz System (NEWLY ADDED) ------------------------------------------
+# --------------------------------------------------------------------------
+
+
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def quiz_dashboard_page(request):
+    """
+    Renders the Quiz Dashboard HTML page.
+    Requires login.
+    """
+    if not request.user.is_authenticated:
+        return _redirect_to_login(request)
+
+    user_initial = None
+    name = request.user.get_username() or getattr(request.user, "email", "") or ""
+    if name:
+        user_initial = name[0].upper()
+
+    # Get all available quizzes
+    available_quizzes = Quiz.objects.all().order_by('quiz_number')
+
+    # Get this user's past attempts
+    user_attempts = QuizAttempt.objects.filter(
+        user=request.user
+    ).select_related('quiz').order_by('-start_time')
+
+    return Response(
+        {
+            "user": request.user,
+            "user_initial": user_initial,
+            "available_quizzes": available_quizzes,
+            "user_attempts": user_attempts,
+        },
+        template_name="quiz_dashboard.html",
+    )
+
+
+@api_view(["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+@ensure_csrf_cookie
+def quiz_attempt_page(request, quiz_id):
+    """
+    Renders the HTML shell for taking a quiz.
+    The actual quiz data is loaded via API.
+    Requires login.
+    """
+    if not request.user.is_authenticated:
+        return _redirect_to_login(request)
+
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    user_initial = None
+    name = request.user.get_username() or getattr(request.user, "email", "") or ""
+    if name:
+        user_initial = name[0].upper()
+
+    return Response(
+        {
+            "user": request.user,
+            "user_initial": user_initial,
+            "quiz": quiz,  # Pass quiz object for ID, title, etc.
+        },
+        template_name="quiz_attempt.html",
+    )
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def api_start_quiz_attempt(request):
+    """
+    Starts a new quiz attempt for the user.
+    Creates the QuizAttempt and returns the questions.
+    Expects: { "quiz_id": <int> }
+    """
+    quiz_id = request.data.get("quiz_id")
+    if not quiz_id:
+        return Response({"detail": "quiz_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    user = request.user
+
+    # Create the new attempt. The model's save() method handles attempt_number.
+    try:
+        attempt = QuizAttempt.objects.create(
+            user=user,
+            quiz=quiz
+        )
+    except Exception as e:
+        return Response({"detail": f"Could not create attempt: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Serialize questions and choices
+    questions_data = []
+    questions = Question.objects.filter(
+        quiz=quiz
+    ).prefetch_related('choices').order_by('order')
+
+    for q in questions:
+        choices_data = []
+        for c in q.choices.all():
+            choices_data.append({
+                "id": c.id,
+                "choice_text": c.choice_text,
+            })
+
+        questions_data.append({
+            "id": q.id,
+            "question_text": q.question_text,
+            "order": q.order,
+            "choices": choices_data,
+        })
+
+    return Response({
+        "attempt_id": attempt.id,
+        "quiz_title": quiz.title,
+        "time_limit_minutes": quiz.time_limit_minutes,
+        "questions": questions_data,
+    }, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def api_submit_quiz_attempt(request):
+    """
+    Submits answers for a quiz attempt.
+    Expects: { "attempt_id": <int>, "answers": { <question_id_str>: <choice_id_str>, ... } }
+    """
+    attempt_id = request.data.get("attempt_id")
+    answers = request.data.get("answers", {})
+
+    if not attempt_id:
+        return Response({"detail": "attempt_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Ensure the user owns this attempt
+    attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user)
+
+    # Prevent re-submission
+    if attempt.end_time:
+        return Response({"detail": "This quiz has already been submitted."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Set the end time
+    attempt.end_time = timezone.now()
+    attempt.save(update_fields=['end_time'])
+
+    # Create UserAnswer objects for each answer
+    answers_to_create = []
+    for q_id, c_id in answers.items():
+        try:
+            question_id = int(q_id)
+            choice_id = int(c_id)
+            answers_to_create.append(
+                UserAnswer(
+                    quiz_attempt=attempt,
+                    question_id=question_id,
+                    selected_choice_id=choice_id
+                )
+            )
+        except (ValueError, TypeError):
+            # Log this error but continue processing other answers
+            print(
+                f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
+
+    # Bulk create answers. The UserAnswer.save() method will auto-check correctness.
+    if answers_to_create:
+        UserAnswer.objects.bulk_create(answers_to_create)
+
+    # Force a refresh from the DB to get the calculated score
+    attempt.refresh_from_db()
+
+    return Response({
+        "ok": True,
+        "attempt_id": attempt.id,
+        "score": attempt.score,
+        "total_questions": attempt.total_questions,
+        "percentage": round(attempt.percentage_score, 2),
+    }, status=status.HTTP_200_OK)
