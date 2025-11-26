@@ -916,3 +916,192 @@ class BlogPhoto(TimestampedModel):
 
     def __str__(self):
         return f"Photo for {self.blog.title} (#{self.pk})"
+
+
+# --- Quiz System -------------------------------------------------------------
+# (Add this new section at the end of your models.py file)
+
+class Quiz(TimestampedModel):
+    """
+    A single quiz, which contains multiple questions.
+    """
+    title = models.CharField(max_length=255)
+    quiz_number = models.PositiveIntegerField(
+        unique=True,
+        help_text=_("A unique number for this quiz, e.g., 101.")
+    )
+    description = models.TextField(
+        blank=True,
+        help_text=_("A brief description of the quiz topic.")
+    )
+    time_limit_minutes = models.PositiveIntegerField(
+        default=30,
+        validators=[MinValueValidator(1)],
+        help_text=_("Duration of the quiz in minutes.")
+    )
+
+    class Meta:
+        ordering = ["quiz_number"]
+        verbose_name = _("Quiz")
+        verbose_name_plural = _("Quizzes")
+
+    def __str__(self):
+        return f"Quiz {self.quiz_number}: {self.title}"
+
+
+class Question(TimestampedModel):
+    """
+    A single question within a Quiz.
+    """
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
+        related_name="questions"
+    )
+    question_text = models.TextField()
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text=_("The order in which this question appears (e.g., 1, 2, 3).")
+    )
+
+    class Meta:
+        ordering = ["quiz", "order"]
+        unique_together = ("quiz", "order")
+
+    def __str__(self):
+        return f"Q{self.order}: {self.question_text[:50]}... (Quiz: {self.quiz.quiz_number})"
+
+
+class Choice(models.Model):
+    """
+    One of the multiple-choice options for a Question.
+    """
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="choices"
+    )
+    choice_text = models.CharField(max_length=500)
+    is_correct = models.BooleanField(
+        default=False,
+        help_text=_("Mark this if it is the correct answer.")
+    )
+
+    class Meta:
+        ordering = ["question", "id"]  # Order choices consistently by creation
+
+    def __str__(self):
+        return f"Choice for Q{self.question.order}: {self.choice_text[:50]}..."
+
+
+class QuizAttempt(TimestampedModel):
+    """
+    Records a single attempt by a user on a specific quiz.
+    This model fulfills your request for:
+    - foreign key for the user
+    - attempt number
+    - correctly marked answers (via the 'score' property)
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="quiz_attempts"
+    )
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.PROTECT,  # Don't delete attempts if quiz is deleted
+        related_name="attempts"
+    )
+    attempt_number = models.PositiveIntegerField()
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_("Set when the user submits the quiz.")
+    )
+
+    class Meta:
+        ordering = ["user", "quiz", "-attempt_number"]
+        # Ensures attempt_number is unique FOR A GIVEN user and quiz
+        unique_together = ("user", "quiz", "attempt_number")
+
+    def __str__(self):
+        return f"Attempt {self.attempt_number} by {self.user.username} on {self.quiz.title}"
+
+    def save(self, *args, **kwargs):
+        """
+        Automatically sets the attempt_number on the first save.
+        """
+        if not self.pk:  # Only on creation
+            last_attempt = QuizAttempt.objects.filter(
+                user=self.user,
+                quiz=self.quiz
+            ).order_by('-attempt_number').first()
+
+            if last_attempt:
+                self.attempt_number = last_attempt.attempt_number + 1
+            else:
+                self.attempt_number = 1
+        super().save(*args, **kwargs)
+
+    @property
+    def score(self) -> int:
+        """
+        Calculates the number of correctly marked answers for this attempt.
+        """
+        # 'user_answers' is the related_name from the UserAnswer model
+        return self.user_answers.filter(is_correct=True).count()
+
+    @property
+    def total_questions(self) -> int:
+        """Total questions in the quiz at the time of the attempt."""
+        return self.quiz.questions.count()
+
+    @property
+    def percentage_score(self) -> float:
+        """Calculates the score as a percentage."""
+        total = self.total_questions
+        if total == 0:
+            return 0.0
+        return (self.score / total) * 100.0
+
+
+class UserAnswer(models.Model):
+    """
+    Stores the specific choice a user selected for a question during an attempt.
+    This fulfills your request for storing the "test answers (1,2,3,4,5)".
+    """
+    quiz_attempt = models.ForeignKey(
+        QuizAttempt,
+        on_delete=models.CASCADE,
+        related_name="user_answers"
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="user_answers"
+    )
+    selected_choice = models.ForeignKey(
+        Choice,
+        on_delete=models.CASCADE,
+        related_name="user_selections"
+    )
+    # This field is set automatically on save
+    is_correct = models.BooleanField(default=False)
+
+    class Meta:
+        # A user can only answer a question once per attempt
+        unique_together = ("quiz_attempt", "question")
+
+    def __str__(self):
+        return f"Answer by {self.quiz_attempt.user.username} for Q{self.question.order}"
+
+    def save(self, *args, **kwargs):
+        """
+        Automatically checks if the selected answer was correct.
+        """
+        if self.selected_choice:
+            self.is_correct = self.selected_choice.is_correct
+        else:
+            self.is_correct = False
+        super().save(*args, **kwargs)
