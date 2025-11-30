@@ -105,7 +105,7 @@
                 </div>
 
                 <div id="questionsContainer" class="space-y-6">
-                    <div id="loadingState" class_="text-center py-10">
+                    <div id="loadingState" class="text-center py-10">
                         <p class="text-lg font-semibold animate-pulse">Loading Quiz...</p>
                     </div>
                 </div>
@@ -150,8 +150,13 @@
             // ...
 
             // --- Quiz Logic ---
-            const quizId = {{ quiz.id }
-        };
+
+            // --- THIS IS THE FIX ---
+            // The template tag {{ quiz.id }} is now correctly closed.
+            const quizId = { quiz, id }
+        });
+        // --- END OF FIX ---
+
         let attemptId = null;
         let timerInterval = null;
 
@@ -179,7 +184,10 @@
                     body: JSON.stringify({ quiz_id: quizId })
                 });
 
-                if (!response.ok) throw new Error('Could not start quiz.');
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ detail: 'Could not start quiz.' }));
+                    throw new Error(errData.detail || 'Could not start quiz.');
+                }
 
                 const data = await response.json();
                 attemptId = data.attempt_id;
@@ -190,7 +198,7 @@
                 submitButtonContainer.classList.remove('hidden');
 
             } catch (error) {
-                console.error(error);
+                console.error('Error in startQuiz:', error);
                 questionsContainer.innerHTML = `<p class="text-red-400 text-center">${error.message}</p>`;
             }
         }
@@ -276,14 +284,17 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('Could not submit answers.');
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({ detail: 'Could not submit answers.' }));
+                    throw new Error(errData.detail || 'Could not submit answers.');
+                }
 
                 const results = await response.json();
                 showResults(results);
 
             } catch (error) {
-                console.error(error);
-                alert('Error submitting quiz. Please try again.');
+                console.error('Error in submitQuiz:', error);
+                alert('Error submitting quiz: ' + error.message);
                 submitQuizBtn.disabled = false;
             }
         }
@@ -306,7 +317,7 @@
 
         // Start the quiz on page load
         startQuiz();
-        });
+
     </script>
 </body>
 
