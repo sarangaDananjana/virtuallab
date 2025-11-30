@@ -2233,16 +2233,16 @@ def calculator_view(request):
 # --------------------------------------------------------------------------
 
 
-@api_view(["GET"])
-@renderer_classes([TemplateHTMLRenderer])
+# We remove the DRF decorators and use standard Django ones
+@login_required
 @ensure_csrf_cookie
 def quiz_dashboard_page(request):
     """
     Renders the Quiz Dashboard HTML page.
     Requires login.
     """
-    if not request.user.is_authenticated:
-        return _redirect_to_login(request)
+    # @login_required handles the auth check, so no need for:
+    # if not request.user.is_authenticated: ...
 
     user_initial = None
     name = request.user.get_username() or getattr(request.user, "email", "") or ""
@@ -2257,19 +2257,19 @@ def quiz_dashboard_page(request):
         user=request.user
     ).select_related('quiz').order_by('-start_time')
 
-    return Response(
-        {
-            "user": request.user,
-            "user_initial": user_initial,
-            "available_quizzes": available_quizzes,
-            "user_attempts": user_attempts,
-        },
-        template_name="quiz_dashboard.html",
-    )
+    # This is the context dictionary
+    context = {
+        "user": request.user,
+        "user_initial": user_initial,
+        "available_quizzes": available_quizzes,
+        "user_attempts": user_attempts,
+    }
+
+    # Use the standard Django 'render' function, not 'Response'
+    return render(request, "quiz_dashboard.html", context)
 
 
-@api_view(["GET"])
-@renderer_classes([TemplateHTMLRenderer])
+@login_required
 @ensure_csrf_cookie
 def quiz_attempt_page(request, quiz_id):
     """
@@ -2277,9 +2277,6 @@ def quiz_attempt_page(request, quiz_id):
     The actual quiz data is loaded via API.
     Requires login.
     """
-    if not request.user.is_authenticated:
-        return _redirect_to_login(request)
-
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
     user_initial = None
@@ -2287,14 +2284,14 @@ def quiz_attempt_page(request, quiz_id):
     if name:
         user_initial = name[0].upper()
 
-    return Response(
-        {
-            "user": request.user,
-            "user_initial": user_initial,
-            "quiz": quiz,  # Pass quiz object for ID, title, etc.
-        },
-        template_name="quiz_attempt.html",
-    )
+    context = {
+        "user": request.user,
+        "user_initial": user_initial,
+        "quiz": quiz,  # Pass quiz object for ID, title, etc.
+    }
+
+    # Use the standard Django 'render' function
+    return render(request, "quiz_attempt.html", context)
 
 
 @api_view(["POST"])
