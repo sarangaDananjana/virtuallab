@@ -119,7 +119,7 @@ def main():
                         choices_to_create = []
                         correct_index = int(row['correct_choice'])
 
-                        for i in range(1, 5):
+                        for i in range(1, 6):
                             choice_text = row.get(f'choice_{i}')
                             if not choice_text:
                                 continue

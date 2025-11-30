@@ -2348,10 +2348,12 @@ def api_start_quiz_attempt(request):
     }, status=status.HTTP_201_CREATED)
 
 
+# In your views.py file:
+
 @api_view(["POST"])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
-@transaction.atomic
+@transaction.atomic  # Keep the transaction for safety
 def api_submit_quiz_attempt(request):
     """
     Submits answers for a quiz attempt.
@@ -2374,27 +2376,27 @@ def api_submit_quiz_attempt(request):
     attempt.end_time = timezone.now()
     attempt.save(update_fields=['end_time'])
 
-    # Create UserAnswer objects for each answer
-    answers_to_create = []
+    # --- THIS IS THE FIX ---
+    # We must create each answer one by one using .create()
+    # so that the custom .save() method on the UserAnswer model is called.
+    # Using bulk_create() bypasses the .save() method.
+
     for q_id, c_id in answers.items():
         try:
             question_id = int(q_id)
             choice_id = int(c_id)
-            answers_to_create.append(
-                UserAnswer(
-                    quiz_attempt=attempt,
-                    question_id=question_id,
-                    selected_choice_id=choice_id
-                )
+
+            # .create() will call .save() automatically
+            UserAnswer.objects.create(
+                quiz_attempt=attempt,
+                question_id=question_id,
+                selected_choice_id=choice_id
             )
         except (ValueError, TypeError):
             # Log this error but continue processing other answers
             print(
                 f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
-
-    # Bulk create answers. The UserAnswer.save() method will auto-check correctness.
-    if answers_to_create:
-        UserAnswer.objects.bulk_create(answers_to_create)
+    # --- END OF FIX ---
 
     # Force a refresh from the DB to get the calculated score
     attempt.refresh_from_db()
