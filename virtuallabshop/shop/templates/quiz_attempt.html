@@ -37,31 +37,23 @@
         html,
         body {
             overflow: hidden;
-            /* Prevent scrolling on the main page */
         }
 
-        /* NEW: Style for the numbered boxes in the palette */
         .nav-box {
             @apply flex items-center justify-center w-12 h-12 font-mono font-bold text-sm border-2 border-white/20 text-white/60 rounded-lg cursor-pointer transition-all duration-150;
         }
         .nav-box:hover {
             @apply bg-white/10 text-white/80;
         }
-
-        /* Style for a box that has been answered */
         .nav-box-answered {
             @apply bg-emerald-500/15 border-emerald-500/80 text-emerald-300;
         }
         .nav-box-answered:hover {
             @apply bg-emerald-500/30 text-emerald-200;
         }
-
-        /* Style for the currently active question's box */
         .nav-box-current {
             @apply bg-brand-500/20 border-brand-400 text-white scale-110 shadow-lg;
         }
-
-        /* Style for code snippets */
         .code-snippet {
             display: block;
             background-color: #1a1a2e;
@@ -70,13 +62,11 @@
             padding: 1rem;
             border-radius: 0.5rem;
             margin: 1rem 0;
-            white-space: pre; /* Use <pre> to respect all whitespace and newlines */
+            white-space: pre;
             font-size: 0.9em;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow-x: auto; /* Add horizontal scroll if code is too wide */
+            overflow-x: auto;
         }
-
-        /* Style for quiz answer choices */
         .quiz-option {
             transition: background .2s, border-color .2s;
         }
@@ -84,8 +74,6 @@
             background: rgba(45, 134, 255, .12);
             border-color: rgba(94, 161, 255, .7);
         }
-
-        /* Disabled button style */
         .disabled-btn {
             @apply opacity-50 cursor-not-allowed bg-white/10;
         }
@@ -145,20 +133,31 @@
                     </div>
 
                 <div id="resultsContainer"
-                    class="hidden flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto text-center py-10">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-4">Quiz Complete!</h2>
-                        <p class="text-xl mb-2">Your Score:</p>
-                        <p class="text-6xl font-black text-gold-400 mb-6">
-                            <span id="resultScore">0</span> / <span id="resultTotal">0</span>
-                        </p>
-                        <p class="text-2xl font-bold mb-8">
-                            (<span id="resultPercentage">0</span>%)
-                        </p>
-                        <a href="{% url 'quiz-dashboard' %}"
-                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
-                            Back to Dashboard
-                        </a>
+                    class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm p-4 sm:p-8 flex items-center justify-center">
+                    
+                    <div class="glass rounded-2xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+                        <div class="flex-shrink-0 p-6 text-center border-b border-white/10">
+                            <h2 class="text-3xl font-bold mb-2">Quiz Complete!</h2>
+                            <p class="text-6xl font-black text-gold-400">
+                                <span id="resultScore">0</span> / <span id="resultTotal">0</span>
+                            </p>
+                            <p class="text-2xl font-bold">
+                                (<span id="resultPercentage">0</span>%)
+                            </p>
+                        </div>
+                        
+                        <div class="flex-grow p-6 text-left overflow-y-auto">
+                            <h3 class="text-2xl font-bold mb-4">Answer Review</h3>
+                            <div id="review-list" class="space-y-6">
+                                </div>
+                        </div>
+
+                        <div class="flex-shrink-0 p-6 text-center border-t border-white/10">
+                            <a href="{% url 'quiz-dashboard' %}"
+                                class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
+                                Back to Dashboard
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -175,7 +174,7 @@
             let timerInterval = null;
             let allQuestions = [];
             let currentQuestionIndex = 0;
-            let userAnswers = {}; // Stores { questionId: choiceId }
+            let userAnswers = {}; 
 
             // --- UI Elements ---
             const loadingEl = document.getElementById('loadingState');
@@ -198,22 +197,16 @@
 
             // --- Helper: Formats text with backticks into <code> blocks ---
             function formatQuestionText(text) {
-                // Split text by the backtick ` delimiter
                 const parts = text.split('`');
-                
                 let html = '';
                 for (let i = 0; i < parts.length; i++) {
                     if (i % 2 === 0) {
-                        // Even parts are regular text
-                        // Replace newlines with <br> for regular text
                         html += parts[i].replace(/\n/g, '<br>');
                     } else {
-                        // Odd parts are code
-                        // We create <pre><code> to preserve indentation
                         const pre = document.createElement('pre');
                         const codeEl = document.createElement('code');
                         pre.className = 'code-snippet';
-                        codeEl.textContent = parts[i]; // Use textContent to safely render
+                        codeEl.textContent = parts[i];
                         pre.appendChild(codeEl);
                         html += pre.outerHTML;
                     }
@@ -265,13 +258,11 @@
                 allQuestions.forEach((q, index) => {
                     const box = document.createElement('div');
                     box.className = 'nav-box';
-                    box.textContent = index + 1; // Just the number
+                    box.textContent = index + 1;
                     box.dataset.index = index;
-
                     box.addEventListener('click', () => {
                         showQuestion(index);
                     });
-
                     questionNav.appendChild(box);
                 });
             }
@@ -306,7 +297,6 @@
                     </div>
                 `;
 
-                // Re-check the radio button if this question was already answered
                 const previousAnswerId = userAnswers[q.id];
                 if (previousAnswerId) {
                     const radio = quizContainer.querySelector(`input[value="${previousAnswerId}"]`);
@@ -314,7 +304,6 @@
                         radio.checked = true;
                     }
                 }
-
                 updateNavStyles();
                 updateNavButtons();
             }
@@ -323,23 +312,18 @@
             function updateNavStyles() {
                 const navBoxes = questionNav.querySelectorAll('.nav-box');
                 let answeredCount = 0;
-
                 navBoxes.forEach((box) => {
                     const index = parseInt(box.dataset.index);
                     const qId = allQuestions[index].id;
-
                     box.classList.remove('nav-box-current', 'nav-box-answered');
-
                     if (userAnswers[qId]) {
                         box.classList.add('nav-box-answered');
                         answeredCount++;
                     }
-
                     if (index === currentQuestionIndex) {
                         box.classList.add('nav-box-current');
                     }
                 });
-
                 answeredCountEl.textContent = answeredCount;
             }
 
@@ -347,7 +331,6 @@
             function updateNavButtons() {
                 const prevBtn = document.getElementById('prevBtn');
                 const nextBtn = document.getElementById('nextBtn');
-
                 if (currentQuestionIndex === 0) {
                     prevBtn.disabled = true;
                     prevBtn.classList.add('disabled-btn');
@@ -355,7 +338,6 @@
                     prevBtn.disabled = false;
                     prevBtn.classList.remove('disabled-btn');
                 }
-
                 if (currentQuestionIndex === allQuestions.length - 1) {
                     nextBtn.disabled = true;
                     nextBtn.classList.add('disabled-btn');
@@ -366,7 +348,6 @@
             }
 
             // --- 6. Handle Clicks (Prev/Next/Answer) ---
-            // Event delegation for dynamically created content
             quizContainer.addEventListener('click', (e) => {
                 if (e.target.id === 'prevBtn' && !e.target.disabled) {
                     showQuestion(currentQuestionIndex - 1);
@@ -375,8 +356,6 @@
                     showQuestion(currentQuestionIndex + 1);
                 }
             });
-
-            // Event delegation for saving answers
             quizContainer.addEventListener('change', (e) => {
                 if (e.target.name === 'question') {
                     const choiceId = e.target.value;
@@ -398,7 +377,7 @@
                         clearInterval(timerInterval);
                         submitQuizBtn.disabled = true;
                         submitQuizBtn.textContent = 'Time\'s up!';
-                        submitQuiz(); // Auto-submit when time runs out
+                        submitQuiz();
                     }
                     totalSeconds--;
                 }
@@ -412,10 +391,9 @@
 
                 const totalAnswered = Object.keys(userAnswers).length;
                 if (totalAnswered < allQuestions.length) {
-                    // This is for auto-submit, so no confirm
                     if (submitQuizBtn.textContent !== 'Time\'s up!') {
                         if (!confirm(`You have only answered ${totalAnswered} out of ${allQuestions.length} questions. Are you sure you want to submit?`)) {
-                            return; // User clicked cancel
+                            return;
                         }
                     }
                 }
@@ -457,14 +435,61 @@
                 // Hide the main quiz UI (nav + question)
                 paletteContainer.classList.add('hidden');
                 quizContainer.classList.add('hidden');
-                
-                // Show the results container
-                resultsContainer.classList.remove('hidden');
+                document.querySelector('header').classList.add('hidden'); // Hide header
 
-                // Populate results
+                // Populate score
                 document.getElementById('resultScore').textContent = results.score;
                 document.getElementById('resultTotal').textContent = results.total_questions;
                 document.getElementById('resultPercentage').textContent = results.percentage;
+
+                // --- NEW: Populate review list ---
+                const reviewList = document.getElementById('review-list');
+                let reviewHTML = '';
+
+                // Icons for review
+                const checkIcon = `<svg class="w-6 h-6 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>`;
+                const xIcon = `<svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>`;
+                const skipIcon = `<svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+
+                results.detailed_results.forEach((res, index) => {
+                    const questionText = formatQuestionText(res.question_text);
+                    
+                    let resultClass, icon, yourAnswerDisplay;
+
+                    if (res.is_correct) {
+                        resultClass = 'border-emerald-500 bg-emerald-500/10';
+                        icon = checkIcon;
+                        yourAnswerDisplay = `<p class="font-medium text-emerald-300">Your answer: ${res.your_answer_text}</p>`;
+                    } else if (!res.your_answer_id) { // Skipped
+                        resultClass = 'border-gray-500 bg-gray-500/10';
+                        icon = skipIcon;
+                        yourAnswerDisplay = `<p class="font-medium text-gray-400">You skipped this question.</p>
+                                             <p class="font-medium text-emerald-300">Correct answer: ${res.correct_answer_text}</p>`;
+                    } else { // Incorrect
+                        resultClass = 'border-red-500 bg-red-500/10';
+                        icon = xIcon;
+                        yourAnswerDisplay = `<p class="font-medium text-red-400 line-through">Your answer: ${res.your_answer_text}</p>
+                                             <p class="font-medium text-emerald-300">Correct answer: ${res.correct_answer_text}</p>`;
+                    }
+
+                    reviewHTML += `
+                        <div class="p-4 rounded-lg border-2 ${resultClass}">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 mt-1">${icon}</div>
+                                <div>
+                                    <h4 class="font-semibold text-white/70">Question ${index + 1}</h4>
+                                    <div class="text-white/90 my-2">${questionText}</div>
+                                    <div class="mt-3">${yourAnswerDisplay}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                reviewList.innerHTML = reviewHTML;
+                
+                // Show the results modal
+                resultsContainer.classList.remove('hidden');
             }
 
             // Add event listener to the final submit button

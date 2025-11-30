@@ -2350,10 +2350,12 @@ def api_start_quiz_attempt(request):
 
 # In your views.py file:
 
+# In your views.py file:
+
 @api_view(["POST"])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
-@transaction.atomic  # Keep the transaction for safety
+@transaction.atomic
 def api_submit_quiz_attempt(request):
     """
     Submits answers for a quiz attempt.
@@ -2365,41 +2367,60 @@ def api_submit_quiz_attempt(request):
     if not attempt_id:
         return Response({"detail": "attempt_id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Ensure the user owns this attempt
     attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user)
 
-    # Prevent re-submission
     if attempt.end_time:
         return Response({"detail": "This quiz has already been submitted."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Set the end time
     attempt.end_time = timezone.now()
     attempt.save(update_fields=['end_time'])
 
-    # --- THIS IS THE FIX ---
-    # We must create each answer one by one using .create()
-    # so that the custom .save() method on the UserAnswer model is called.
-    # Using bulk_create() bypasses the .save() method.
-
+    # Create UserAnswer objects one-by-one to trigger the .save() method
     for q_id, c_id in answers.items():
         try:
-            question_id = int(q_id)
-            choice_id = int(c_id)
-
-            # .create() will call .save() automatically
             UserAnswer.objects.create(
                 quiz_attempt=attempt,
-                question_id=question_id,
-                selected_choice_id=choice_id
+                question_id=int(q_id),
+                selected_choice_id=int(c_id)
             )
         except (ValueError, TypeError):
-            # Log this error but continue processing other answers
-            print(
-                f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
-    # --- END OF FIX ---
+            print(f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
 
-    # Force a refresh from the DB to get the calculated score
+    # --- NEW: Build Detailed Results ---
     attempt.refresh_from_db()
+    
+    detailed_results = []
+    # Get all questions for this quiz to find the correct choices
+    all_questions = attempt.quiz.questions.prefetch_related('choices')
+    
+    # Get all answers the user just submitted
+    submitted_answers = attempt.user_answers.select_related('question', 'selected_choice')
+    
+    # Create a lookup map for faster access
+    submitted_map = {sa.question.id: sa for sa in submitted_answers}
+
+    for q in all_questions.order_by('order'):
+        correct_choice = q.choices.filter(is_correct=True).first()
+        submitted_answer_obj = submitted_map.get(q.id)
+        
+        your_answer_text = "N/A (Skipped)"
+        your_answer_id = None
+        is_correct = False
+        
+        if submitted_answer_obj:
+            your_answer_text = submitted_answer_obj.selected_choice.choice_text
+            your_answer_id = submitted_answer_obj.selected_choice.id
+            is_correct = submitted_answer_obj.is_correct
+
+        detailed_results.append({
+            "question_id": q.id,
+            "question_text": q.question_text,
+            "your_answer_id": your_answer_id,
+            "your_answer_text": your_answer_text,
+            "is_correct": is_correct,
+            "correct_answer_text": correct_choice.choice_text if correct_choice else "N/A"
+        })
+    # --- END OF NEW SECTION ---
 
     return Response({
         "ok": True,
@@ -2407,4 +2428,5 @@ def api_submit_quiz_attempt(request):
         "score": attempt.score,
         "total_questions": attempt.total_questions,
         "percentage": round(attempt.percentage_score, 2),
+        "detailed_results": detailed_results,  # <-- Add this to the response
     }, status=status.HTTP_200_OK)
