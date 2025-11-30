@@ -39,32 +39,6 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Language helpers (from your file) */
-        .lang-si {
-            display: none;
-        }
-
-        body.sinhala-mode .lang-en {
-            display: none;
-        }
-
-        body.sinhala-mode .lang-si {
-            display: inline;
-        }
-
-        .block-lang.lang-si {
-            display: none;
-        }
-
-        body.sinhala-mode .block-lang.lang-en {
-            display: none;
-        }
-
-        body.sinhala-mode .block-lang.lang-si {
-            display: block;
-        }
-
-        /* Custom styles for quiz options */
         .quiz-option {
             transition: background .2s, border-color .2s;
         }
@@ -122,7 +96,6 @@
                     <a href="{% url 'quiz-dashboard' %}"
                         class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
                         <span class="lang-en">Back to Dashboard</span>
-                        <span class="lang-si">උපකරණ පුවරුව වෙත ආපසු</span>
                     </a>
                 </div>
 
@@ -130,7 +103,6 @@
                     <button id="submitQuizBtn"
                         class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
                         <span class="lang-en">Submit Answers</span>
-                        <span class="lang-si">පිළිතුරු යවන්න</span>
                     </button>
                 </div>
 
@@ -146,16 +118,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('year').textContent = new Date().getFullYear();
-            // --- Mobile Menu & Language JS (Copy from submit_ticket.html) ---
-            // ...
 
             // --- Quiz Logic ---
 
-            // --- THIS IS THE FIX ---
-            // The template tag {{ quiz.id }} is now correctly closed.
-            const quizId = { quiz, id }
-        });
-        // --- END OF FIX ---
+            const quizId = {{ quiz.id }}; // This is the correct syntax
 
         let attemptId = null;
         let timerInterval = null;
@@ -317,7 +283,8 @@
 
         // Start the quiz on page load
         startQuiz();
-
+            
+        }); // The script now correctly ends inside this
     </script>
 </body>
 
