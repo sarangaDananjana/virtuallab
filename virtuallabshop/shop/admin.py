@@ -17,7 +17,8 @@ from .models import (
     DLC,
     StorageDevice,
     OfflineGames,
-    OrderStorageItem, Blog, BlogPhoto, OfflineGames, ActivationStep, ActivationTicket
+    OrderStorageItem, Blog, BlogPhoto, OfflineGames, ActivationStep, ActivationTicket,
+    Quiz, Question, Choice, QuizAttempt, UserAnswer
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -565,3 +566,139 @@ class BlogPhotoAdmin(admin.ModelAdmin):
         return "—"
 
     image_preview.short_description = "Preview"
+
+
+# =========================
+# Quiz System
+# =========================
+
+class ChoiceInline(admin.TabularInline):
+    """
+    Allows adding/editing Choices directly within the Question admin page.
+    """
+    model = Choice
+    extra = 1
+    fields = ('choice_text', 'is_correct')
+
+
+class QuestionInline(admin.StackedInline):
+    """
+    Allows adding/editing Questions directly within the Quiz admin page.
+    """
+    model = Question
+    extra = 0
+    fields = ('order', 'question_text')
+    ordering = ('order',)
+    # Allows you to click to the full Question admin page to add choices
+    show_change_link = True
+
+
+@admin.register(Quiz)
+class QuizAdmin(admin.ModelAdmin):
+    inlines = [QuestionInline]
+    list_display = ('title', 'quiz_number', 'time_limit_minutes',
+                    'question_count', 'created_at')
+    search_fields = ('title', 'quiz_number')
+
+    @admin.display(description='Questions')
+    def question_count(self, obj):
+        return obj.questions.count()
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+    list_display = ('question_text', 'quiz', 'order', 'created_at')
+    list_filter = ('quiz',)
+    search_fields = ('question_text', 'quiz__title')
+    ordering = ('quiz', 'order')
+
+
+class UserAnswerInline(admin.TabularInline):
+    """
+    Read-only view of a user's answers for a specific attempt.
+    """
+    model = UserAnswer
+    extra = 0
+    # These fields are set by the user/system, not the admin
+    readonly_fields = ('question', 'selected_choice', 'is_correct')
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        # Disable adding answers from the admin
+        return False
+
+
+@admin.register(QuizAttempt)
+class QuizAttemptAdmin(admin.ModelAdmin):
+    inlines = [UserAnswerInline]
+    list_display = (
+        '__str__',
+        'user',
+        'quiz',
+        'attempt_number',
+        'score_display',
+        'percentage_score_display',
+        'start_time',
+        'end_time'
+    )
+    list_filter = ('quiz', 'start_time')
+    search_fields = ('user__username', 'quiz__title')
+
+    # Make the entire model read-only in the admin,
+    # as attempts should only be created by users.
+    readonly_fields = (
+        'user',
+        'quiz',
+        'attempt_number',
+        'start_time',
+        'end_time',
+        'score_display',
+        'percentage_score_display'
+    )
+
+    # Define the layout for the read-only fields
+    fields = (
+        'user',
+        'quiz',
+        'attempt_number',
+        'start_time',
+        'end_time',
+        ('score_display', 'percentage_score_display')
+    )
+
+    @admin.display(description='Score')
+    def score_display(self, obj):
+        return f"{obj.score} / {obj.total_questions}"
+
+    @admin.display(description='Percentage')
+    def percentage_score_display(self, obj):
+        return f"{obj.percentage_score:.2f}%"
+
+    def has_add_permission(self, request):
+        # Disable creating attempts from the admin
+        return False
+
+
+# --- Optional: Register Choice and UserAnswer for standalone viewing ---
+
+@admin.register(Choice)
+class ChoiceAdmin(admin.ModelAdmin):
+    """
+    Standalone admin for viewing/editing all Choices.
+    """
+    list_display = ('choice_text', 'question', 'is_correct')
+    list_filter = ('question__quiz',)
+    search_fields = ('choice_text', 'question__question_text')
+
+
+@admin.register(UserAnswer)
+class UserAnswerAdmin(admin.ModelAdmin):
+    """
+    Standalone admin for viewing/editing all UserAnswers.
+    """
+    list_display = ('__str__', 'quiz_attempt', 'question',
+                    'selected_choice', 'is_correct')
+    list_filter = ('quiz_attempt__quiz',)
+    search_fields = ('quiz_attempt__user__username', 'question__question_text')
+    readonly_fields = ('quiz_attempt', 'question', 'selected_choice')

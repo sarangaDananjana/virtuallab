@@ -59,3 +59,5 @@ venv/
 
 # Ignore user-specific files that are not part of the project
 my_scratchpad.txt
+/import_script.py
+quizzes.csv
