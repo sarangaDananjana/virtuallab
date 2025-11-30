@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="h-full bg-aurora">
 
 <head>
     {% load static %}
@@ -12,6 +12,10 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                     colors: {
                         brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
                         gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
@@ -30,22 +34,32 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
     <style>
-        /* Dark background for the page */
         html, body {
-            background-color: #0c0a1d; /* Matches your aurora/noise style */
+            overflow: hidden; /* Prevent scrolling on the main page */
+        }
+
+        /* Base style for a navigation box */
+        .nav-box {
+            @apply flex items-center justify-center w-10 h-10 font-mono font-bold text-sm border-2 border-white/20 text-white/60 rounded-lg cursor-pointer transition-all duration-150;
+        }
+        .nav-box:hover {
+            @apply bg-white/10 text-white/80;
+        }
+
+        /* Style for a box that has been answered */
+        .nav-box-answered {
+            @apply bg-emerald-500/15 border-emerald-500/80 text-emerald-300;
+        }
+        .nav-box-answered:hover {
+            @apply bg-emerald-500/30 text-emerald-200;
+        }
+
+        /* Style for the currently active question's box */
+        .nav-box-current {
+            @apply bg-brand-500/20 border-brand-400 text-white scale-110 shadow-lg;
         }
         
-        /* Custom styles for quiz options */
-        .quiz-option {
-            transition: background .2s, border-color .2s;
-        }
-
-        .quiz-option:has(input:checked) {
-            background: rgba(45, 134, 255, .12);
-            border-color: rgba(94, 161, 255, .7);
-        }
-
-        /* NEW: Style for code snippets */
+        /* Style for code snippets */
         .code-snippet {
             display: block;
             background-color: #1a1a2e; /* Darker background */
@@ -58,59 +72,64 @@
             font-size: 0.9em;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        /* Style for quiz answer choices */
+        .quiz-option {
+            transition: background .2s, border-color .2s;
+        }
+        .quiz-option:has(input:checked) {
+            background: rgba(45, 134, 255, .12);
+            border-color: rgba(94, 161, 255, .7);
+        }
     </style>
 </head>
 
-<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    
-    <header class="sticky top-0 z-[80]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-            <div class="flex items-center justify-between h-16 sm:h-18">
-                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
-                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
-                    <div class="flex flex-col">
-                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
-                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">QUIZ</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </header>
+<body class="h-full bg-aurora text-white selection:bg-gold-400/30 noise">
 
-    <main class="py-10 sm:py-14 lg:py-16">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+    <div id="quizAppContainer" class="flex flex-col h-screen">
 
-            <div id="quizAppContainer" class="glass rounded-2xl sm:rounded-3xl p-5 sm:p-8">
-
-                <div id="loadingState" class="text-center py-10">
-                    <p class="text-lg font-semibold animate-pulse">Loading Quiz...</p>
-                </div>
-
-                <div id="quizContainer" class="hidden">
-                    <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                        <h1 class="text-xl sm:text-2xl font-bold">{{ quiz.title }}</h1>
+        <header class="flex-shrink-0 header-blend border-b border-white/10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16 sm:h-18">
+                    <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
+                        <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
+                            class="h-10 w-auto object-contain" width="48" height="48" decoding="async" />
+                        <span class="font-black text-lg lg:text-xl tracking-tight">Virtual Lab Quiz</span>
+                    </a>
+                    
+                    <div class="flex items-center gap-4">
+                        <h1 class="hidden sm:block text-lg font-bold text-white/80">{{ quiz.title }}</h1>
                         <div id="timer" class="text-lg font-mono font-bold bg-white/10 px-4 py-2 rounded-lg text-gold-400">
                             <span id="timerMinutes">--</span>:<span id="timerSeconds">--</span>
                         </div>
                     </div>
-                    
-                    <div class="mb-4 text-sm font-semibold text-white/70">
-                        Question <span id="current-q">1</span> of <span id="total-q">10</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow flex-1 flex overflow-hidden">
+
+            <nav class="flex-shrink-0 w-64 bg-black/10 border-r border-white/10 flex flex-col">
+                <div id="question-nav" class="flex-grow p-4 grid grid-cols-5 gap-2 content-start overflow-y-auto">
                     </div>
+                <div class="p-4 border-t border-white/10">
+                    <button id="submitQuizBtn" class="shine w-full px-5 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold">
+                        Submit Quiz
+                    </button>
+                </div>
+            </nav>
 
-                    <div id="questionsContainer" class="space-y-6">
-                        </div>
-
-                    <div class="mt-8 pt-6 border-t border-white/10 text-right">
-                        <button id="nextBtn"
-                            class="shine px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold w-full sm:w-auto">
-                            Next Question
-                        </button>
+            <div id="question-display" class="flex-grow p-6 sm:p-10 lg:p-12 overflow-y-auto">
+                <div id="loadingState" class="h-full flex items-center justify-center">
+                    <div class="text-center">
+                        <p class="text-lg font-semibold animate-pulse">Loading Quiz...</p>
                     </div>
                 </div>
+
+                <div id="questionContainer" class="hidden max-w-4xl mx-auto">
+                    </div>
                 
-                <div id="resultsContainer" class="hidden text-center py-10">
+                <div id="resultsContainer" class="hidden max-w-4xl mx-auto text-center py-10">
                     <h2 class="text-3xl font-bold mb-4">Quiz Complete!</h2>
                     <p class="text-xl mb-2">Your Score:</p>
                     <p class="text-6xl font-black text-gold-400 mb-6">
@@ -126,45 +145,54 @@
                 </div>
 
             </div>
-        </div>
-    </main>
-
-    <footer class="border-t border-white/10">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">
-            © <span id="year"></span> Virtual Lab Games.
-        </div>
-    </footer>
+        </main>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('year').textContent = new Date().getFullYear();
-
-            // --- Quiz Logic ---
-            const quizId = {{ quiz.id }};
             
-            // App State
+            // --- State Variables ---
+            const quizId = {{ quiz.id }};
             let attemptId = null;
             let timerInterval = null;
             let allQuestions = [];
             let currentQuestionIndex = 0;
-            let userAnswers = {};
+            let userAnswers = {}; // Stores { questionId: choiceId }
 
-            // UI Elements
+            // --- UI Elements ---
             const loadingEl = document.getElementById('loadingState');
-            const quizContainer = document.getElementById('quizContainer');
+            const quizAppContainer = document.getElementById('quizAppContainer');
+            const quizContainer = document.getElementById('questionContainer');
             const resultsContainer = document.getElementById('resultsContainer');
-            const questionsContainer = document.getElementById('questionsContainer');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            const currentQEl = document.getElementById('current-q');
-            const totalQEl = document.getElementById('total-q');
+            const questionNav = document.getElementById('question-nav');
+            const questionDisplay = document.getElementById('question-display');
+            const submitQuizBtn = document.getElementById('submitQuizBtn');
             const timerMinEl = document.getElementById('timerMinutes');
             const timerSecEl = document.getElementById('timerSeconds');
-            
+
             function getCookie(name) {
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            
+            // --- Helper: Formats text with backticks into <code> blocks ---
+            function formatQuestionText(text) {
+                // 1. Replace code snippets
+                let formatted = text.replace(
+                    /`([^`]+)`/g,
+                    (match, code) => {
+                        // Create elements to safely escape HTML
+                        const pre = document.createElement('pre');
+                        const codeEl = document.createElement('code');
+                        pre.className = 'code-snippet';
+                        codeEl.textContent = code.trim(); // .textContent auto-escapes
+                        pre.appendChild(codeEl);
+                        return pre.outerHTML;
+                    }
+                );
+                // 2. Replace newlines with <br> for non-code text
+                return formatted.replace(/\n/g, '<br>');
             }
 
             // --- 1. Start the Quiz ---
@@ -178,12 +206,10 @@
                         },
                         body: JSON.stringify({ quiz_id: quizId })
                     });
-
                     if (!response.ok) {
                         const errData = await response.json().catch(() => ({ detail: 'Could not start quiz.' }));
                         throw new Error(errData.detail || 'Could not start quiz.');
                     }
-
                     const data = await response.json();
                     
                     // Save state
@@ -192,10 +218,10 @@
                     currentQuestionIndex = 0;
                     userAnswers = {};
                     
-                    // Set up UI
-                    totalQEl.textContent = allQuestions.length;
+                    // Build the UI
+                    buildNav();
+                    showQuestion(0);
                     startTimer(data.time_limit_minutes);
-                    showQuestion(currentQuestionIndex);
                     
                     // Show quiz, hide loading
                     loadingEl.classList.add('hidden');
@@ -207,12 +233,28 @@
                 }
             }
 
-            // --- 2. Show a Single Question ---
+            // --- 2. Build the side navigation ---
+            function buildNav() {
+                questionNav.innerHTML = ''; // Clear any old nav
+                allQuestions.forEach((q, index) => {
+                    const box = document.createElement('div');
+                    box.className = 'nav-box';
+                    box.textContent = index + 1;
+                    box.dataset.index = index; // Store index (0, 1, 2...)
+                    
+                    // Add click listener to jump to this question
+                    box.addEventListener('click', () => {
+                        showQuestion(index);
+                    });
+                    
+                    questionNav.appendChild(box);
+                });
+            }
+
+            // --- 3. Show a Single Question by its index ---
             function showQuestion(index) {
+                currentQuestionIndex = index;
                 const q = allQuestions[index];
-                
-                // Update counter
-                currentQEl.textContent = index + 1;
                 
                 // Build choices HTML
                 let choicesHTML = q.choices.map(c => `
@@ -222,77 +264,76 @@
                     </label>
                 `).join('');
 
-                // NEW: Format question text to find and replace code snippets
-                const formattedText = q.question_text.replace(
-                    /`([^`]+)`/g,
-                    (match, code) => {
-                        // Create elements to safely escape HTML
-                        const pre = document.createElement('pre');
-                        const codeEl = document.createElement('code');
-                        pre.className = 'code-snippet';
-                        codeEl.textContent = code.trim(); // .textContent auto-escapes
-                        pre.appendChild(codeEl);
-                        return pre.outerHTML;
-                    }
-                ).replace(/\n/g, '<br>'); // Add line breaks for non-code text
-
                 // Set question HTML
-                questionsContainer.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-4">Question ${index + 1}:</h3>
-                    <div class="mb-4 text-xl">${formattedText}</div>
-                    <div class="space-y-3">
+                quizContainer.innerHTML = `
+                    <h3 class="text-lg font-semibold mb-4 text-white/70">Question ${index + 1} of ${allQuestions.length}</h3>
+                    <div class="mb-4 text-xl font-medium">${formatQuestionText(q.question_text)}</div>
+                    <div class="space-y-3" data-question-id="${q.id}">
                         ${choicesHTML}
                     </div>
                 `;
                 
-                // Update button text
-                if (index === allQuestions.length - 1) {
-                    nextBtn.textContent = 'Submit Quiz';
-                } else {
-                    nextBtn.textContent = 'Next Question';
+                // Re-check the radio button if this question was already answered
+                const previousAnswerId = userAnswers[q.id];
+                if (previousAnswerId) {
+                    const radio = quizContainer.querySelector(`input[value="${previousAnswerId}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                    }
                 }
+                
+                // Update the nav styling
+                updateNavStyles();
+            }
+            
+            // --- 4. Update Nav Styles (Current & Answered) ---
+            function updateNavStyles() {
+                const navBoxes = questionNav.querySelectorAll('.nav-box');
+                navBoxes.forEach((box, index) => {
+                    const qId = allQuestions[index].id;
+                    
+                    // Remove all styles first
+                    box.classList.remove('nav-box-current', 'nav-box-answered');
+                    
+                    if (userAnswers[qId]) {
+                        // This question is answered
+                        box.classList.add('nav-box-answered');
+                    }
+                    
+                    if (index === currentQuestionIndex) {
+                        // This is the current question
+                        box.classList.add('nav-box-current');
+                    }
+                });
             }
 
-            // --- 3. Handle "Next/Submit" Button Click ---
-            function handleNextClick() {
-                // Find selected answer
-                const selected = questionsContainer.querySelector('input[name="question"]:checked');
-                
-                if (!selected) {
-                    alert('Please select an answer.');
-                    return;
+            // --- 5. Handle Answer Selection ---
+            // We use event delegation on the container
+            quizContainer.addEventListener('change', (e) => {
+                if (e.target.name === 'question') {
+                    const choiceId = e.target.value;
+                    const questionId = allQuestions[currentQuestionIndex].id;
+                    
+                    // Store the answer
+                    userAnswers[questionId] = choiceId;
+                    
+                    // Update the nav box to show "answered"
+                    updateNavStyles();
                 }
-                
-                // Store answer
-                const currentQuestionId = allQuestions[currentQuestionIndex].id;
-                userAnswers[currentQuestionId] = selected.value;
-                
-                // Check if it's the last question
-                if (currentQuestionIndex === allQuestions.length - 1) {
-                    // Last question, submit the quiz
-                    submitQuiz();
-                } else {
-                    // Move to next question
-                    currentQuestionIndex++;
-                    showQuestion(currentQuestionIndex);
-                }
-            }
+            });
 
-            // --- 4. Start the Countdown Timer ---
+            // --- 6. Start the Countdown Timer ---
             function startTimer(minutes) {
                 let totalSeconds = minutes * 60;
-
                 function updateTimer() {
                     const m = Math.floor(totalSeconds / 60);
                     const s = totalSeconds % 60;
-
                     timerMinEl.textContent = String(m).padStart(2, '0');
                     timerSecEl.textContent = String(s).padStart(2, '0');
-
                     if (totalSeconds <= 0) {
                         clearInterval(timerInterval);
-                        nextBtn.disabled = true;
-                        nextBtn.textContent = 'Time\'s up!';
+                        submitQuizBtn.disabled = true;
+                        submitQuizBtn.textContent = 'Time\'s up!';
                         submitQuiz(); // Auto-submit when time runs out
                     }
                     totalSeconds--;
@@ -301,13 +342,21 @@
                 timerInterval = setInterval(updateTimer, 1000);
             }
 
-            // --- 5. Submit the Quiz to the API ---
+            // --- 7. Submit the Quiz to the API ---
             async function submitQuiz() {
                 if (!attemptId) return;
 
+                // Confirm submission
+                const totalAnswered = Object.keys(userAnswers).length;
+                if (totalAnswered < allQuestions.length) {
+                    if (!confirm(`You have only answered ${totalAnswered} out of ${allQuestions.length} questions. Are you sure you want to submit?`)) {
+                        return; // User clicked cancel
+                    }
+                }
+
                 clearInterval(timerInterval);
-                nextBtn.disabled = true;
-                nextBtn.textContent = "Submitting...";
+                submitQuizBtn.disabled = true;
+                submitQuizBtn.textContent = "Submitting...";
 
                 try {
                     const response = await fetch("{% url 'api-quiz-submit' %}", {
@@ -318,7 +367,7 @@
                         },
                         body: JSON.stringify({
                             attempt_id: attemptId,
-                            answers: userAnswers // Send the collected answers
+                            answers: userAnswers
                         })
                     });
 
@@ -326,30 +375,32 @@
                         const errData = await response.json().catch(() => ({ detail: 'Could not submit answers.' }));
                         throw new Error(errData.detail || 'Could not submit answers.');
                     }
-
                     const results = await response.json();
                     showResults(results);
 
                 } catch (error) {
                     console.error('Error in submitQuiz:', error);
                     alert('Error submitting quiz: ' + error.message);
-                    nextBtn.disabled = false;
-                    nextBtn.textContent = "Submit Quiz"; // Re-enable if submit failed
+                    submitQuizBtn.disabled = false;
+                    submitQuizBtn.textContent = "Submit Quiz";
                 }
             }
 
-            // --- 6. Show the Final Results Screen ---
+            // --- 8. Show the Final Results Screen ---
             function showResults(results) {
-                quizContainer.classList.add('hidden'); // Hide quiz
+                // Hide the main quiz UI (nav + question)
+                quizAppContainer.innerHTML = ''; // This removes the whole quiz UI
+                quizAppContainer.appendChild(resultsContainer); // Add results
                 resultsContainer.classList.remove('hidden'); // Show results
                 
+                // Populate results
                 document.getElementById('resultScore').textContent = results.score;
                 document.getElementById('resultTotal').textContent = results.total_questions;
                 document.getElementById('resultPercentage').textContent = results.percentage;
             }
 
-            // Add event listener to the main button
-            nextBtn.addEventListener('click', handleNextClick);
+            // Add event listener to the final submit button
+            submitQuizBtn.addEventListener('click', submitQuiz);
 
             // Start the quiz on page load
             startQuiz();
