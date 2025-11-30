@@ -152,12 +152,15 @@
                         <div>
                             <h3 class="text-xl font-bold text-gold-400">Quiz {{ quiz.quiz_number }}: {{ quiz.title }}
                             </h3>
+
                             <p class="text-sm text-white/70 mt-2 mb-4">{{ quiz.description|default:"No description
                                 available." }}</p>
                         </div>
                         <div class="flex justify-between items-center">
+
                             <span class="text-sm font-mono bg-white/10 px-3 py-1 rounded-full">{{
                                 quiz.time_limit_minutes }} min</span>
+
                             <a href="{% url 'quiz-attempt' quiz.id %}"
                                 class="shine px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white font-bold"><span
                                     class="lang-en">Start Quiz</span><span class="lang-si">ආරම්භ කරන්න</span></a>
@@ -172,7 +175,7 @@
 
             <section>
                 <h2 class="text-2xl font-bold mb-4"><span class="lang-en">My Quiz History</span><span
-                        class="lang-si">මගේ ප්‍රශ්න ඉතිහාසය</span></h2>
+                        class="lang-si">මගේ ප්‍රශ්න ඉති historii</span></h2>
                 <div class="glass rounded-2xl p-5">
                     <ul class="divide-y divide-white/10">
                         {% for attempt in user_attempts %}
@@ -187,7 +190,8 @@
                                     }}</span>
                                 <p
                                     class="text-sm font-mono {% if attempt.percentage_score >= 80 %}text-emerald-400{% elif attempt.percentage_score >= 50 %}text-yellow-400{% else %}text-red-400{% endif %}">
-                                    {{ attempt.percentage_score|floatformat:1 }}%</p>
+                                    {{ attempt.percentage_score|floatformat:1 }}%
+                                </p>
                             </div>
                         </li>
                         {% empty %}
