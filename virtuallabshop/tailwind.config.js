@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './shop/**/*.html',       // <-- Explicitly target your app folder
+    './shop/templates/home.html',      // <-- Explicitly target your app folder
     './templates/**/*.html',   // Keep this for base templates
     './**/*.html',             // The "Nuclear Option" (catch everything else)
   ],
