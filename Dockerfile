@@ -8,7 +8,7 @@ WORKDIR /app
 
 # 1. Install dependencies
 # We use 'curl' to download Tailwind, we DO NOT need nodejs or npm
-RUN apk add --update curl
+RUN apk add --update curl libc6-compat
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
