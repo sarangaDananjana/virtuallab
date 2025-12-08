@@ -5,24 +5,27 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# 1. Install Node.js and NPM
+# 1. Install system dependencies
 RUN apt-get update && apt-get install -y nodejs npm curl && rm -rf /var/lib/apt/lists/*
 
-# Install Python deps
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Copy project (This copies the "bad" Windows node_modules)
 COPY virtuallabshop/ /app/
 
-# 2. Install Tailwind via NPM (The standard, reliable way)
-# We use a clean install to ensure Linux binaries are downloaded
+# --- THE FIX IS HERE ---
+# 2. Force delete the copied Windows/Mac modules to ensure a clean slate
+RUN rm -rf node_modules package-lock.json
+
+# 3. Fresh Install for Linux
 RUN npm init -y
 RUN npm install -D tailwindcss
 
-# 3. Build CSS
-# We use npx, which will now work because of the volume hack in compose
+# 4. Build CSS
+# Now npx will work because we forced a fresh download of Linux binaries
 RUN npx tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify
+# -----------------------
 
 EXPOSE 8000
 
