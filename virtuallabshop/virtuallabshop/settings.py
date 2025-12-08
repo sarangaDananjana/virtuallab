@@ -169,7 +169,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"  # keep or change to leading slash form
+STATIC_URL = "/static/"  # keep or change to leading slash form
 
 # Required for `python manage.py collectstatic`
 STATIC_ROOT = BASE_DIR / "staticfiles"
