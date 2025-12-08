@@ -5,6 +5,7 @@ services:
     build: .
     container_name: shop_web
     working_dir: /app/
+    # In docker-compose.yml under 'web' or 'shop_web':
     command: >
       sh -c "
       echo '🚀 DOWNLOADING TAILWIND...' &&
