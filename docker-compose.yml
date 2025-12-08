@@ -36,8 +36,6 @@ services:
     depends_on:
       - web
     volumes:
-      - ./virtuallabshop:/app
-      - /app/node_modules
       - static_volume:/static
       - media_volume:/media
       - ${NGINX_CONF}:/etc/nginx/conf.d/default.conf:ro
