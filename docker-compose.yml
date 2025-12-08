@@ -5,15 +5,6 @@ services:
     build: .
     container_name: shop_web
     working_dir: /app/
-    command: sh -c "
-      echo '🚀 INSTALLING TAILWIND...' &&
-      npm install -D tailwindcss &&
-      echo '🚀 BUILDING CSS...' &&
-      npx tailwindcss -i ./static/src/input.css -o ./static/css/output.css --content './shop/templates/**/*.html' --minify &&
-      echo '✅ BUILD COMPLETE. STARTING SERVER...' &&
-      python manage.py collectstatic --noinput &&
-      python manage.py migrate &&
-      python manage.py runserver 0.0.0.0:8000
     environment:
       # Django
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-dev-key}
