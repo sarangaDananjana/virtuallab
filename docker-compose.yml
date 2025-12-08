@@ -21,7 +21,6 @@ services:
     ports:
       - "8000"
 
-
   certbot:
     image: certbot/certbot
     volumes:
