@@ -5,6 +5,23 @@ services:
     build: .
     container_name: shop_web
     working_dir: /app/
+    command: >
+      sh -c "
+      echo '🚀 DOWNLOADING TAILWIND...' &&
+      curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o /tmp/tailwindcss &&
+      chmod +x /tmp/tailwindcss &&
+      
+      echo '♻️ RESETTING INPUT CSS...' &&
+      echo '@tailwind base; @tailwind components; @tailwind utilities;' > ./static/src/input.css &&
+
+      echo '🎨 BUILDING CSS...' &&
+      /tmp/tailwindcss -i ./static/src/input.css -o ./static/css/output.css --content './shop/templates/**/*.html' --minify &&
+      
+      echo '✅ STARTING SERVER...' &&
+      python manage.py collectstatic --noinput &&
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
     environment:
       # Django
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-dev-key}
