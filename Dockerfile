@@ -1,34 +1,35 @@
-# Dockerfile
-FROM python:3.12-alpine
+# CHANGE 1: Use 'slim' instead of 'alpine'.
+# This is standard Linux (Debian), so the Tailwind binary will actually work.
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# 1. Install dependencies
-# We use 'curl' to download Tailwind, we DO NOT need nodejs or npm
-RUN apk add --update curl libc6-compat
+# CHANGE 2: Install 'curl' using apt-get (Debian's package manager)
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
+# Install Python deps
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 2. Download Tailwind Standalone CLI (Linux version)
-# This puts the executable at /usr/bin/tailwindcss so we can run it anywhere
+# CHANGE 3: Download Tailwind
+# We download the standard Linux binary. On 'slim', this runs natively.
 RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
     chmod +x tailwindcss-linux-x64 && \
     mv tailwindcss-linux-x64 /usr/bin/tailwindcss
 
-# 3. Copy your project
+# Copy project files
 COPY virtuallabshop/ /app/
 
-# 4. Build the CSS
-# We run the binary directly. No npx, no node_modules.
+# CHANGE 4: Build CSS
+# This command will finally succeed because the OS is compatible.
 RUN tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify
 
 EXPOSE 8000
 
-# 5. Collect static (now includes the compiled css)
+# Collect static files (now that CSS is built)
 RUN python manage.py collectstatic --noinput
 
 CMD sh -lc "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
