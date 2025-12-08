@@ -5,27 +5,30 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# 1. Install Node.js, NPM, and dos2unix (To fix Windows file endings)
-RUN apt-get update && apt-get install -y nodejs npm dos2unix && rm -rf /var/lib/apt/lists/*
+# 1. Install curl (to download Tailwind) and dos2unix (to fix Windows file corruption)
+RUN apt-get update && apt-get install -y curl dos2unix && rm -rf /var/lib/apt/lists/*
 
 # Install Python deps
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# 2. Download the Standalone Tailwind Binary
+# This puts a Linux-compatible binary directly in your path. No npm required.
+RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
+    chmod +x tailwindcss-linux-x64 && \
+    mv tailwindcss-linux-x64 /usr/bin/tailwindcss
+
+# Copy project
 COPY virtuallabshop/ /app/
 
-# 2. FIX WINDOWS LINE ENDINGS (The "Nuclear" fix for empty CSS)
-# This converts all your HTML files to Linux format so Tailwind can read them
+# 3. FIX WINDOWS LINE ENDINGS (Crucial!)
+# Your HTML files have Windows hidden characters (\r\n) that blind the Tailwind scanner.
+# This command converts them to Linux format (\n) so the tool can read them.
 RUN find . -name "*.html" -exec dos2unix {} +
 
-# 3. Install Tailwind GLOBALLY
-# The '-g' flag installs it to the system path, bypassing local node_modules issues
-RUN npm install -g tailwindcss
-
 # 4. Build the CSS
-# We run 'tailwindcss' directly (no npx). It will find the global command.
-# We also use the --content flag to FORCE it to find your files.
+# We use the binary directly.
+# We use the --content flag to explicitly tell it where to look, bypassing config issues.
 RUN tailwindcss -i ./static/src/input.css -o ./static/css/output.css --content "./shop/templates/**/*.html" --minify
 
 EXPOSE 8000
