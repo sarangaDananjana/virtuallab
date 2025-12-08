@@ -6,12 +6,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+RUN apk add --update nodejs npm
 # Install Python deps
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
 COPY virtuallabshop/ /app/
+
+RUN npm install -g tailwindcss
+RUN npx tailwindcss -i ./static/src/input.css -o ./static/css/output.css --minify
 
 EXPOSE 8000
 RUN python manage.py collectstatic --noinput
