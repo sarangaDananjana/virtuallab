@@ -1,7 +1,0 @@
-# .dockerignore
-virtuallabshop/node_modules
-virtuallabshop/static/css/output.css
-**/__pycache__
-**/*.pyc
-.git
-.env
