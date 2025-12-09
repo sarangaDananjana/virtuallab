@@ -5,6 +5,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
+RUN apk add --no-cache \
+    curl \
+    git \
+    libc6-compat \
+    libstdc++
 
 # Install Python deps
 COPY requirements.txt /app/
