@@ -22,4 +22,4 @@ EXPOSE 8000
 RUN python manage.py collectstatic --noinput
 RUN python manage.py tailwind install
 # For dev: run migrations then dev server
-CMD sh -lc "python manage.py migrate && python manage.py tailwind dev && python manage.py runserver 0.0.0.0:8000"
+CMD sh -lc "python manage.py migrate && python manage.py tailwind start && python manage.py runserver 0.0.0.0:8000"
