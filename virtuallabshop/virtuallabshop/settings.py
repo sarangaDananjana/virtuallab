@@ -29,7 +29,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
-    "virtuallabgames.com,www.virtuallabgames.com,localhost,127.0.0.1"
+    "virtuallabgames.com,www.virtuallabgames.com,localhost,127.0.0.1,virtuallabgames.shop,www.virtuallabgames.shop"
 ).split(",")
 
 GENIE_API_URL = os.environ.get(
