@@ -2384,29 +2384,31 @@ def api_submit_quiz_attempt(request):
                 selected_choice_id=int(c_id)
             )
         except (ValueError, TypeError):
-            print(f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
+            print(
+                f"Invalid answer format for attempt {attempt_id}: Q={q_id}, C={c_id}")
 
     # --- NEW: Build Detailed Results ---
     attempt.refresh_from_db()
-    
+
     detailed_results = []
     # Get all questions for this quiz to find the correct choices
     all_questions = attempt.quiz.questions.prefetch_related('choices')
-    
+
     # Get all answers the user just submitted
-    submitted_answers = attempt.user_answers.select_related('question', 'selected_choice')
-    
+    submitted_answers = attempt.user_answers.select_related(
+        'question', 'selected_choice')
+
     # Create a lookup map for faster access
     submitted_map = {sa.question.id: sa for sa in submitted_answers}
 
     for q in all_questions.order_by('order'):
         correct_choice = q.choices.filter(is_correct=True).first()
         submitted_answer_obj = submitted_map.get(q.id)
-        
+
         your_answer_text = "N/A (Skipped)"
         your_answer_id = None
         is_correct = False
-        
+
         if submitted_answer_obj:
             your_answer_text = submitted_answer_obj.selected_choice.choice_text
             your_answer_id = submitted_answer_obj.selected_choice.id
@@ -2430,3 +2432,144 @@ def api_submit_quiz_attempt(request):
         "percentage": round(attempt.percentage_score, 2),
         "detailed_results": detailed_results,  # <-- Add this to the response
     }, status=status.HTTP_200_OK)
+
+
+############################ Virtual Lab Launcher ##########################
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([AllowAny])
+def api_multiple_products_basic_info(request):
+    """
+    Expects a query parameter 'ids' containing a comma-separated list of product IDs.
+    Example: /api/products/basic/?ids=1,2,3
+    Returns only the ID, title, and the main cover image.
+    """
+    ids_param = request.query_params.get("ids", "")
+    if not ids_param:
+        return Response({"results": []})
+
+    try:
+        # Convert comma-separated string into a list of integers
+        id_list = [int(x.strip()) for x in ids_param.split(",") if x.strip()]
+    except ValueError:
+        return Response({"detail": "Invalid IDs provided. Must be integers."}, status=400)
+
+    # Fetch products and prefetch images to avoid N+1 query performance issues
+    products = Product.objects.filter(
+        id__in=id_list, is_active=True).prefetch_related('images')
+
+    results = []
+    for p in products:
+        # Grab the primary image, or fallback to the first available image
+        primary_img = p.images.filter(
+            is_primary=True).first() or p.images.first()
+        img_url = request.build_absolute_uri(
+            primary_img.image.url) if primary_img and primary_img.image else None
+
+        results.append({
+            "id": p.id,
+            "title": p.title,
+            "cover_url": img_url
+        })
+
+    return Response({"results": results})
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@permission_classes([AllowAny])
+def api_single_product_full_details(request, product_id: int):
+    """
+    Fetches all details for a single product using its ID.
+    Example: /api/products/12/details/
+    """
+    qs = (Product.objects
+          .filter(is_active=True)
+          .select_related("developer", "publisher", "system_requirements")
+          .prefetch_related("genres", "images", "dlcs", "addons"))
+
+    p = get_object_or_404(qs, id=product_id)
+
+    # Process Images
+    imgs_qs = (p.images.all().order_by('-is_primary', 'id')
+               if hasattr(p.images.model, 'is_primary')
+               else p.images.all().order_by('id'))
+
+    images = [{
+        "url": request.build_absolute_uri(img.image.url) if img.image else None,
+        "alt": getattr(img, "alt_text", None) or p.title,
+        "is_primary": bool(getattr(img, "is_primary", False)),
+    } for img in imgs_qs]
+
+    # Process Addons / Game Box
+    game_box_product = p.addons.filter(is_active=True).first()
+    game_box_data = None
+    if game_box_product:
+        box_primary_img = game_box_product.images.filter(
+            is_primary=True).first() or game_box_product.images.first()
+        box_img_url = request.build_absolute_uri(
+            box_primary_img.image.url) if box_primary_img and box_primary_img.image else None
+
+        game_box_data = {
+            "id": game_box_product.id,
+            "title": game_box_product.title,
+            "price": float(game_box_product.price),
+            "currency": game_box_product.currency,
+            "cover_url": box_img_url
+        }
+
+    # Process DLCs
+    dlcs = [{
+        "title": d.title,
+        "description": d.description or "",
+        "image_url": request.build_absolute_uri(d.image.url) if d.image else None,
+    } for d in p.dlcs.all()]
+
+    # Process System Requirements
+    sysreq_data = None
+    sysreq = getattr(p, "system_requirements", None)
+    if sysreq:
+        sysreq_data = {
+            "minimum": {
+                "cpu": getattr(sysreq, "min_cpu", None),
+                "ram_gb": getattr(sysreq, "min_ram_gb", None),
+                "gpu": getattr(sysreq, "min_gpu", None),
+                "storage_gb": float(getattr(sysreq, "min_storage_gb", 0)) if getattr(sysreq, "min_storage_gb", None) is not None else None,
+                "os": getattr(sysreq, "min_os", None),
+            },
+            "recommended": {
+                "cpu": getattr(sysreq, "rec_cpu", None),
+                "ram_gb": getattr(sysreq, "rec_ram_gb", None),
+                "gpu": getattr(sysreq, "rec_gpu", None),
+                "storage_gb": float(getattr(sysreq, "rec_storage_gb", 0)) if getattr(sysreq, "rec_storage_gb", None) is not None else None,
+                "os": getattr(sysreq, "rec_os", None),
+            },
+        }
+
+    # Compile Final Dictionary
+    data = {
+        "id": p.id,
+        "sku": getattr(p, "sku", None),
+        "slug": p.slug,
+        "title": p.title,
+        "edition": getattr(p, "edition", None),
+        "description": getattr(p, "description", ""),
+        "genres": [g.name for g in p.genres.all()],
+        "developer": getattr(getattr(p, "developer", None), "name", None),
+        "publisher": getattr(getattr(p, "publisher", None), "name", None),
+        "price": float(p.price),
+        "currency": getattr(p, "currency", "LKR"),
+        "game_size_gb": float(p.game_size_gb) if getattr(p, "game_size_gb", None) is not None else None,
+        "is_active": p.is_active,
+        "is_cracked": p.is_cracked,
+        "images": images,
+        "cover_url": images[0]["url"] if images else None,
+        "url": f"/products/{p.slug}/",
+        "game_box": game_box_data,
+        "dlcs": dlcs,
+        "system_requirements": sysreq_data,
+    }
+
+    return Response(data)

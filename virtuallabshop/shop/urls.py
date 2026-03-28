@@ -68,6 +68,18 @@ urlpatterns = [
     path("api/blog/home/", views.api_blog_home, name="api-blog-home"),
     path("api/blog/<slug:slug>/", views.api_blog_detail, name="api_blog_detail"),
 
+    ############### Virtuallab Launcher Apis ##################
+    path(
+        'api/launcher/home/',
+        views.api_multiple_products_basic_info,
+        name='launcher_home'
+    ),
+    path(
+        'api/launcher/<int:product_id>/details/',
+        views.api_single_product_full_details,
+        name='launcher_game_info_page'
+    ),
+
 
 
 
