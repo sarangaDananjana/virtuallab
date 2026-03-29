@@ -1,10 +1,57 @@
 @import "tailwindcss";
 
 /**
-  * A catch-all path to Django template files, JavaScript, and Python files
-  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
-  */
+ * Scan all Django templates, Python, and JS files for Tailwind classes.
+ */
 @source "../../../**/*.{html,py,js}";
+
+/**
+ * Custom theme — brand & gold colors + custom animations.
+ * These replace the old tailwind.config.js `theme.extend` values
+ * using the Tailwind v4 CSS-based config approach.
+ */
+@theme {
+  /* Brand colors */
+  --color-brand-50:  #F1F7FF;
+  --color-brand-100: #DDEBFF;
+  --color-brand-200: #B8D5FF;
+  --color-brand-300: #90BDFF;
+  --color-brand-400: #5EA1FF;
+  --color-brand-500: #2D86FF;
+  --color-brand-600: #1E6CE0;
+  --color-brand-700: #164FB3;
+  --color-brand-800: #0E377F;
+  --color-brand-900: #0A2559;
+
+  /* Gold colors */
+  --color-gold-50:  #FFFBEB;
+  --color-gold-100: #FEF3C7;
+  --color-gold-200: #FDE68A;
+  --color-gold-300: #FCD34D;
+  --color-gold-400: #f6cd45;
+  --color-gold-500: #F59E0B;
+  --color-gold-600: #D97706;
+  --color-gold-700: #B45309;
+  --color-gold-800: #92400E;
+  --color-gold-900: #78350F;
+
+  /* Custom animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-gradient: gradient 8s ease infinite;
+  --animate-slide-up: slideUp 0.3s ease-out;
+
+  /* Custom keyframes */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-20px); }
+  }
+  @keyframes gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  @keyframes slideUp {
+    0%   { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+}

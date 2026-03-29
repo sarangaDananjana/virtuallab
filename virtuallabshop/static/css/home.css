@@ -43,7 +43,6 @@ body {
         radial-gradient(ellipse 1000px 600px at 90% 10%, rgba(246, 205, 69, .3), transparent 50%),
         radial-gradient(ellipse 1200px 800px at 50% 120%, rgba(6, 182, 212, .35), transparent 55%),
         linear-gradient(180deg, #0a0b14 0%, #05060b 100%);
-    background-attachment: fixed;
 }
 
 .noise::before {
@@ -193,14 +192,50 @@ body {
     background: linear-gradient(135deg, rgba(246, 205, 69, .15), rgba(246, 205, 69, .05));
 }
 
-@media (max-width: 640px) {
+/* ============================================================ */
+/* MOBILE PERFORMANCE OVERRIDES                                 */
+/* Disable GPU-heavy effects on mobile for smoother scrolling.  */
+/* Desktop appearance is completely unaffected.                  */
+/* ============================================================ */
+@media (max-width: 768px) {
+    /* Disable backdrop-filter blur on glass elements (GPU-heavy on mobile) */
     .glass {
-        backdrop-filter: saturate(140%) blur(12px);
-        -webkit-backdrop-filter: saturate(140%) blur(12px);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .04));
     }
 
     .glass-white {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         background: linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .88));
+    }
+
+    .glass-dark {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: linear-gradient(135deg, rgba(0, 0, 0, .45), rgba(0, 0, 0, .25));
+    }
+
+    .header-blend {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(88, 74, 31, .92);
+    }
+
+    .header-solid {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(88, 74, 31, .95);
+    }
+
+    /* Disable infinite decorative animations on mobile */
+    .shine::after {
+        animation: none;
+    }
+
+    .gradient-text {
+        animation: none;
     }
 }
 
@@ -426,5 +461,24 @@ body {
 
     .store-card:hover {
         transform: translateY(-8px) scale(1.02);
+    }
+}
+
+/* Disable store card blur on mobile */
+@media (max-width: 768px) {
+    .store-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, .12),
+                rgba(255, 255, 255, .06));
+    }
+
+    .store-card .absolute.top-3.right-3 span {
+        animation: none;
+    }
+
+    .store-card::before {
+        display: none;
     }
 }

@@ -2,36 +2,13 @@
 <html lang="en" class="scroll-smooth">
 
 <head>
-    {% load static %}
+    {% load static tailwind_tags %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Payment Successful — Virtual Lab Games</title>
     <meta name="description" content="Your payment was successful. Thank you for your order." />
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 50: '#F1F7FF', 100: '#DDEBFF', 200: '#B8D5FF', 300: '#90BDFF', 400: '#5EA1FF', 500: '#2D86FF', 600: '#1E6CE0', 700: '#164FB3', 800: '#0E377F', 900: '#0A2559' },
-                        gold: { 50: '#FFFBEB', 100: '#FEF3C7', 200: '#FDE68A', 300: '#FCD34D', 400: '#f6cd45', 500: '#F59E0B', 600: '#D97706', 700: '#B45309', 800: '#92400E', 900: '#78350F' }
-                    },
-                    animation: {
-                        float: 'float 6s ease-in-out infinite',
-                        gradient: 'gradient 8s ease infinite',
-                        pop: 'pop 650ms cubic-bezier(.2,1,.2,1) both'
-                    },
-                    keyframes: {
-                        float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-                        gradient: { '0%,100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
-                        pop: { '0%': { transform: 'scale(.6)', opacity: 0 }, '60%': { transform: 'scale(1.05)', opacity: 1 }, '100%': { transform: 'scale(1)' } }
-                    }
-                }
-            }
-        }
-    </script>
+    {% tailwind_css %}
 
     <!-- Fonts (match site) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
