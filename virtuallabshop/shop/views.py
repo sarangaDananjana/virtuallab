@@ -22,7 +22,8 @@ from .models import (
     Order, OfflineGames, Ticket, ActivationTicket, TicketPhoto, ReservedSlot,
     GameRequest, Product, StorageDevice, Cart, CartItem, CartStorageItem, User,
     OrderItem, OrderStorageItem, Blog, BlogPhoto, Genre,
-    Quiz, Question, Choice, QuizAttempt, UserAnswer  # <-- ADD THESE
+    Quiz, Question, Choice, QuizAttempt, UserAnswer,
+    Review,
 )
 
 # Also, make sure 'timezone' is imported near the top (it's used in the new views)
@@ -189,7 +190,20 @@ def home_page(request):
         name = request.user.get_username() or getattr(request.user, "email", "") or ""
         if name:
             user_initial = name[0].upper()
-    return Response({"user": request.user, "user_initial": user_initial}, template_name="home.html")
+
+    # Fetch the 8 latest active reviews for the trust section
+    reviews = (
+        Review.objects
+        .filter(is_active=True)
+        .select_related("user", "product")
+        .prefetch_related("product__images")
+        .order_by("-created_at")[:8]
+    )
+
+    return Response(
+        {"user": request.user, "user_initial": user_initial, "reviews": reviews},
+        template_name="home.html",
+    )
 
 
 @api_view(["GET"])  # Login page (renders form)

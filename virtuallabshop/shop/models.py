@@ -1105,3 +1105,67 @@ class UserAnswer(models.Model):
         else:
             self.is_correct = False
         super().save(*args, **kwargs)
+
+
+# --- Reviews (display-only, managed from Admin) ------------------------------
+
+def review_image_upload_to(instance, filename):
+    """
+    Store under: media/reviews/<product-slug>/<uuid>.<ext>
+    """
+    base, ext = os.path.splitext(filename)
+    product = instance.product
+    folder = (product.slug or slugify(product.title)).strip() or "review"
+    return f"reviews/{folder}/{uuid4().hex}{ext.lower()}"
+
+
+class Review(TimestampedModel):
+    """
+    Customer review displayed on the homepage to build trust.
+    Managed entirely from Django Admin — no public submission form.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        help_text=_("The user who wrote this review."),
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        help_text=_("The product this review is about."),
+    )
+    username_display = models.CharField(
+        max_length=100,
+        help_text=_("Public display name, e.g. 'Kasun P.' or 'GamerPro_LK'"),
+    )
+    review = models.TextField(
+        help_text=_("The review text shown on the homepage."),
+    )
+    stars = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1)],
+        help_text=_("Star rating from 1 to 5."),
+    )
+    image_1 = models.ImageField(
+        upload_to=review_image_upload_to,
+        blank=True,
+        null=True,
+        help_text=_("First review photo (optional) — e.g. unboxing, gameplay screenshot."),
+    )
+    image_2 = models.ImageField(
+        upload_to=review_image_upload_to,
+        blank=True,
+        null=True,
+        help_text=_("Second review photo (optional)."),
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text=_("Only active reviews are shown on the homepage."),
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.username_display} — {self.stars}★ on {self.product.title}"

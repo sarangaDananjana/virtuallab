@@ -18,7 +18,8 @@ from .models import (
     StorageDevice,
     OfflineGames,
     OrderStorageItem, Blog, BlogPhoto, OfflineGames, ActivationStep, ActivationTicket,
-    Quiz, Question, Choice, QuizAttempt, UserAnswer
+    Quiz, Question, Choice, QuizAttempt, UserAnswer,
+    Review
 )
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
@@ -702,3 +703,66 @@ class UserAnswerAdmin(admin.ModelAdmin):
     list_filter = ('quiz_attempt__quiz',)
     search_fields = ('quiz_attempt__user__username', 'question__question_text')
     readonly_fields = ('quiz_attempt', 'question', 'selected_choice')
+
+
+# =========================
+# Reviews (Homepage trust section)
+# =========================
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        "username_display",
+        "stars_display",
+        "product",
+        "is_active",
+        "image_1_preview",
+        "image_2_preview",
+        "created_at",
+    )
+    list_filter = ("stars", "is_active", "product")
+    search_fields = ("username_display", "review", "product__title", "user__username")
+    autocomplete_fields = ("user", "product")
+    readonly_fields = ("created_at", "updated_at", "image_1_preview", "image_2_preview")
+    list_editable = ("is_active",)
+
+    fieldsets = (
+        (None, {"fields": ("user", "product", "username_display", "review", "stars")}),
+        ("Photos", {"fields": ("image_1", "image_1_preview", "image_2", "image_2_preview")}),
+        ("Visibility", {"fields": ("is_active",)}),
+        ("Timestamps", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
+    )
+
+    @admin.display(description="Stars")
+    def stars_display(self, obj):
+        return "⭐" * obj.stars
+
+    @admin.display(description="Photo 1")
+    def image_1_preview(self, obj):
+        if getattr(obj, "image_1", None) and obj.image_1:
+            return format_html(
+                "<img src='{}' style='height:60px;border-radius:6px'/>",
+                obj.image_1.url,
+            )
+        return "—"
+
+    @admin.display(description="Photo 2")
+    def image_2_preview(self, obj):
+        if getattr(obj, "image_2", None) and obj.image_2:
+            return format_html(
+                "<img src='{}' style='height:60px;border-radius:6px'/>",
+                obj.image_2.url,
+            )
+        return "—"
+
+    actions = ["activate_reviews", "deactivate_reviews"]
+
+    @admin.action(description="Activate selected reviews")
+    def activate_reviews(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"Activated {updated} review(s).")
+
+    @admin.action(description="Deactivate selected reviews")
+    def deactivate_reviews(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"Deactivated {updated} review(s).")
