@@ -66,6 +66,8 @@
         border-radius: 8px;
         padding: 24px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        min-width: 0; /* Prevents CSS Grid blowout */
+        overflow-x: auto; /* Allow horizontal scrolling if contents are too wide */
     }
 
     .panel h2 {
@@ -148,7 +150,13 @@
     .btn-save:hover { transform: scale(1.02); }
 
     /* Steam HTML overrides */
-    .steam-html { color: #d1d5db; line-height: 1.6; }
+    .steam-html { 
+        color: #d1d5db; 
+        line-height: 1.6; 
+        overflow-wrap: break-word;
+        max-width: 100%;
+        overflow-x: auto;
+    }
     .steam-html img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
 </style>
 {% endblock %}
@@ -352,32 +360,34 @@
                 <strong>Publishers:</strong> <div class="tags">${data.publishers.map(p=>`<span class="tag">${p}</span>`).join('')}</div>
                 <strong>Genres:</strong> <div class="tags">${data.genres.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
                 
-                <hr style="margin: 15px 0;">
-                
-                <div class="steam-html">
-                    <strong>Description:</strong><br>
-                    ${data.description}
-                </div>
-
-                <hr style="margin: 15px 0;">
+                <hr style="margin: 15px 0; border-top: 1px solid #374151; border-bottom:0;">
 
                 <div class="steam-html">
-                    <strong>System Requirements:</strong><br>
-                    <div style="background:#111827; padding:15px; font-size:13px; border-radius:6px; border: 1px solid #374151;">
+                    <strong style="color:#f6cd45;">System Requirements:</strong><br>
+                    <div style="background:#111827; padding:15px; font-size:13px; border-radius:6px; border: 1px solid #374151; margin-top:10px;">
                         ${data.pc_requirements.minimum || ''}
                     </div>
                 </div>
 
-                <hr style="margin: 15px 0;">
+                <hr style="margin: 15px 0; border-top: 1px solid #374151; border-bottom:0;">
                 
-                <strong>Image Curation:</strong>
-                <p style="font-size:11px; color:#666;">Check boxes below to select images. They will be downloaded and attached to your product upon save in the exact order you click them.</p>
+                <strong style="color:#f6cd45;">Image Curation:</strong>
+                <p style="font-size:11px; color:#9ca3af; margin-top:5px;">Check boxes below to select images. They will be downloaded and attached to your product upon save in the exact order you click them.</p>
                 ${galleryHTML}
 
-                <hr style="margin: 15px 0;">
+                <hr style="margin: 15px 0; border-top: 1px solid #374151; border-bottom:0;">
                 
-                <strong>Raw API JSON Data:</strong>
-                <p style="font-size:11px; color:#666;">Full data dump from Steam below for manual field extraction if needed.</p>
+                <div class="steam-html">
+                    <strong style="color:#f6cd45;">Steam Description:</strong><br>
+                    <div style="margin-top:10px;">
+                        ${data.description}
+                    </div>
+                </div>
+
+                <hr style="margin: 15px 0; border-top: 1px solid #374151; border-bottom:0;">
+                
+                <strong style="color:#f6cd45;">Raw API JSON Data:</strong>
+                <p style="font-size:11px; color:#9ca3af; margin-top:5px;">Full data dump from Steam below for manual field extraction if needed.</p>
                 <div style="background:#111827; padding:15px; font-size:12px; border-radius:6px; border: 1px solid #374151; overflow-x: auto; max-height: 300px; overflow-y: auto; color: #a5b4fc;">
                     <pre style="margin:0;">${JSON.stringify(data, null, 2)}</pre>
                 </div>
