@@ -10,43 +10,48 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-    /* Admin resets and UI */
+    /* Admin resets and UI - Dark Theme */
     .ingestion-container {
         display: flex;
         flex-direction: column;
         gap: 20px;
-        font-family: Arial, sans-serif;
+        font-family: 'Inter', Arial, sans-serif;
+        color: #e2e8f0;
     }
     
     .top-bar {
-        background: #f8f8f8;
+        background: #1e2128;
         padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        border: 1px solid #374151;
+        border-radius: 8px;
         display: flex;
-        gap: 10px;
+        gap: 15px;
         align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
     
     .top-bar input {
-        padding: 8px;
+        padding: 10px;
         font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 200px;
+        background: #111827;
+        color: white;
+        border: 1px solid #4b5563;
+        border-radius: 6px;
+        width: 250px;
     }
     
     .top-bar button {
-        background: #417690;
-        color: white;
-        padding: 8px 16px;
+        background: #f6cd45;
+        color: black;
+        padding: 10px 20px;
         border: none;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: bold;
+        transition: all 0.2s;
     }
-    .top-bar button:hover { background: #205067; }
+    .top-bar button:hover { background: #d97706; transform: scale(1.05); }
 
     .split-view {
         display: grid;
@@ -56,81 +61,95 @@
     }
 
     .panel {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: #1e2128;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
 
     .panel h2 {
         margin-top: 0;
         margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
-        color: #417690;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #374151;
+        color: #f6cd45;
+        font-weight: 800;
     }
 
     /* Left Panel Styles */
-    #steam-viewer h3 { margin: 15px 0 5px; color: #333; }
-    #steam-viewer p { margin: 0 0 10px; line-height: 1.5; color: #555; }
-    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
-    .tag { background: #e0e0e0; padding: 3px 8px; border-radius: 10px; font-size: 12px; }
+    #steam-viewer h3 { margin: 15px 0 5px; color: white; font-size: 1.25rem; }
+    #steam-viewer p { margin: 0 0 10px; line-height: 1.6; color: #9ca3af; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+    .tag { background: #374151; color: #e2e8f0; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
     
     .image-gallery {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        gap: 12px;
         margin-top: 15px;
     }
     .img-box {
-        border: 1px solid #ddd;
+        border: 1px solid #4b5563;
         padding: 5px;
-        border-radius: 4px;
+        border-radius: 6px;
+        background: #111827;
         position: relative;
     }
-    .img-box img { width: 100%; height: auto; display: block; border-radius: 2px; }
+    .img-box img { width: 100%; height: auto; display: block; border-radius: 4px; }
     .img-controls {
         display: flex;
         justify-content: space-between;
-        margin-top: 5px;
-        font-size: 11px;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #d1d5db;
     }
 
     /* Right Panel Styles (Django Form) */
-    .form-row { margin-bottom: 15px; }
-    .form-row label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .form-row { margin-bottom: 18px; }
+    .form-row label { display: block; font-weight: bold; margin-bottom: 6px; color: #d1d5db; }
     .form-row input[type="text"],
     .form-row input[type="number"],
     .form-row select,
     .form-row textarea {
         width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        padding: 10px;
+        background: #111827;
+        color: white;
+        border: 1px solid #4b5563;
+        border-radius: 6px;
         box-sizing: border-box;
+        font-family: inherit;
     }
-    .form-row textarea { height: 150px; resize: vertical; }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+        outline: none;
+        border-color: #f6cd45;
+        box-shadow: 0 0 0 2px rgba(246, 205, 69, 0.2);
+    }
+    .form-row textarea { height: 180px; resize: vertical; line-height: 1.5; }
     
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
     
     .btn-save {
-        background: #f6cd45;
+        background: linear-gradient(to right, #f6cd45, #D97706);
         color: black;
-        padding: 12px 24px;
+        padding: 14px 24px;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         font-size: 16px;
-        font-weight: bold;
+        font-weight: 900;
         cursor: pointer;
         width: 100%;
-        margin-top: 20px;
+        margin-top: 25px;
+        box-shadow: 0 4px 6px rgba(217,119,6,0.3);
+        transition: transform 0.2s;
     }
-    .btn-save:hover { background: #e5be3c; }
+    .btn-save:hover { transform: scale(1.02); }
 
     /* Steam HTML overrides */
-    .steam-html img { max-width: 100%; height: auto; }
+    .steam-html { color: #d1d5db; line-height: 1.6; }
+    .steam-html img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
 </style>
 {% endblock %}
 
@@ -288,6 +307,9 @@
             // Populate Form Basics automatically to save time
             document.getElementById('id_title').value = data.name || '';
             document.getElementById('id_slug').value = generateSlug(data.name || '');
+            
+            // Auto-populate the description!
+            document.getElementById('id_description').value = data.description || '';
 
             // Build Left Panel UI
             const viewer = document.getElementById('viewer-content');
@@ -331,7 +353,7 @@
 
                 <div class="steam-html">
                     <strong>System Requirements:</strong><br>
-                    <div style="background:#f4f4f4; padding:10px; font-size:12px; border-radius:4px;">
+                    <div style="background:#111827; padding:15px; font-size:13px; border-radius:6px; border: 1px solid #374151;">
                         ${data.pc_requirements.minimum || ''}
                     </div>
                 </div>
