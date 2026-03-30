@@ -130,6 +130,7 @@ class DLCAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    change_list_template = "admin/custom/product_changelist.html"
     inlines = [ProductImageInline, SystemRequirementsInline]
 
     list_display = (

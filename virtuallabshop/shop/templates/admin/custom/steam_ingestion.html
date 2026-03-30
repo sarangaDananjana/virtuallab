@@ -1,0 +1,451 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Steam Ingestion Dashboard | Django site admin{% endblock %}
+
+{% block content_title %}
+    <h1>Steam Ingestion Dashboard</h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Admin resets and UI */
+    .ingestion-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        font-family: Arial, sans-serif;
+    }
+    
+    .top-bar {
+        background: #f8f8f8;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .top-bar input {
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 200px;
+    }
+    
+    .top-bar button {
+        background: #417690;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .top-bar button:hover { background: #205067; }
+
+    .split-view {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .panel {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .panel h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        color: #417690;
+    }
+
+    /* Left Panel Styles */
+    #steam-viewer h3 { margin: 15px 0 5px; color: #333; }
+    #steam-viewer p { margin: 0 0 10px; line-height: 1.5; color: #555; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
+    .tag { background: #e0e0e0; padding: 3px 8px; border-radius: 10px; font-size: 12px; }
+    
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .img-box {
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 4px;
+        position: relative;
+    }
+    .img-box img { width: 100%; height: auto; display: block; border-radius: 2px; }
+    .img-controls {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+        font-size: 11px;
+    }
+
+    /* Right Panel Styles (Django Form) */
+    .form-row { margin-bottom: 15px; }
+    .form-row label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row select,
+    .form-row textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .form-row textarea { height: 150px; resize: vertical; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    
+    .btn-save {
+        background: #f6cd45;
+        color: black;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .btn-save:hover { background: #e5be3c; }
+
+    /* Steam HTML overrides */
+    .steam-html img { max-width: 100%; height: auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ingestion-container">
+    
+    <div class="top-bar">
+        <label for="app_id"><b>Steam App ID:</b></label>
+        <input type="text" id="app_id" placeholder="e.g. 3321460">
+        <button type="button" onclick="fetchSteam()">Fetch Game Data</button>
+        <span id="fetch-status" style="margin-left: 10px; font-weight: bold;"></span>
+    </div>
+
+    <div class="split-view">
+        <!-- LEFT PANEL (Steam Viewer) -->
+        <div class="panel" id="steam-viewer">
+            <h2>Steam Data Viewer</h2>
+            <div id="viewer-content">
+                <p><em>Enter an App ID and click Fetch to load data here.</em></p>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL (Django Form) -->
+        <div class="panel" id="django-form">
+            <h2>Authoritative Form</h2>
+            <form id="ingestion-form" onsubmit="submitForm(event)">
+                {% csrf_token %}
+                
+                <div class="grid-2">
+                    <div class="form-row">
+                        <label>Title *</label>
+                        <input type="text" id="id_title" name="title" required>
+                    </div>
+                    <div class="form-row">
+                        <label>Slug *</label>
+                        <input type="text" id="id_slug" name="slug" required>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-row">
+                        <label>Edition</label>
+                        <input type="text" id="id_edition" name="edition" value="Standard Edition">
+                    </div>
+                    <div class="form-row">
+                        <label>Price *</label>
+                        <input type="number" step="0.01" id="id_price" name="price" value="0.00" required>
+                    </div>
+                    <div class="form-row">
+                        <label>Currency</label>
+                        <input type="text" id="id_currency" name="currency" value="LKR">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Description</label>
+                    <textarea id="id_description" name="description"></textarea>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-row">
+                        <label>Developer</label>
+                        <select id="id_developer_id" name="developer_id">
+                            <option value="">---------</option>
+                            {% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Publisher</label>
+                        <select id="id_publisher_id" name="publisher_id">
+                            <option value="">---------</option>
+                            {% for c in companies %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Genres (Hold Ctrl/Cmd to select multiple)</label>
+                    <select id="id_genre_ids" name="genre_ids" multiple style="height:100px;">
+                        {% for g in genres %}<option value="{{ g.id }}">{{ g.name }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+                <h3>System Requirements</h3>
+                <div class="grid-2">
+                    <div class="form-row"><label>Min CPU</label><input type="text" id="id_min_cpu" name="min_cpu"></div>
+                    <div class="form-row"><label>Rec CPU</label><input type="text" id="id_rec_cpu" name="rec_cpu"></div>
+                    
+                    <div class="form-row"><label>Min RAM (GB)</label><input type="number" id="id_min_ram_gb" name="min_ram_gb" value="8"></div>
+                    <div class="form-row"><label>Rec RAM (GB)</label><input type="number" id="id_rec_ram_gb" name="rec_ram_gb"></div>
+                    
+                    <div class="form-row"><label>Min GPU</label><input type="text" id="id_min_gpu" name="min_gpu"></div>
+                    <div class="form-row"><label>Rec GPU</label><input type="text" id="id_rec_gpu" name="rec_gpu"></div>
+                    
+                    <div class="form-row"><label>Min Storage (GB)</label><input type="number" step="0.1" id="id_min_storage_gb" name="min_storage_gb" value="0"></div>
+                    <div class="form-row"><label>Rec Storage (GB)</label><input type="number" step="0.1" id="id_rec_storage_gb" name="rec_storage_gb"></div>
+                </div>
+
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+                <div class="grid-3">
+                    <div class="form-row">
+                        <label>Game Size (GB) *</label>
+                        <input type="number" step="0.01" id="id_game_size_gb" name="game_size_gb" required>
+                    </div>
+                    <div class="form-row" style="display:flex; align-items:center; gap:10px; margin-top:15px;">
+                        <input type="checkbox" id="id_is_active" name="is_active" checked>
+                        <label for="id_is_active" style="margin:0;">Is Active</label>
+                    </div>
+                    <div class="form-row" style="display:flex; align-items:center; gap:10px; margin-top:15px;">
+                        <input type="checkbox" id="id_is_cracked" name="is_cracked" checked>
+                        <label for="id_is_cracked" style="margin:0;">Is Cracked</label>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs for images will be injected via JS -->
+                <div id="hidden-images-container"></div>
+
+                <button type="submit" class="btn-save" id="btn-save">Save Product</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global tracking for images
+    let fetchedImages = [];
+
+    // Helper to generate a slug from a title
+    function generateSlug(text) {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
+    }
+
+    async function fetchSteam() {
+        const appId = document.getElementById('app_id').value.trim();
+        const statusSpan = document.getElementById('fetch-status');
+        if (!appId) return;
+
+        statusSpan.style.color = 'blue';
+        statusSpan.innerText = 'Fetching...';
+
+        try {
+            const resp = await fetch(`/admin/custom/api/fetch-steam/${appId}/`);
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                throw new Error(data.error || 'Fetch failed');
+            }
+
+            // Populate Form Basics automatically to save time
+            document.getElementById('id_title').value = data.name || '';
+            document.getElementById('id_slug').value = generateSlug(data.name || '');
+
+            // Build Left Panel UI
+            const viewer = document.getElementById('viewer-content');
+            
+            // Collect all images to display
+            fetchedImages = [];
+            if(data.header_image) fetchedImages.push(data.header_image);
+            if(data.capsule_image) fetchedImages.push(data.capsule_image);
+            data.screenshots.forEach(s => fetchedImages.push(s));
+
+            // Generate Gallery HTML
+            let galleryHTML = '<div class="image-gallery">';
+            fetchedImages.forEach((img, idx) => {
+                galleryHTML += `
+                    <div class="img-box">
+                        <img src="${img}" alt="Screenshot">
+                        <div class="img-controls">
+                            <label><input type="checkbox" class="img-select" value="${img}" onchange="updateHiddenImages()"> Sel</label>
+                            <label><input type="radio" name="primary_radio" value="${img}" onchange="updateHiddenImages()"> Prim</label>
+                        </div>
+                    </div>
+                `;
+            });
+            galleryHTML += '</div>';
+
+            viewer.innerHTML = `
+                <h3>${data.name}</h3>
+                
+                <strong>Developers:</strong> <div class="tags">${data.developers.map(d=>`<span class="tag">${d}</span>`).join('')}</div>
+                <strong>Publishers:</strong> <div class="tags">${data.publishers.map(p=>`<span class="tag">${p}</span>`).join('')}</div>
+                <strong>Genres:</strong> <div class="tags">${data.genres.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
+                
+                <hr style="margin: 15px 0;">
+                
+                <div class="steam-html">
+                    <strong>Description:</strong><br>
+                    ${data.description}
+                </div>
+
+                <hr style="margin: 15px 0;">
+
+                <div class="steam-html">
+                    <strong>System Requirements:</strong><br>
+                    <div style="background:#f4f4f4; padding:10px; font-size:12px; border-radius:4px;">
+                        ${data.pc_requirements.minimum || ''}
+                    </div>
+                </div>
+
+                <hr style="margin: 15px 0;">
+                
+                <strong>Image Curation:</strong>
+                <p style="font-size:11px; color:#666;">Check boxes below and select one primary image. They will be downloaded and attached to your product upon save.</p>
+                ${galleryHTML}
+            `;
+
+            statusSpan.style.color = 'green';
+            statusSpan.innerText = 'Success!';
+            // Clear status after 3s
+            setTimeout(() => statusSpan.innerText='', 3000);
+
+        } catch (err) {
+            statusSpan.style.color = 'red';
+            statusSpan.innerText = err.message;
+        }
+    }
+
+    // Keep the hidden form inputs synched with the left side visual checkboxes
+    function updateHiddenImages() {
+        const container = document.getElementById('hidden-images-container');
+        container.innerHTML = ''; // Clear prev
+
+        // Find all selected checkboxes
+        const checkboxes = document.querySelectorAll('.img-select:checked');
+        checkboxes.forEach(cb => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'selected_image_urls';
+            inp.value = cb.value;
+            container.appendChild(inp);
+        });
+
+        // Find selected radio
+        const radio = document.querySelector('input[name="primary_radio"]:checked');
+        if (radio) {
+            const radInp = document.createElement('input');
+            radInp.type = 'hidden';
+            radInp.name = 'primary_image_url';
+            radInp.value = radio.value;
+            container.appendChild(radInp);
+        }
+    }
+
+    async function submitForm(e) {
+        e.preventDefault();
+        const form = e.target;
+        const btn = document.getElementById('btn-save');
+        btn.innerText = "Saving & Downloading Images...";
+        btn.disabled = true;
+
+        // Build Payload
+        const payload = {
+            title: document.getElementById('id_title').value,
+            slug: document.getElementById('id_slug').value,
+            edition: document.getElementById('id_edition').value,
+            price: document.getElementById('id_price').value,
+            currency: document.getElementById('id_currency').value,
+            description: document.getElementById('id_description').value,
+            developer_id: document.getElementById('id_developer_id').value,
+            publisher_id: document.getElementById('id_publisher_id').value,
+            
+            // Handle multiple select
+            genre_ids: Array.from(document.getElementById('id_genre_ids').selectedOptions).map(opt => opt.value),
+            
+            game_size_gb: document.getElementById('id_game_size_gb').value,
+            is_active: document.getElementById('id_is_active').checked,
+            is_cracked: document.getElementById('id_is_cracked').checked,
+            
+            system_requirements: {
+                min_cpu: document.getElementById('id_min_cpu').value,
+                rec_cpu: document.getElementById('id_rec_cpu').value,
+                min_ram_gb: document.getElementById('id_min_ram_gb').value,
+                rec_ram_gb: document.getElementById('id_rec_ram_gb').value,
+                min_gpu: document.getElementById('id_min_gpu').value,
+                rec_gpu: document.getElementById('id_rec_gpu').value,
+                min_storage_gb: document.getElementById('id_min_storage_gb').value,
+                rec_storage_gb: document.getElementById('id_rec_storage_gb').value,
+            },
+
+            // Collect dynamically injected hidden fields 
+            selected_image_urls: Array.from(form.querySelectorAll('input[name="selected_image_urls"]')).map(i => i.value),
+            primary_image_url: (form.querySelector('input[name="primary_image_url"]') || {}).value
+        };
+
+        try {
+            const resp = await fetch("/admin/custom/api/save-steam-game/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+
+            if (resp.ok) {
+                alert(`Success! Created product ID ${data.product_id} with SKU ${data.sku}.`);
+                // Optionally redirect to standard edit page
+                window.location.href = `/admin/shop/product/${data.product_id}/change/`;
+            } else {
+                alert("Error saving: " + data.error);
+                btn.innerText = "Save Product";
+                btn.disabled = false;
+            }
+        } catch (err) {
+            alert("Network Error: " + err.message);
+            btn.innerText = "Save Product";
+            btn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

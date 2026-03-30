@@ -1,0 +1,736 @@
+--- PDF CONTENT ---
+
+Steam-to-Django  Ingestion  Dashboard:  
+Implementation
+ 
+Plan
+ Overview  
+A  side-by-side  ingestion  dashboard  designed  for  Django  staff/admins.  The  left  side  acts  as  a  
+read-only
+ 
+"Steam
+ 
+Reference
+ 
+Viewer,"
+ 
+displaying
+ 
+raw
+ 
+data
+ 
+fetched
+ 
+directly
+ 
+from
+ 
+the
+ 
+Steam
+ 
+Storefront
+ 
+API.
+ 
+The
+ 
+right
+ 
+side
+ 
+is
+ 
+the
+ 
+"Authoritative
+ 
+Entry
+ 
+Form,"
+ 
+mirroring
+ 
+your
+ 
+Django
+ 
+Admin
+ 
+panel,
+ 
+allowing
+ 
+you
+ 
+to
+ 
+manually
+ 
+copy,
+ 
+tweak,
+ 
+and
+ 
+map
+ 
+data
+ 
+before
+ 
+saving
+ 
+it
+ 
+using
+ 
+standard
+ 
+Django
+ 
+ORM
+ 
+methods.
+ 
+Phase  1:  The  Steam  Fetcher  View  (Backend)  
+Create  a  simple,  dedicated  Django  view  to  proxy  the  Steam  API.  This  avoids  CORS  issues  on  the  
+frontend
+ 
+and
+ 
+keeps
+ 
+your
+ 
+server
+ 
+IP
+ 
+hidden.
+ ●  Endpoint:  /admin/api/fetch-steam/<app_id>/  ●  Access:  @staff_member_required  ●  Logic:  1.  Receives  the  app_id.  2.  Makes  a  GET  request  to  
+https://store.steampowered.com/api/appdetails?appids=<app_id>.
+ 3.  Parses  the  JSON  response.  4.  Returns  a  streamlined  JSON  object  to  the  frontend  containing:  ■  name  ■  detailed_description  (and  short_description)  ■  developers  (Array  of  strings)  ■  publishers  (Array  of  strings)  ■  genres  (Array  of  strings)  ■  pc_requirements  (Raw  HTML  strings  for  minimum/recommended)  ■  images:  A  combined  array  of  URLs  from  header_image,  capsule_image,  and  
+screenshots.
+ 
+Phase  2:  The  Side-by-Side  UI  Layout  (Frontend)  
+Create  a  custom  Django  template  (e.g.,  admin/custom/steam_ingestion.html).  
+Top  Bar  
+●  App  ID  Input:  A  text  input  and  a  "Fetch  Game"  button.  ●  Action:  Triggers  an  AJAX/Fetch  call  to  the  Phase  1  endpoint.  
+Left  Panel  (Steam  Data  Viewer)  
+Read-only  display  populated  by  the  AJAX  response.  ●  Header:  Steam  Title.  ●  Text  Blocks:  Steam  Description  (rendered  HTML  so  you  can  read  it  easily).  ●  Tags:  Genres,  Developers,  and  Publishers  listed  as  plain  text  pills.  ●  System  Requirements:  The  raw  HTML  output  from  Steam,  rendered  visually  so  you  can  
+read
+ 
+"Processor:
+ 
+Ryzen
+ 
+5"
+ 
+clearly.
+ ●  Image  Gallery:  A  CSS  grid  displaying  all  fetched  images.  ○  Interactive  Element:  Each  image  has  a  "Select"  checkbox  and  a  "Make  Primary"  radio  
+button.
+ 
+Right  Panel  (Authoritative  Django  Form)  
+A  standard  HTML  <form>  that  maps  exactly  to  your  models.py  fields.  ●  Basic  Info:  Title,  Edition  (default:  Standard  Edition),  Slug,  SKU  (auto-generated  by  your  
+model,
+ 
+so
+ 
+leave
+ 
+blank/hidden),
+ 
+Price,
+ 
+Currency
+ 
+(default:
+ 
+LKR),
+ 
+Description
+ 
+textarea.
+ ●  Categorization:  *  Standard  Django  ModelChoiceFields/Select2  dropdowns  populated  
+with
+ 
+your
+ 
+database's
+ 
+existing
+ 
+Genres,
+ 
+Developers,
+ 
+and
+ 
+Publishers.
+ ○  Includes  the  standard  Django  admin  +  button  to  add  a  new  one  in  a  popup  if  Steam's  
+developer
+ 
+isn't
+ 
+in
+ 
+your
+ 
+DB
+ 
+yet.
+ ●  Status  &  Specs:  Is  Active  (checkbox),  Is  Cracked  (checkbox),  Game  Size  GB  (number  
+input).
+ ●  System  Requirements:  Exact  inputs  for  min_cpu,  min_ram_gb,  min_gpu,  min_storage_gb,  
+etc.
+ ●  Hidden  Image  Inputs:  When  you  select  an  image  on  the  Left  Panel,  JavaScript  
+dynamically
+ 
+creates
+ 
+a
+ 
+hidden
+ 
+<input
+ 
+name="selected_image_urls"
+ 
+value="[URL]">
+ 
+in
+ 
+the
+ 
+Right
+ 
+Panel's
+ 
+form,
+ 
+along
+ 
+with
+ 
+a
+ 
+hidden
+ 
+field
+ 
+for
+ 
+the
+ 
+primary_image_url.
+ 
+Phase  3:  The  Workflow  (The  Admin  Experience)  
+1.  Fetch:  Enter  App  ID  ->  Left  side  populates.  2.  Copy/Paste  Text:  You  read  the  Steam  description  on  the  left  and  paste/type  what  you  
+want
+ 
+into
+ 
+the
+ 
+Right
+ 
+Panel's
+ 
+description
+ 
+box.
+ 3.  Map  Specs:  You  read  the  messy  Steam  requirements  on  the  left,  extract  the  numbers  
+mentally,
+ 
+and
+ 
+type
+ 
+16
+ 
+into
+ 
+the
+ 
+RAM
+ 
+field
+ 
+and
+ 
+Ryzen
+ 
+5
+ 
+into
+ 
+the
+ 
+CPU
+ 
+field
+ 
+on
+ 
+the
+ 
+right.
+ 4.  Map  Categories:  You  see  "Pearl  Abyss"  on  the  left.  You  use  the  right  panel's  dropdown  to  
+select
+ 
+"Pearl
+ 
+Abyss"
+ 
+from
+ 
+your
+ 
+database
+ 
+(or
+ 
+click
+ 
++
+ 
+to
+ 
+add
+ 
+it).
+ 5.  Curate  Images:  You  look  at  the  left  image  gallery.  You  check  the  boxes  for  the  4  best  
+screenshots.
+ 
+You
+ 
+click
+ 
+the
+ 
+"Primary"
+ 
+radio
+ 
+button
+ 
+on
+ 
+the
+ 
+header
+ 
+image.
+ 6.  Submit:  You  click  the  "Save  Product"  button  at  the  bottom  of  the  Right  Panel.  
+Phase  4:  Django  Backend  Save  Logic  
+Submit  the  Right  Panel  form  to  a  custom  Django  view  (e.g.,  SaveSteamGameView)  that  handles  
+standard
+ 
+Django
+ 
+ORM
+ 
+creation,
+ 
+mimicking
+ 
+the
+ 
+Admin
+ 
+backend.
+ 
+●  Endpoint:  POST  to  /admin/custom/save-steam-game/  ●  Data  Processing:  1.  Extract  POST  Data:  Get  all  standard  fields  (title,  price,  currency,  description,  etc.).  2.  Save  Product:  ```python new_product  =  Product( title=request.POST['title'], edition=request.POST['edition'], description=request.POST['description'], price=request.POST['price'], currency=request.POST['currency'], game_size_gb=request.POST['game_size_gb'], developer_id=request.POST['developer'], publisher_id=request.POST['publisher'] #  ...  status  flags  ... ) New  
+
+
+--- STEAM API CONTENT ---
+
+{
+  "3321460": {
+    "success": true,
+    "data": {
+      "type": "game",
+      "name": "Crimson Desert",
+      "steam_appid": 3321460,
+      "required_age": "17",
+      "is_free": false,
+      "controller_support": "full",
+      "dlc": [
+        4024620
+      ],
+      "detailed_description": "<h1>Digital Deluxe Edition</h1><p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/8ae4dca408143f078562cf8345b7e69f.avif?t=1774868383\" width=1024 height=1024 /></span></p><p class=\"bb_paragraph\" style=\"text-align: center\">  </p><p class=\"bb_paragraph\" style=\"text-align: center\"><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/c092a80d34c46c72333596218d7438cb.avif?t=1774868383\" width=1560 height=100 /></span></p><p class=\"bb_paragraph\" style=\"text-align: center\">Want to add a little more grandeur to your journey in Pywel?\u200b</p><p class=\"bb_paragraph\" style=\"text-align: center\">The Crimson Desert Deluxe Edition includes the full game and the following exclusive items:</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u25a0 Kairos Plate Set:</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Kairos Plate Helm</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Kairos Plate Gloves</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Kairos Plate Boots</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Kairos Cloak</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Kairos Plate Armor</p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">\u25a0 Balgran Shield</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">\u25a0 Exclaire Horse Tack Set:</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Exclaire Champron</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Exclaire Barding</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Exclaire Saddle</p><p class=\"bb_paragraph\" style=\"text-align: center\">\u00b7 Exclaire Stirrups</p></p><br><h1>About the Game</h1><p class=\"bb_paragraph\" style=\"text-align: center\">On the continent of Pywel, the rival factions of Pailune maintained a tense balance. At Kliff's side stood his steadfast Greymane comrades, but a devastating ambush in the deep of night by their sworn enemies the Black Bears leaves members of the Greymanes dead or scattered across the continent.</p><p class=\"bb_paragraph\" style=\"text-align: center\">Kliff\u2014having lost his family in all but name\u2014is determined to reunite with the survivors and rebuild the faction.</p><p class=\"bb_paragraph\" style=\"text-align: center\">But on a journey where alliances are forged, dangers abound, and mysterious factions are uncovered, Kliff will meet those who seek to upend the very order of the continent and face a mission unlike any he has ever known.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/8e43eb42115c8b4fe1b723a9f989dffb.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">Welcome to Pywel. </p><p class=\"bb_paragraph\" style=\"text-align: center\">Here you'll find stretches of natural beauty and wilderness\u2014from green plains and woods to arid deserts and rugged mountains\u2014alongside bustling cities and quiet hamlets inhabited by residents from all walks of life. Between destinations, you will come across landmarks, ancient ruins, hidden treasures, and other points of interest that will draw your curisoity to wander. Your journey will also inevitably take you skyward to the mysterious realm known as the Abyss, where a mystical imbalance endangering the world must be restored.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">The world is yours to explore as you will and there are many paths for you to uncover. </p><p class=\"bb_paragraph\" style=\"text-align: center\">Experience the continent's stories and tales through quests, encounters, challenges, and battles. Roam the lands on various mounts from horses to even a dragon and mechs, and scale cliffsides and walls which you can leap from to glide.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">The story of Crimson Desert centers on Kliff. But as his tale unfolds, 2 new playable characters\u2014Oongka and Damiane\u2014will come to join your journey. As these characters become available, you will be able to freely explore Pywel and undertake many quests outside the main story with them. Each character has their own combat style, as well as unique skills and weapons, allowing you to experience the world and its battles in different ways.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\"><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ef72d78aa7fb4b4b168ff1593cde1052.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">On the unforgiving battlefields of Crimson Desert, there is no single path to victory.\u200b </p><p class=\"bb_paragraph\" style=\"text-align: center\">Grow your arsenal of skills, weapons, and equipment\u2014and decide how you want to use them. Powerful weapon skills can be paired with hard-hitting bare-hand hits and kicks, as well as a wide range of grapples to create seamless chains of attacks. Acquire weapons like swords, spears, greatswords, axes, dual wields, various ranged weapons, and more, and unleash powerful abilities and elemental enhancements through lethal combinations. Stay mobile and relentless with slides, dodges, counters, and swings that flow directly into your next attack. With every strike and move, forge your own way in a world where a split second can decide your fate in fast-paced, visceral battles.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">From ruthless warriors to fearsome beasts, there are those in Pywel who will seek your downfall. Encounter a diverse array of challenging enemies and bosses in brutal one-on-one duels, large-scale battle clashes, and quick skirmishes, and prevail against the threats that stand in your way.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/d42ac9d2898c48e73f6763c6c623da55.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">Pywel isn't just a continent of battles and exploration. It's a world where many of the smaller moments also shape your journey and make up your day-to-day life.</p><p class=\"bb_paragraph\" style=\"text-align: center\">Upgrade the Greymane camp, the starting point in the path to reclaiming the Greymanes' lost homeland of Pailune. Gather resources, cook, fish, hunt, and partake in the other various activities of Pywel for stat replenishment, making your equipment stronger, and more. Along the way, enjoy some leisure time by playing minigames with the locals. </p><p class=\"bb_paragraph\" style=\"text-align: center\">And shaping your daily life also extends to customization. Adjust hairstyles, tattoos, outfits, and more using dyes you brew or pick up along your journey.</p><p class=\"bb_paragraph\" ></p>",
+      "about_the_game": "<p class=\"bb_paragraph\" style=\"text-align: center\">On the continent of Pywel, the rival factions of Pailune maintained a tense balance. At Kliff's side stood his steadfast Greymane comrades, but a devastating ambush in the deep of night by their sworn enemies the Black Bears leaves members of the Greymanes dead or scattered across the continent.</p><p class=\"bb_paragraph\" style=\"text-align: center\">Kliff\u2014having lost his family in all but name\u2014is determined to reunite with the survivors and rebuild the faction.</p><p class=\"bb_paragraph\" style=\"text-align: center\">But on a journey where alliances are forged, dangers abound, and mysterious factions are uncovered, Kliff will meet those who seek to upend the very order of the continent and face a mission unlike any he has ever known.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/8e43eb42115c8b4fe1b723a9f989dffb.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/14a48a0b2e19e5a2e707cc756c5d927a.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">Welcome to Pywel. </p><p class=\"bb_paragraph\" style=\"text-align: center\">Here you'll find stretches of natural beauty and wilderness\u2014from green plains and woods to arid deserts and rugged mountains\u2014alongside bustling cities and quiet hamlets inhabited by residents from all walks of life. Between destinations, you will come across landmarks, ancient ruins, hidden treasures, and other points of interest that will draw your curisoity to wander. Your journey will also inevitably take you skyward to the mysterious realm known as the Abyss, where a mystical imbalance endangering the world must be restored.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/b34e2f26672fac172022ed8927a0f0c0.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">The world is yours to explore as you will and there are many paths for you to uncover. </p><p class=\"bb_paragraph\" style=\"text-align: center\">Experience the continent's stories and tales through quests, encounters, challenges, and battles. Roam the lands on various mounts from horses to even a dragon and mechs, and scale cliffsides and walls which you can leap from to glide.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/deb34f7a79f77ce972dcabd11cff893d.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">The story of Crimson Desert centers on Kliff. But as his tale unfolds, 2 new playable characters\u2014Oongka and Damiane\u2014will come to join your journey. As these characters become available, you will be able to freely explore Pywel and undertake many quests outside the main story with them. Each character has their own combat style, as well as unique skills and weapons, allowing you to experience the world and its battles in different ways.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\"><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ef72d78aa7fb4b4b168ff1593cde1052.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/9061a72622eb272ec9c951e3e29bf112.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">On the unforgiving battlefields of Crimson Desert, there is no single path to victory.\u200b </p><p class=\"bb_paragraph\" style=\"text-align: center\">Grow your arsenal of skills, weapons, and equipment\u2014and decide how you want to use them. Powerful weapon skills can be paired with hard-hitting bare-hand hits and kicks, as well as a wide range of grapples to create seamless chains of attacks. Acquire weapons like swords, spears, greatswords, axes, dual wields, various ranged weapons, and more, and unleash powerful abilities and elemental enhancements through lethal combinations. Stay mobile and relentless with slides, dodges, counters, and swings that flow directly into your next attack. With every strike and move, forge your own way in a world where a split second can decide your fate in fast-paced, visceral battles.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/ccbc4a9252a6582db0257462c096f294.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" style=\"text-align: center\">From ruthless warriors to fearsome beasts, there are those in Pywel who will seek your downfall. Encounter a diverse array of challenging enemies and bosses in brutal one-on-one duels, large-scale battle clashes, and quick skirmishes, and prevail against the threats that stand in your way.</p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ></p><p class=\"bb_paragraph\" ><span class=\"bb_img_ctn\"><img class=\"bb_img\" src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/d42ac9d2898c48e73f6763c6c623da55.avif?t=1774868383\" width=1560 height=81 /></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"><span class=\"bb_img_ctn\"><video class=\"bb_img\" autoplay muted loop playsinline poster=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.poster.avif?t=1774868383\" width=1170 height=658 ><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.webm?t=1774868383\" type=\"video/webm; codecs=vp9\"><source src=\"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/extras/cbdb296a72ab39ee9e7af18e8bc0f89a.mp4?t=1774868383\" type=\"video/mp4\"></video></span></p><p class=\"bb_paragraph\" style=\"text-align: center\"></p><p class=\"bb_paragraph\" style=\"text-align: center\">Pywel isn't just a continent of battles and exploration. It's a world where many of the smaller moments also shape your journey and make up your day-to-day life.</p><p class=\"bb_paragraph\" style=\"text-align: center\">Upgrade the Greymane camp, the starting point in the path to reclaiming the Greymanes' lost homeland of Pailune. Gather resources, cook, fish, hunt, and partake in the other various activities of Pywel for stat replenishment, making your equipment stronger, and more. Along the way, enjoy some leisure time by playing minigames with the locals. </p><p class=\"bb_paragraph\" style=\"text-align: center\">And shaping your daily life also extends to customization. Adjust hairstyles, tattoos, outfits, and more using dyes you brew or pick up along your journey.</p><p class=\"bb_paragraph\" ></p>",
+      "short_description": "Crimson Desert is an open-world action-adventure set on the continent of Pywel. Join Kliff on his journey to rebuild the Greymane faction and to save the land from a looming threat. From vast wilderness and cities to ruins and the mysterious Abyss, forge your path through battles and discovery.",
+      "supported_languages": "English<strong>*</strong>, French, Italian, German, Spanish - Spain, Japanese, Korean<strong>*</strong>, Polish, Russian, Simplified Chinese<strong>*</strong>, Spanish - Latin America, Traditional Chinese, Portuguese - Brazil, Turkish<br><strong>*</strong>languages with full audio support",
+      "header_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/abd7dbdeaede8b6c9a6d40bf116ff2b883f2dd45/header.jpg?t=1774868383",
+      "capsule_image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/f4b3cbf1c0759e0f18cbc0bf13cdefa02451c95b/capsule_231x87.jpg?t=1774868383",
+      "capsule_imagev5": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/f4b3cbf1c0759e0f18cbc0bf13cdefa02451c95b/capsule_184x69.jpg?t=1774868383",
+      "website": "https://crimsondesert.pearlabyss.com",
+      "pc_requirements": {
+        "minimum": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 64-bit<br></li><li><strong>Processor:</strong> Ryzen 5 2600X / i5-8500<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> RX 5500 XT / GTX 1060<br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Windows Compatible Audio Device<br></li><li><strong>Additional Notes:</strong> SSD required.</li></ul>",
+        "recommended": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires a 64-bit processor and operating system<br></li><li><strong>OS:</strong> Windows 10 64-bit<br></li><li><strong>Processor:</strong> Ryzen 5 5600 / i5-11600K<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> RX 6700 XT / RTX 2080 <br></li><li><strong>DirectX:</strong> Version 12<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> Windows Compatible Audio Device<br></li><li><strong>Additional Notes:</strong> SSD required.</li></ul>"
+      },
+      "mac_requirements": {
+        "minimum": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"><li>Requires an Apple processor<br></li><li><strong>OS:</strong> MacOS 15.0 or later<br></li><li><strong>Processor:</strong> Apple M2 Pro, M3, M4<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> M2 Pro, M3, M4<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> macOS compatible audio device</li></ul>",
+        "recommended": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"><li>Requires an Apple processor<br></li><li><strong>OS:</strong> MacOS 15.0 or later<br></li><li><strong>Processor:</strong> Apple M3 Pro, M4 Pro, M5<br></li><li><strong>Memory:</strong> 16 GB RAM<br></li><li><strong>Graphics:</strong> M3 Pro, M4 Pro, M5<br></li><li><strong>Storage:</strong> 150 GB available space<br></li><li><strong>Sound Card:</strong> macOS compatible audio device</li></ul>"
+      },
+      "linux_requirements": {
+        "minimum": "<strong>Minimum:</strong><br><ul class=\"bb_ul\"></ul>",
+        "recommended": "<strong>Recommended:</strong><br><ul class=\"bb_ul\"></ul>"
+      },
+      "legal_notice": "Copyright \u24d2 Pearl Abyss Corp. All Rights Reserved.",
+      "drm_notice": "Denuvo Anti-tamper<br>5 different PC within a day machine activation limit",
+      "developers": [
+        "Pearl Abyss"
+      ],
+      "publishers": [
+        "Pearl Abyss"
+      ],
+      "price_overview": {
+        "currency": "USD",
+        "initial": 6999,
+        "final": 6999,
+        "discount_percent": 0,
+        "initial_formatted": "",
+        "final_formatted": "$69.99"
+      },
+      "packages": [
+        1176092,
+        1418529
+      ],
+      "package_groups": [
+        {
+          "name": "default",
+          "title": "Buy Crimson Desert",
+          "description": "",
+          "selection_text": "Select a purchase option",
+          "save_text": "",
+          "display_type": 0,
+          "is_recurring_subscription": "false",
+          "subs": [
+            {
+              "packageid": 1176092,
+              "percent_savings_text": " ",
+              "percent_savings": 0,
+              "option_text": "Crimson Desert - $69.99",
+              "option_description": "",
+              "can_get_free_license": "0",
+              "is_free_license": false,
+              "price_in_cents_with_discount": 6999
+            },
+            {
+              "packageid": 1418529,
+              "percent_savings_text": " ",
+              "percent_savings": 0,
+              "option_text": "Crimson Desert Deluxe Edition - $79.99",
+              "option_description": "",
+              "can_get_free_license": "0",
+              "is_free_license": false,
+              "price_in_cents_with_discount": 7999
+            }
+          ]
+        }
+      ],
+      "platforms": {
+        "windows": true,
+        "mac": true,
+        "linux": false
+      },
+      "categories": [
+        {
+          "id": 2,
+          "description": "Single-player"
+        },
+        {
+          "id": 22,
+          "description": "Steam Achievements"
+        },
+        {
+          "id": 28,
+          "description": "Full controller support"
+        },
+        {
+          "id": 68,
+          "description": "Custom Volume Controls"
+        },
+        {
+          "id": 79,
+          "description": "Save Anytime"
+        },
+        {
+          "id": 69,
+          "description": "Stereo Sound"
+        },
+        {
+          "id": 65,
+          "description": "Subtitle Options"
+        },
+        {
+          "id": 70,
+          "description": "Surround Sound"
+        },
+        {
+          "id": 23,
+          "description": "Steam Cloud"
+        },
+        {
+          "id": 61,
+          "description": "HDR available"
+        },
+        {
+          "id": 62,
+          "description": "Family Sharing"
+        }
+      ],
+      "genres": [
+        {
+          "id": "1",
+          "description": "Action"
+        },
+        {
+          "id": "25",
+          "description": "Adventure"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": 0,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/669119c3747653f41a46c59f213168448d094e04/ss_669119c3747653f41a46c59f213168448d094e04.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/669119c3747653f41a46c59f213168448d094e04/ss_669119c3747653f41a46c59f213168448d094e04.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 1,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/4b178bdd24ed576458116d8d3383b5352dad0fae/ss_4b178bdd24ed576458116d8d3383b5352dad0fae.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/4b178bdd24ed576458116d8d3383b5352dad0fae/ss_4b178bdd24ed576458116d8d3383b5352dad0fae.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 2,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/55e514af688f459364b3d0ffb288faf73580c8e5/ss_55e514af688f459364b3d0ffb288faf73580c8e5.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/55e514af688f459364b3d0ffb288faf73580c8e5/ss_55e514af688f459364b3d0ffb288faf73580c8e5.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 3,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/d889c95c5f37b3a081cc7be68daf4ad2ffb9e291/ss_d889c95c5f37b3a081cc7be68daf4ad2ffb9e291.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/d889c95c5f37b3a081cc7be68daf4ad2ffb9e291/ss_d889c95c5f37b3a081cc7be68daf4ad2ffb9e291.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 4,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/ab4e6544853a3ecb4e1e714b0fa706c50144fbbb/ss_ab4e6544853a3ecb4e1e714b0fa706c50144fbbb.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/ab4e6544853a3ecb4e1e714b0fa706c50144fbbb/ss_ab4e6544853a3ecb4e1e714b0fa706c50144fbbb.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 5,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/17861390a1d7e6bbf3c44854605c63d68127afac/ss_17861390a1d7e6bbf3c44854605c63d68127afac.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/17861390a1d7e6bbf3c44854605c63d68127afac/ss_17861390a1d7e6bbf3c44854605c63d68127afac.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 6,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/acbecac845c724dd50dfece5e420f5c6e4a2d171/ss_acbecac845c724dd50dfece5e420f5c6e4a2d171.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/acbecac845c724dd50dfece5e420f5c6e4a2d171/ss_acbecac845c724dd50dfece5e420f5c6e4a2d171.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 7,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/10fa299935f8baed56b2311a6d905e2a5d751fa3/ss_10fa299935f8baed56b2311a6d905e2a5d751fa3.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/10fa299935f8baed56b2311a6d905e2a5d751fa3/ss_10fa299935f8baed56b2311a6d905e2a5d751fa3.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 8,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/2fd06c82a96ba625e5e348e964e48ca372022549/ss_2fd06c82a96ba625e5e348e964e48ca372022549.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/2fd06c82a96ba625e5e348e964e48ca372022549/ss_2fd06c82a96ba625e5e348e964e48ca372022549.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 9,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/da5b8d5347b66aa994119fc7052ca43896971da9/ss_da5b8d5347b66aa994119fc7052ca43896971da9.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/da5b8d5347b66aa994119fc7052ca43896971da9/ss_da5b8d5347b66aa994119fc7052ca43896971da9.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 10,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/b64711208534731f57e0a4595241cdbb43a0cbc2/ss_b64711208534731f57e0a4595241cdbb43a0cbc2.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/b64711208534731f57e0a4595241cdbb43a0cbc2/ss_b64711208534731f57e0a4595241cdbb43a0cbc2.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 11,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/65dce9f0199332d1dc43aa5dd3684e1967d7a551/ss_65dce9f0199332d1dc43aa5dd3684e1967d7a551.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/65dce9f0199332d1dc43aa5dd3684e1967d7a551/ss_65dce9f0199332d1dc43aa5dd3684e1967d7a551.1920x1080.jpg?t=1774868383"
+        },
+        {
+          "id": 12,
+          "path_thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/54b5c0b89a83fd2383b67861c148144461d5a87c/ss_54b5c0b89a83fd2383b67861c148144461d5a87c.600x338.jpg?t=1774868383",
+          "path_full": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/54b5c0b89a83fd2383b67861c148144461d5a87c/ss_54b5c0b89a83fd2383b67861c148144461d5a87c.1920x1080.jpg?t=1774868383"
+        }
+      ],
+      "movies": [
+        {
+          "id": 257218232,
+          "name": "Official Launch Trailer | Crimson Desert",
+          "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257218232/86ea605726f9b28143a52033d68aa53038a3371c/movie_600x337.jpg?t=1773306034",
+          "dash_av1": "https://video.akamai.steamstatic.com/store_trailers/3321460/655378362/17020655551cf841d3a4d6868638c1232225cdbd/1773298403/dash_av1.mpd?t=1773306034",
+          "dash_h264": "https://video.akamai.steamstatic.com/store_trailers/3321460/655378362/17020655551cf841d3a4d6868638c1232225cdbd/1773298403/dash_h264.mpd?t=1773306034",
+          "hls_h264": "https://video.akamai.steamstatic.com/store_trailers/3321460/655378362/17020655551cf841d3a4d6868638c1232225cdbd/1773298403/hls_264_master.m3u8?t=1773306034",
+          "highlight": true
+        },
+        {
+          "id": 257233024,
+          "name": "Gameplay Video",
+          "thumbnail": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/257233024/e9c85a458c321fb8d346cb27fb035bf067099921/movie_600x337.jpg?t=1773306012",
+          "dash_av1": "https://video.akamai.steamstatic.com/store_trailers/3321460/1115586514/144676005f415fc40d3331d98de4fbca55a750d9/1773290480/dash_av1.mpd?t=1773306012",
+          "dash_h264": "https://video.akamai.steamstatic.com/store_trailers/3321460/1115586514/144676005f415fc40d3331d98de4fbca55a750d9/1773290480/dash_h264.mpd?t=1773306012",
+          "hls_h264": "https://video.akamai.steamstatic.com/store_trailers/3321460/1115586514/144676005f415fc40d3331d98de4fbca55a750d9/1773290480/hls_264_master.m3u8?t=1773306012",
+          "highlight": true
+        }
+      ],
+      "recommendations": {
+        "total": 65461
+      },
+      "achievements": {
+        "total": 34,
+        "highlighted": [
+          {
+            "name": "Novice Adventurer",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/c05f04fc5033ff67d2078db084751b45eba3b91d.jpg"
+          },
+          {
+            "name": "Master Camper",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/2df91d42db90145457a0561585d88108054d66f7.jpg"
+          },
+          {
+            "name": "Maze Pathfinder",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/119768c5fce4b96db3c8a45c5b918f75844c1d2d.jpg"
+          },
+          {
+            "name": "Conqueror of Spires",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/9c791e66809413ced99624b9e0fe2ac18d0f1101.jpg"
+          },
+          {
+            "name": "Navigator of the Stars",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/6abf780b94efe545a78862dd886ab29012e126e2.jpg"
+          },
+          {
+            "name": "Master of Swords",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/076ddb13bb16683a13fff314b792314a133a0ded.jpg"
+          },
+          {
+            "name": "Master of Shields",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/3b1df180431b87706ad49798cb1361b9fa5bb6e4.jpg"
+          },
+          {
+            "name": "Master of Bows",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/8c3495c4c5e0a4ae6f4475aca2cf2a0210c9b92c.jpg"
+          },
+          {
+            "name": "Master of Spears",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/257444acc5d9411a3d3324d7cc8b814de492a070.jpg"
+          },
+          {
+            "name": "Master of Two-Handed Weapons",
+            "path": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/3321460/69affa1164fe87c2b391b5ccf54e92ad6b09d5d7.jpg"
+          }
+        ]
+      },
+      "release_date": {
+        "coming_soon": false,
+        "date": "Mar 19, 2026"
+      },
+      "support_info": {
+        "url": "https://crimsondesert.pearlabyss.com",
+        "email": ""
+      },
+      "background": "https://store.akamai.steamstatic.com/images/storepagebackground/app/3321460?t=1774868383",
+      "background_raw": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3321460/3eb4fa25db870d727842f0d0a3399597b6c2d22f/page_bg_raw.jpg?t=1774868383",
+      "content_descriptors": {
+        "ids": [
+          2,
+          5
+        ],
+        "notes": "Violent, Gore"
+      },
+      "ratings": {
+        "esrb": {
+          "rating": "m",
+          "descriptors": "Intense Violence\r\nBlood\r\nStrong Language\r\nDrug Reference\r\n",
+          "use_age_gate": "true",
+          "required_age": "17"
+        },
+        "pegi": {
+          "rating": "18",
+          "descriptors": "Violence\r\nBad Language",
+          "use_age_gate": "true",
+          "required_age": "18"
+        },
+        "oflc": {
+          "rating": "ma15",
+          "descriptors": "Strong Suicide Scenes\r\nStrong Violence\r\nStrong Coarse Language",
+          "use_age_gate": "true",
+          "required_age": "15"
+        },
+        "dejus": {
+          "rating": "18",
+          "use_age_gate": "true",
+          "required_age": "18",
+          "descriptors": "Drogas il\u00edcitas\r\nLinguagem impr\u00f3pria\r\nViol\u00eancia Extrema\r\n"
+        },
+        "csrr": {
+          "rating": "R",
+          "descriptors": "Violence\r\nAlcohol and Tobacco\r\nInappropriate Language",
+          "use_age_gate": "true",
+          "required_age": "18"
+        },
+        "usk": {
+          "rating": "18",
+          "required_age": "18",
+          "rating_id": "57853/25",
+          "descriptors": "Drastische Gewalt",
+          "use_age_gate": "true"
+        },
+        "cero": {
+          "rating": "z",
+          "descriptors": "\u72af\u7f6a\r\n\u66b4\u529b",
+          "use_age_gate": "true",
+          "required_age": "18"
+        },
+        "kgrb": {
+          "rating": "19",
+          "descriptors": "\ud3ed\ub825\uc131\r\n\uc5b8\uc5b4\uc758 \ubd80\uc801\uc808\uc131\r\n\ubc94\uc8c4\r\n\uc0ac\ud589\uc131",
+          "use_age_gate": "true",
+          "required_age": "19"
+        },
+        "nzoflc": {
+          "rating": "r16",
+          "descriptors": "Violence\r\nOffensive Language",
+          "required_age": "16",
+          "use_age_gate": "true"
+        },
+        "fpb": {
+          "rating": "18",
+          "descriptors": "Substance Abuse\r\nLanguage\r\nPrejudice \r\nViolence",
+          "use_age_gate": "true",
+          "required_age": "18"
+        },
+        "mda": {
+          "rating": "M18",
+          "descriptors": "VIOLENCE\r\nCOARSE LANGUAGE",
+          "required_age": "18",
+          "use_age_gate": "true"
+        },
+        "steam_germany": {
+          "rating_generated": "1",
+          "rating": "18",
+          "required_age": "18",
+          "banned": "0",
+          "use_age_gate": "0",
+          "descriptors": "Drastische Gewalt\nAlkohol / Tabak\nDerbe Sprache"
+        },
+        "igrs": {
+          "rating_generated": "1",
+          "rating": "18",
+          "required_age": "18",
+          "banned": "0",
+          "use_age_gate": "0",
+          "descriptors": "Kekerasan\nRokok dan/atau rokok elektronik, minuman beralkohol, narkotika, psikotropika, dan/atau zat adiktif lainnya\nPenggunaan bahasa"
+        }
+      }
+    }
+  }
+}

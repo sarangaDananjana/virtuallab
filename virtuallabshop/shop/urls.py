@@ -1,7 +1,13 @@
 from django.urls import path
 from . import views
+from . import steam_ingestion_api
 
 urlpatterns = [
+    # Custom Admin Endpoint for Steam Ingestion
+    path('admin/custom/steam-ingestion/', steam_ingestion_api.SteamDashboardView.as_view(), name='steam-dashboard'),
+    path('admin/custom/api/fetch-steam/<int:app_id>/', steam_ingestion_api.FetchSteamProxyView.as_view(), name='api-fetch-steam'),
+    path('admin/custom/api/save-steam-game/', steam_ingestion_api.SaveSteamGameView.as_view(), name='api-save-steam-game'),
+
     # Template endpoints (served via DRF TemplateHTMLRenderer)
     path('', views.home_page, name='home-page'),
     path('login/', views.login_page, name='login-page'),
