@@ -278,7 +278,7 @@
         statusSpan.innerText = 'Fetching...';
 
         try {
-            const resp = await fetch(`/admin/custom/api/fetch-steam/${appId}/`);
+            const resp = await fetch(`/api/steam-ingestion/fetch/${appId}/`);
             const data = await resp.json();
 
             if (!resp.ok) {
@@ -422,7 +422,7 @@
         };
 
         try {
-            const resp = await fetch("/admin/custom/api/save-steam-game/", {
+            const resp = await fetch("/api/steam-ingestion/save/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
