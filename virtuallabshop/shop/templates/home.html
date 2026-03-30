@@ -1308,7 +1308,7 @@
             {% if reviews %}
             <!-- Reviews Carousel -->
             <div class="overflow-hidden" id="reviewsCarouselContainer">
-                <div class="reviews-track" id="reviewsTrack">
+                <div class="reviews-track {% if reviews|length < 4 %}!w-full !animate-none !justify-center flex-wrap{% endif %}" id="reviewsTrack">
                     <!-- First set of cards -->
                     {% for r in reviews %}
                     <div class="review-card">
@@ -1373,6 +1373,7 @@
                     {% endfor %}
 
                     <!-- Duplicate set for seamless infinite loop -->
+                    {% if reviews|length >= 4 %}
                     {% for r in reviews %}
                     <div class="review-card">
                         <div class="flex items-center justify-between mb-4">
@@ -1425,6 +1426,7 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% else %}
