@@ -1,133 +1,57 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+{% extends "base.html" %}
+{% load static %}
 
-<head>
-    {% load static tailwind_tags %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shop — Virtual Lab Games</title>
-    <meta name="description"
-        content="Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on multi-disc DVDs or pre-loaded Hard Disks with fast islandwide delivery and after-service support." />
+{% block title %}Shop — Virtual Lab Games{% endblock %}
+{% block meta_description %}Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on multi-disc DVDs or pre-loaded Hard Disks with fast islandwide delivery and after-service support.{% endblock %}
 
-    {% tailwind_css %}
+{% block title_en %}Shop — Virtual Lab Games{% endblock %}
+{% block title_si %}ස්ටෝර් — Virtual Lab Games{% endblock %}
+{% block desc_en %}Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on DVDs or pre-loaded Hard Disks with fast delivery and support.{% endblock %}
+{% block desc_si %}Virtual Lab Games වෙතින් PC ක්‍රීඩා මිලදී ගන්න. DVD හෝ පෙර-පූරණය කළ දෘඪ තැටි මත — වේගවත් බෙදාහැරීම සහ සහය.{% endblock %}
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
-        rel="stylesheet">
+{% block mobile_nav_links %}
+<a href="{% url 'home-page' %}"
+    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+        </path>
+    </svg>
+    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
+</a>
+<a href="{% url 'shop-page' %}"
+    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 text-gold-400 transition-colors font-semibold">
+    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+    </svg>
+    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
+</a>
 
-    <!-- Shared site styles -->
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<a href="{% url 'blog_page' %}"
+    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+    </svg>
+    <span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span>
+</a>
 
-    <style>
-        /* Language visibility helpers */
-        .lang-si {
-            display: none;
-        }
+<a href="{% url 'tickets-page' %}"
+    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
+    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
+        </path>
+    </svg>
+    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
+</a>
+{% endblock %}
 
-        body.sinhala-mode .lang-en {
-            display: none;
-        }
-
-        body.sinhala-mode .lang-si {
-            display: inline;
-        }
-
-        .block-lang.lang-si {
-            display: none;
-        }
-
-        body.sinhala-mode .block-lang.lang-en {
-            display: none;
-        }
-
-        body.sinhala-mode .block-lang.lang-si {
-            display: block;
-        }
-    </style>
-</head>
-
-<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise">
-    <!-- =================================================================
-    HEADER - UPDATED WITH NEW MOBILE MENU
-    ================================================================== -->
-    <header class="header-blend sticky top-0 z-[80]">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-18">
-                <!-- Logo -->
-                <a href="{% url 'home-page' %}" class="flex items-center gap-2 sm:gap-3">
-                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-10 sm:h-12 w-auto object-contain" width="48" height="48" decoding="async" />
-                    <div class="flex flex-col">
-                        <span class="font-black text-base sm:text-lg lg:text-xl tracking-tight">Virtual Lab</span>
-                        <span class="text-[10px] sm:text-xs font-medium -mt-0.5">GAMES</span>
-                    </div>
-                </a>
-
-                <!-- Desktop Navigation (links point to Home sections) -->
-                <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
-                    <a href="{% url 'home-page' %}"
-                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
-                            class="lang-en">Home</span><span class="lang-si">Home</span></a>
-                    <a href="{% url 'blog_page' %}" class="text-sm font-semibold transition-colors text-gold-400">
-                        <span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></a>
-                    <a href="{% url 'tickets-page' %}"
-                        class="text-sm font-semibold transition-colors hover:text-gold-400"><span
-                            class="lang-en">Support</span><span class="lang-si">සහය</span></a>
-                </nav>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button id="langToggleBtn"
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-bold transition-all">EN</button>
-
-                    <a href="{% url 'cart_page' %}"
-                        class="shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
-                        </svg>
-                        <span class="hidden sm:inline"><span class="lang-en">Cart</span><span
-                                class="lang-si">Cart</span></span>
-                    </a>
-
-                    <a href="{% url 'shop-page' %}"
-                        class="store-pop shine inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-gold-400 text-white text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all"
-                        aria-label="Shop">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="hidden sm:inline">
-                            <span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span>
-                        </span>
-                    </a>
-
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'profile-page' %}" aria-label="Account"
-                        class="hidden lg:inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 font-bold uppercase transition-all">
-                        {{user_initial }}</a>
-                    {% else %}
-                    <a href="{% url 'login-page' %}"
-                        class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold transition-all"><span
-                            class="lang-en">Login</span><span class="lang-si">ඇතුළු වන්න</span></a>
-                    {% endif %}
-
-                    <button id="navToggle"
-                        class="lg:hidden p-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
+{% block content %}
     <!-- Main -->
     <main class="py-10 sm:py-14 lg:py-16">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -173,119 +97,9 @@
             <nav id="pager" class="mt-8 flex items-center justify-center gap-2"></nav>
         </div>
     </main>
+{% endblock %}
 
-    <!-- Footer -->
-    <footer class="border-t border-white/10">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center text-sm text-white/60">© <span
-                id="year"></span> Virtual Lab Games.</div>
-    </footer>
-
-    <!-- =================================================================
-    NEW MOBILE MENU CONTAINER
-    ================================================================== -->
-    <div id="mobileMenuContainer" class="fixed inset-0 z-[90] pointer-events-none lg:hidden">
-        <div id="mobileMenuOverlay"
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-in-out">
-        </div>
-        <div id="mobileMenu"
-            class="absolute top-0 right-0 h-full w-full max-w-xs bg-aurora/95 backdrop-blur-xl shadow-2xl flex flex-col noise transform translate-x-full transition-transform duration-300 ease-in-out">
-            <div class="flex items-center justify-between p-4 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <img src="{% static 'images/Virtuallab.png' %}" alt="Virtual Lab logo"
-                        class="h-8 w-auto object-contain" />
-                    <span class="font-bold text-lg">Menu</span>
-                </div>
-                <button id="closeNav" type="button" class="p-2 rounded-full hover:bg-white/10 transition-colors">
-                    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-                {% if user.is_authenticated %}
-                <a href="{% url 'profile-page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-gold-400">
-                    <div
-                        class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/80 to-gold-400/80 font-bold uppercase text-white">
-                        {{ user_initial }}</div>
-                    <div class="text-sm text-white/90"><span class="lang-en">Hello</span><span
-                            class="lang-si">ආයුබෝවන්</span>, {{ user.username }}</div>
-                </a>
-                {% else %}
-                <a href="{% url 'login-page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold focus:outline-none focus:ring-2 focus:ring-gold-400">
-                    <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                    </svg>
-                    <span><span class="lang-en">Login / Register</span><span class="lang-si">ඇතුළු වන්න</span></span>
-                </a>
-                {% endif %}
-
-                <hr class="border-white/10 my-4">
-
-                <a href="{% url 'home-page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                        </path>
-                    </svg>
-                    <span><span class="lang-en">Home</span><span class="lang-si">Home</span></span>
-                </a>
-                <a href="{% url 'shop-page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 text-gold-400 transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                    </svg>
-                    <span><span class="lang-en">Shop</span><span class="lang-si">වෙළඳසැල</span></span>
-                </a>
-
-                <a href="{% url 'blog_page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                    </svg>
-                    <span><span class="lang-en">Blog</span><span class="lang-si">බ්ලොග්</span></span>
-                </a>
-
-                <a href="{% url 'tickets-page' %}"
-                    class="mobile-menu-link group flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5 text-white/50 group-hover:text-gold-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5z">
-                        </path>
-                    </svg>
-                    <span><span class="lang-en">Support</span><span class="lang-si">සහය</span></span>
-                </a>
-            </nav>
-
-            <div class="p-4 mt-auto border-t border-white/10">
-                <button id="langToggleBtnMobile"
-                    class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg hover:bg-white/10 text-white transition-colors font-semibold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 5h12M9 3v2m4 13l4-4M9 17v2M5 11h12M4 17h12a2 2 0 002-2v-4a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 002 2z" />
-                    </svg>
-                    <span class="lang-en">Switch to සිංහල</span>
-                    <span class="lang-si">Switch to English</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- =================================================================
-    UPDATED SCRIPT SECTION
-    ================================================================== -->
+{% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const API_URL = '/api/products/';
@@ -304,7 +118,7 @@
                 const size = g.size_display || (g.game_size_gb ? `${g.game_size_gb} GB` : '');
                 const edition = g.edition || 'Standard Edition';
 
-                // --- START: Badge Logic ---
+                // --- Badge Logic ---
                 let badgeHTML = '';
                 if (g.is_cracked === false) {
                     badgeHTML = `
@@ -314,7 +128,6 @@
                         </div>
                     `;
                 }
-                // --- END: Badge Logic ---
 
                 return `
                 <a href="${detail}" class="group block rounded-3xl card-hover">
@@ -335,7 +148,6 @@
                 </a>`;
             }
 
-            // Add this new function inside the DOMContentLoaded listener
             async function loadGenres() {
                 try {
                     const res = await fetch('/api/genres/');
@@ -410,87 +222,18 @@
                 }
             }
 
-            document.getElementById('year').textContent = new Date().getFullYear();
-
-            // --- Mobile Menu Logic ---
-            const navToggle = document.getElementById('navToggle');
-            const closeNav = document.getElementById('closeNav');
-            const mobileMenuContainer = document.getElementById('mobileMenuContainer');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
-
-            const openMenu = () => {
-                if (!mobileMenuContainer) return;
-                mobileMenuContainer.classList.remove('pointer-events-none');
-                mobileMenuOverlay.classList.remove('opacity-0');
-                mobileMenu.classList.remove('translate-x-full');
-                document.body.style.overflow = 'hidden';
-            };
-            const closeMenu = () => {
-                if (!mobileMenuContainer) return;
-                mobileMenuOverlay.classList.add('opacity-0');
-                mobileMenu.classList.add('translate-x-full');
-                document.body.style.overflow = '';
-                setTimeout(() => { mobileMenuContainer.classList.add('pointer-events-none'); }, 300);
-            };
-
-            navToggle?.addEventListener('click', openMenu);
-            closeNav?.addEventListener('click', closeMenu);
-            mobileMenuOverlay?.addEventListener('click', closeMenu);
-            mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !mobileMenuContainer.classList.contains('pointer-events-none')) {
-                    closeMenu();
-                }
-            });
-
-            // --- Language toggle logic ---
-            const langToggleBtn = document.getElementById('langToggleBtn');
-            const langToggleBtnMobile = document.getElementById('langToggleBtnMobile');
-            const body = document.body;
-            const metaDescription = document.querySelector('meta[name="description"]');
-
-            const setLanguage = (lang) => {
-                const isSi = lang === 'si';
-                body.classList.toggle('sinhala-mode', isSi);
-                body.classList.toggle('font-sinhala', isSi);
-                if (langToggleBtn) langToggleBtn.textContent = isSi ? 'EN' : 'සිංහල';
-
-                document.title = isSi ? 'ස්ටෝර් — Virtual Lab Games' : 'Shop — Virtual Lab Games';
-                const newDesc = isSi
-                    ? 'Virtual Lab Games වෙතින් PC ක්‍රීඩා මිලදී ගන්න. DVD හෝ පෙර-පූරණය කළ දෘඪ තැටි මත — වේගවත් බෙදාහැරීම සහ සහය.'
-                    : 'Browse and buy PC games from Virtual Lab Games in Sri Lanka. Available on DVDs or pre-loaded Hard Disks with fast delivery and support.';
-                metaDescription?.setAttribute('content', newDesc);
-                localStorage.setItem('language', lang);
-            };
-
-            const toggleLanguage = () => {
-                const newLang = (localStorage.getItem('language') || 'en') === 'en' ? 'si' : 'en';
-                setLanguage(newLang);
-            };
-
-            langToggleBtn?.addEventListener('click', toggleLanguage);
-            langToggleBtnMobile?.addEventListener('click', toggleLanguage);
-
-            setLanguage(localStorage.getItem('language') || 'en');
-
-            // --- ADD THIS NEW SECTION FOR EVENT LISTENERS ---
+            // Event Listeners
             const filterForm = document.getElementById('filterForm');
             const genreSelect = document.getElementById('genre');
 
-            // Trigger search when the form is submitted (Search button or Enter key)
             filterForm.addEventListener('submit', (event) => {
-                event.preventDefault(); // Stop the page from reloading
-                loadGames(1); // Load the first page of search results
+                event.preventDefault();
+                loadGames(1);
             });
 
-            // Trigger search immediately when a new genre is selected
             genreSelect.addEventListener('change', () => {
-                loadGames(1); // Load the first page of results for that genre
+                loadGames(1);
             });
-            // --- END OF NEW SECTION ---
-
 
             // Initial load
             const initialPage = Number(new URLSearchParams(location.search).get('page') || '1');
@@ -498,6 +241,4 @@
             loadGames(initialPage);
         });
     </script>
-</body>
-
-</html>
+{% endblock %}

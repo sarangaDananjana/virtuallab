@@ -1,0 +1,154 @@
+=== blog.html ===
+Title: Blog ? Virtual Lab Games
+Desc: Stay updated with the latest stories, gaming news, and tech insights from Virtua...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise isolate min-h-screen
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers (match Home) */
+        /* Blog-specific UI */
+        .glass {
+            back...
+
+=== view_blog.html ===
+Title: Loading? | Virtual Lab Games
+Desc: Read the latest stories, gaming news, and tech insights from Virtual Lab Games....
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise isolate min-h-screen
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers (match Blog/Home) */
+        .glass {
+            background: rgba(255, 255, 255...
+
+=== cart.html ===
+Title: Your Cart ? Virtual Lab Games
+Desc: Review your selections, storage device, and checkout with fast islandwide delive...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers (match other pages) */...
+
+=== product_details.html ===
+Title: {{ slug }} ? Virtual Lab Games
+Desc: View game details, screenshots, system requirements, and add to your cart or sto...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers */
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4,...
+
+=== orders.html ===
+Title: My Orders ? Virtual Lab Games
+Desc: View your Virtual Lab Games orders. Track status, see items, totals, and downloa...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers */
+        /* Status pills */
+        .pill {
+            padding: 4px 10px;
+   ...
+
+=== profile.html ===
+Title: My Profile ? Virtual Lab Games
+Desc: View and update your account details. Quickly jump to your cart or orders....
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers */
+        .card-hover {
+            transition: transform .25s cubic-bezier(.4,...
+
+=== register.html ===
+Title: Register ? Virtual Lab Games
+Desc: Create your Virtual Lab Games account to track orders and support tickets....
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen flex flex-col
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language visibility helpers match other pages */...
+
+=== login.html ===
+Title: Login ? Virtual Lab Games
+Desc: Sign in to your Virtual Lab Games account to manage orders and tickets....
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen flex flex-col
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language visibility helpers */...
+
+=== pick_storage.html ===
+Title: Select a Storage Device ? Virtual Lab Games
+Desc: Choose a storage device and we'll preload your selected games. You pay only for ...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language visibility helpers */...
+
+=== submit_ticket.html ===
+Title: Open Support Ticket ? Virtual Lab Games
+Desc: Open a support ticket with Virtual Lab Games. Tell us the issue and preferred ti...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers */
+        /* Custom styles for form elements */
+        .option,
+        .slot-...
+
+=== my_tickets.html ===
+Title: My Support Tickets ? Virtual Lab Games
+Desc: Track your Virtual Lab Games support requests, see updates, and open new tickets...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language visibility helpers */
+        /* Ticket status badges */
+        .badge {
+            di...
+
+=== quiz_dashboard.html ===
+Title: Quiz Dashboard ? Virtual Lab Games
+Desc: ...
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: True
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers (from your file) */...
+
+=== activation.html ===
+Title: Game Activation ? Virtual Lab Games
+Desc: Activate your purchased offline games and manage your activation attempts....
+Body class: bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise
+Has mobile menu: False
+Has lang toggle: True
+Extra styles: 1 blocks
+  Style block 0: /* Language helpers */
+        /* CSS for black and white image effect */
+        .grayscale {
+     ...
+
+=== quiz_attempt.html ===
+Title: Attempting: {{ quiz.title }} ? Virtual Lab
+Desc: ...
+Body class: h-full bg-aurora text-white selection:bg-gold-400/30 noise
+Has mobile menu: False
+Has lang toggle: False
+Extra styles: 1 blocks
+  Style block 0: html,
+        body {
+            overflow: hidden;
+        }
+
+        .nav-box {
+            @apply ...
+

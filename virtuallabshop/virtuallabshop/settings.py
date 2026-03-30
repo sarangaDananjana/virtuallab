@@ -63,12 +63,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shop',
-    "tailwind",
-    "theme",
+    'tailwind',
+    'theme',
 ]
 AUTH_USER_MODEL = "shop.User"
 
 TAILWIND_APP_NAME = "theme"
+
+if DEBUG:
+    INSTALLED_APPS += ["django_browser_reload"]
 
 
 MIDDLEWARE = [
@@ -81,6 +84,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+    ]
 
 ROOT_URLCONF = 'virtuallabshop.urls'
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

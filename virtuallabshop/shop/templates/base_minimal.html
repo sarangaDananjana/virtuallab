@@ -1,0 +1,31 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Virtual Lab Games{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Virtual Lab Games delivers PC games on DVDs and Hard Disks across Sri Lanka.{% endblock %}" />
+
+    {% tailwind_css %}
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
+        rel="stylesheet">
+
+    <!-- Shared site styles -->
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise{% endblock %}">
+    {% block content %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

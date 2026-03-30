@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+{% extends "base_minimal.html" %}
+{% load static %}
 
-<head>
-    {% load static tailwind_tags %}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Payment Successful — Virtual Lab Games</title>
-    <meta name="description" content="Your payment was successful. Thank you for your order." />
+{% block title %}Payment Successful — Virtual Lab Games{% endblock %}
+{% block meta_description %}Your payment was successful. Thank you for your order.{% endblock %}
 
-    {% tailwind_css %}
-
-    <!-- Fonts (match site) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Maname&display=swap"
-        rel="stylesheet">
-
-    <!-- Shared site styles to get the exact aurora bg / glass / noise -->
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-
+{% block extra_head %}
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif
@@ -61,9 +46,11 @@
             }
         }
     </style>
-</head>
+{% endblock %}
 
-<body class="bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen">
+{% block body_class %}bg-aurora text-white selection:bg-gold-400/30 selection:text-white noise min-h-screen{% endblock %}
+
+{% block content %}
     <!-- Plain, centered success card (no navbar, no DB bits) -->
     <main class="min-h-screen flex items-center justify-center px-4 py-14">
         <section
@@ -93,7 +80,9 @@
             </div>
         </section>
     </main>
+{% endblock %}
 
+{% block extra_js %}
     <!-- Lottie: replace the JSON path with your asset. Plays once. -->
     <script src="https://unpkg.com/lottie-web/build/player/lottie.min.js"></script>
     <script>
@@ -106,7 +95,7 @@
                         renderer: 'svg',
                         loop: false,   // play only once
                         autoplay: true,
-                        path: '{% static "images/payment_success.json" %}' // ← replace with your Lottie JSON
+                        path: '{% static "images/payment_success.json" %}'
                     });
                 } else {
                     // Fallback checkmark if lottie fails
@@ -114,6 +103,4 @@
                 }
             })();
     </script>
-</body>
-
-</html>
+{% endblock %}

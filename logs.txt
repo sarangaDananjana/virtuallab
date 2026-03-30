@@ -1,0 +1,9 @@
+﻿Found another file with the destination path 'css/dist/styles.css'. It will be ignored since only the first encountered file is collected. If this is not what you want, make sure every static file has a unique path.
+
+165 static files copied to '/app/staticfiles', 30 unmodified.
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions, shop
+Running migrations:
+  No migrations to apply.
+  Your models in app(s): 'shop' have changes that are not yet reflected in a migration, and so won't be applied.
+  Run 'manage.py makemigrations' to make new migrations, and then re-run 'manage.py migrate' to apply them.

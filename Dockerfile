@@ -1,15 +1,16 @@
 # Dockerfile (Alpine)
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     curl \
     git \
-    libc6-compat \
-    libstdc++
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python deps
 COPY requirements.txt /app/
@@ -19,7 +20,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY virtuallabshop/ /app/
 
 EXPOSE 8000
-RUN python manage.py collectstatic --noinput
-RUN python manage.py tailwind install
-# For dev: run migrations then dev server
-CMD sh -lc "python manage.py migrate && python manage.py tailwind start && python manage.py runserver 0.0.0.0:8000"
+RUN python manage.py tailwind build && python manage.py collectstatic --noinput
+CMD sh -lc "python manage.py migrate && gunicorn virtuallabshop.wsgi:application --bind 0.0.0.0:8000"

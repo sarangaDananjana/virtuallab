@@ -1,0 +1,10 @@
+cart.html : <nav class="hidden lg:flex items-center gap-6 xl:gap-8"> <a href="{% url 'home-page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400"><span class="lang-en">Home</span><span clas
+
+blog.html : <nav class="hidden lg:flex items-center gap-6 xl:gap-8"> <a href="{% url 'home-page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400"><span class="lang-en">Home</span><span clas
+
+orders.html : <nav class="hidden lg:flex items-center gap-6 xl:gap-8"> <a href="{% url 'home-page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400"><span class="lang-en">Home</span><span clas
+
+profile.html : <nav class="hidden lg:flex items-center gap-6 xl:gap-8"> <a href="{% url 'home-page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400"><span class="lang-en">Home</span><span clas
+
+my_tickets.html : <nav class="hidden lg:flex items-center gap-6 xl:gap-8"> <a href="{% url 'home-page' %}" class="text-sm font-semibold transition-colors hover:text-gold-400"><span class="lang-en">Home</span><span clas
+
