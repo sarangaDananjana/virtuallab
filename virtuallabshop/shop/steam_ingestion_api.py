@@ -55,7 +55,8 @@ class FetchSteamProxyView(View):
 class SaveSteamGameView(View):
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body)
+            data = request.POST
+            
             # Create Product
             product = Product.objects.create(
                 title=data.get('title'),
@@ -65,8 +66,8 @@ class SaveSteamGameView(View):
                 price=data.get('price', 0),
                 currency=data.get('currency', 'LKR'),
                 game_size_gb=data.get('game_size_gb', 0),
-                is_active=data.get('is_active', True),
-                is_cracked=data.get('is_cracked', True)
+                is_active=(data.get('is_active') == 'true'),
+                is_cracked=(data.get('is_cracked') == 'true')
             )
 
             # Associate Developer/Publisher
@@ -80,45 +81,48 @@ class SaveSteamGameView(View):
             product.save()
 
             # Genres
-            genre_ids = data.get('genre_ids', [])
+            genre_ids = data.getlist('genre_ids')
             if genre_ids:
                 genres = Genre.objects.filter(id__in=genre_ids)
                 product.genres.set(genres)
 
             # System Requirements
-            sys_req = data.get('system_requirements', {})
             SystemRequirements.objects.create(
                 product=product,
-                min_cpu=sys_req.get('min_cpu', ''),
-                min_ram_gb=sys_req.get('min_ram_gb', 8),
-                min_gpu=sys_req.get('min_gpu', ''),
-                min_storage_gb=sys_req.get('min_storage_gb', 0),
-                min_os=sys_req.get('min_os', ''),
-                rec_cpu=sys_req.get('rec_cpu', ''),
-                rec_ram_gb=sys_req.get('rec_ram_gb') or None,
-                rec_gpu=sys_req.get('rec_gpu', ''),
-                rec_storage_gb=sys_req.get('rec_storage_gb') or None,
-                rec_os=sys_req.get('rec_os', '')
+                min_cpu=data.get('min_cpu', ''),
+                min_ram_gb=data.get('min_ram_gb', 8),
+                min_gpu=data.get('min_gpu', ''),
+                min_storage_gb=data.get('min_storage_gb', 0),
+                min_os=data.get('min_os', ''),
+                rec_cpu=data.get('rec_cpu', ''),
+                rec_ram_gb=data.get('rec_ram_gb') or None,
+                rec_gpu=data.get('rec_gpu', ''),
+                rec_storage_gb=data.get('rec_storage_gb') or None,
+                rec_os=data.get('rec_os', '')
             )
 
             # Images
-            primary_url = data.get('primary_image_url')
-            selected_urls = data.get('selected_image_urls', [])
+            primary_file = request.FILES.get('primary_image')
+            if primary_file:
+                # Save uploaded local primary image
+                prod_img = ProductImage(product=product, is_primary=True, image=primary_file)
+                prod_img.save()
+
+            selected_urls = data.getlist('selected_image_urls')
             
-            for url in selected_urls:
+            for index, url in enumerate(selected_urls):
                 if not url: continue
                 try:
                     # Provide User-Agent to avoid 403 Forbidden from Akamai/Steam edges
                     img_response = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0'})
                     if img_response.status_code == 200:
-                        is_prim = (url == primary_url)
                         file_name = url.split('/')[-1]
                         if '?' in file_name:
                             file_name = file_name.split('?')[0]
                         if not file_name:
-                            file_name = 'image.jpg'
+                            file_name = f'steam_image_{index}.jpg'
                             
-                        prod_img = ProductImage(product=product, is_primary=is_prim)
+                        prod_img = ProductImage(product=product, is_primary=False)
                         prod_img.image.save(file_name, ContentFile(img_response.content), save=True)
                 except Exception as e:
                     print(f"Failed to download image {url}: {e}")

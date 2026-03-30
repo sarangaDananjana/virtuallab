@@ -178,15 +178,20 @@
             <form id="ingestion-form" onsubmit="submitForm(event)">
                 {% csrf_token %}
                 
-                <div class="grid-2">
-                    <div class="form-row">
+                <div class="grid-2" style="margin-bottom: 18px;">
+                    <div class="form-row" style="margin-bottom:0;">
                         <label>Title *</label>
                         <input type="text" id="id_title" name="title" required>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" style="margin-bottom:0;">
                         <label>Slug *</label>
                         <input type="text" id="id_slug" name="slug" required>
                     </div>
+                </div>
+
+                <div class="form-row">
+                    <label style="color: #f6cd45;">Primary Box Art Image (Upload Local File) *</label>
+                    <input type="file" id="id_primary_image" name="primary_image" accept="image/*" required style="padding: 6px; background: #374151;">
                 </div>
 
                 <div class="grid-3">
@@ -204,10 +209,7 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <label>Description</label>
-                    <textarea id="id_description" name="description"></textarea>
-                </div>
+
 
                 <div class="grid-2">
                     <div class="form-row">
@@ -265,18 +267,24 @@
                     </div>
                 </div>
 
-                <!-- Hidden inputs for images will be injected via JS -->
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #374151;">
+                <div class="form-row">
+                    <label style="color: #f6cd45; font-size: 1.1em;">Game Description (HTML Supported)</label>
+                    <textarea id="id_description" name="description" style="height: 300px;"></textarea>
+                </div>
+
                 <div id="hidden-images-container"></div>
 
-                <button type="submit" class="btn-save" id="btn-save">Save Product</button>
+                <button type="submit" class="btn-save" id="btn-save">Save Product & Download Selection</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    // Global tracking for images
+    // Global tracking for images and selection order
     let fetchedImages = [];
+    let orderedSelection = [];
 
     // Helper to generate a slug from a title
     function generateSlug(text) {
@@ -320,6 +328,9 @@
             if(data.capsule_image) fetchedImages.push(data.capsule_image);
             data.screenshots.forEach(s => fetchedImages.push(s));
 
+            // Clear old ordered selection on new fetch
+            orderedSelection = [];
+
             // Generate Gallery HTML
             let galleryHTML = '<div class="image-gallery">';
             fetchedImages.forEach((img, idx) => {
@@ -327,8 +338,7 @@
                     <div class="img-box">
                         <img src="${img}" alt="Screenshot">
                         <div class="img-controls">
-                            <label><input type="checkbox" class="img-select" value="${img}" onchange="updateHiddenImages()"> Sel</label>
-                            <label><input type="radio" name="primary_radio" value="${img}" onchange="updateHiddenImages()"> Prim</label>
+                            <label><input type="checkbox" class="img-select" value="${img}" onchange="toggleImageSelection(this.value, this.checked)"> Select Image</label>
                         </div>
                     </div>
                 `;
@@ -376,29 +386,14 @@
         }
     }
 
-    // Keep the hidden form inputs synched with the left side visual checkboxes
-    function updateHiddenImages() {
-        const container = document.getElementById('hidden-images-container');
-        container.innerHTML = ''; // Clear prev
-
-        // Find all selected checkboxes
-        const checkboxes = document.querySelectorAll('.img-select:checked');
-        checkboxes.forEach(cb => {
-            const inp = document.createElement('input');
-            inp.type = 'hidden';
-            inp.name = 'selected_image_urls';
-            inp.value = cb.value;
-            container.appendChild(inp);
-        });
-
-        // Find selected radio
-        const radio = document.querySelector('input[name="primary_radio"]:checked');
-        if (radio) {
-            const radInp = document.createElement('input');
-            radInp.type = 'hidden';
-            radInp.name = 'primary_image_url';
-            radInp.value = radio.value;
-            container.appendChild(radInp);
+    // Keep track of exact order in which user checks the boxes
+    function toggleImageSelection(url, isChecked) {
+        if (isChecked) {
+            if (!orderedSelection.includes(url)) {
+                orderedSelection.push(url);
+            }
+        } else {
+            orderedSelection = orderedSelection.filter(u => u !== url);
         }
     }
 
@@ -409,48 +404,51 @@
         btn.innerText = "Saving & Downloading Images...";
         btn.disabled = true;
 
-        // Build Payload
-        const payload = {
-            title: document.getElementById('id_title').value,
-            slug: document.getElementById('id_slug').value,
-            edition: document.getElementById('id_edition').value,
-            price: document.getElementById('id_price').value,
-            currency: document.getElementById('id_currency').value,
-            description: document.getElementById('id_description').value,
-            developer_id: document.getElementById('id_developer_id').value,
-            publisher_id: document.getElementById('id_publisher_id').value,
-            
-            // Handle multiple select
-            genre_ids: Array.from(document.getElementById('id_genre_ids').selectedOptions).map(opt => opt.value),
-            
-            game_size_gb: document.getElementById('id_game_size_gb').value,
-            is_active: document.getElementById('id_is_active').checked,
-            is_cracked: document.getElementById('id_is_cracked').checked,
-            
-            system_requirements: {
-                min_cpu: document.getElementById('id_min_cpu').value,
-                rec_cpu: document.getElementById('id_rec_cpu').value,
-                min_ram_gb: document.getElementById('id_min_ram_gb').value,
-                rec_ram_gb: document.getElementById('id_rec_ram_gb').value,
-                min_gpu: document.getElementById('id_min_gpu').value,
-                rec_gpu: document.getElementById('id_rec_gpu').value,
-                min_storage_gb: document.getElementById('id_min_storage_gb').value,
-                rec_storage_gb: document.getElementById('id_rec_storage_gb').value,
-            },
+        // Build Payload using FormData to handle file uploads
+        const formData = new FormData();
+        formData.append('title', document.getElementById('id_title').value);
+        formData.append('slug', document.getElementById('id_slug').value);
+        formData.append('edition', document.getElementById('id_edition').value);
+        formData.append('price', document.getElementById('id_price').value);
+        formData.append('currency', document.getElementById('id_currency').value);
+        formData.append('description', document.getElementById('id_description').value);
+        formData.append('developer_id', document.getElementById('id_developer_id').value);
+        formData.append('publisher_id', document.getElementById('id_publisher_id').value);
+        
+        // Append all selected genres
+        Array.from(document.getElementById('id_genre_ids').selectedOptions).forEach(opt => {
+            formData.append('genre_ids', opt.value);
+        });
+        
+        formData.append('game_size_gb', document.getElementById('id_game_size_gb').value);
+        formData.append('is_active', document.getElementById('id_is_active').checked);
+        formData.append('is_cracked', document.getElementById('id_is_cracked').checked);
+        
+        formData.append('min_cpu', document.getElementById('id_min_cpu').value);
+        formData.append('rec_cpu', document.getElementById('id_rec_cpu').value);
+        formData.append('min_ram_gb', document.getElementById('id_min_ram_gb').value);
+        formData.append('rec_ram_gb', document.getElementById('id_rec_ram_gb').value);
+        formData.append('min_gpu', document.getElementById('id_min_gpu').value);
+        formData.append('rec_gpu', document.getElementById('id_rec_gpu').value);
+        formData.append('min_storage_gb', document.getElementById('id_min_storage_gb').value);
+        formData.append('rec_storage_gb', document.getElementById('id_rec_storage_gb').value);
 
-            // Collect dynamically injected hidden fields 
-            selected_image_urls: Array.from(form.querySelectorAll('input[name="selected_image_urls"]')).map(i => i.value),
-            primary_image_url: (form.querySelector('input[name="primary_image_url"]') || {}).value
-        };
+        // Upload local primary image
+        const primaryFile = document.getElementById('id_primary_image').files[0];
+        if (primaryFile) {
+            formData.append('primary_image', primaryFile);
+        }
+
+        // Add dynamically selected sequential image URLs from the array tracker
+        orderedSelection.forEach(url => formData.append('selected_image_urls', url));
 
         try {
             const resp = await fetch("/api/steam-ingestion/save/", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
-                body: JSON.stringify(payload)
+                body: formData
             });
             const data = await resp.json();
 
