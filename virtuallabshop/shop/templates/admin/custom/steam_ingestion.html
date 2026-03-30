@@ -371,8 +371,16 @@
                 <hr style="margin: 15px 0;">
                 
                 <strong>Image Curation:</strong>
-                <p style="font-size:11px; color:#666;">Check boxes below and select one primary image. They will be downloaded and attached to your product upon save.</p>
+                <p style="font-size:11px; color:#666;">Check boxes below to select images. They will be downloaded and attached to your product upon save in the exact order you click them.</p>
                 ${galleryHTML}
+
+                <hr style="margin: 15px 0;">
+                
+                <strong>Raw API JSON Data:</strong>
+                <p style="font-size:11px; color:#666;">Full data dump from Steam below for manual field extraction if needed.</p>
+                <div style="background:#111827; padding:15px; font-size:12px; border-radius:6px; border: 1px solid #374151; overflow-x: auto; max-height: 300px; overflow-y: auto; color: #a5b4fc;">
+                    <pre style="margin:0;">${JSON.stringify(data, null, 2)}</pre>
+                </div>
             `;
 
             statusSpan.style.color = 'green';
