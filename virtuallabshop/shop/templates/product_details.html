@@ -101,6 +101,17 @@
         .addon-glow:hover::before {
             left: 150%;
         }
+
+        /* Fix for Steam HTML content injected into Description */
+        #desc img, #desc video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        #desc h2, #desc h3 { color: white; margin-top: 20px; font-weight: bold; }
+        #desc p { margin-bottom: 10px; line-height: 1.6; }
+        #desc { overflow-wrap: break-word; }
     </style>
 </head>
 
@@ -378,7 +389,7 @@
             <!-- Description -->
             <section class="mt-10">
                 <h2 class="text-xl font-bold"><span class="lang-en">About</span><span class="lang-si"> ගැන</span></h2>
-                <p id="desc" class="mt-3 text-white/80 whitespace-pre-line"></p>
+                <div id="desc" class="mt-3 text-white/80"></div>
             </section>
 
             <!-- DLCs -->
@@ -714,7 +725,8 @@
                 if (landscapes.length === 0) { document.getElementById('galleryWrap').classList.add('hidden'); }
                 wireSlider();
 
-                setText('desc', p.description || '');
+                const descEl = document.getElementById('desc');
+                if (descEl) descEl.innerHTML = p.description || '';
 
                 const dlcs = Array.isArray(p.dlcs) ? p.dlcs : [];
                 if (dlcs.length) {
